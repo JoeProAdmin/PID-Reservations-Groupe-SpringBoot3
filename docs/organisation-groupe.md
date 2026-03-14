@@ -1,4 +1,4 @@
-# Organisation du groupe – PID Réservations
+﻿# Organisation du groupe – PID Réservations
 
 ## Contexte
 Ce dépôt GitHub est destiné au travail de groupe du projet PID Réservations (Spring Boot 3) pour l’année académique 2025-2026 à l’ICC.
