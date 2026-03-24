@@ -11,21 +11,24 @@ public class Spectacle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(nullable = false)
     private LocalDateTime date;
 
     private String location;
 
+    @Column(nullable = false)
     private Double price;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    // --- Getters & Setters ---
+    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
