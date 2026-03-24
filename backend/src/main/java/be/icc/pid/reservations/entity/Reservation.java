@@ -31,12 +31,8 @@ public class Reservation {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // ===== CONSTRUCTEURS =====
-
     public Reservation() {
     }
-
-    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;

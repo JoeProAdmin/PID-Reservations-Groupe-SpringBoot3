@@ -5,6 +5,8 @@ import be.icc.pid.reservations.entity.ReservationStatus;
 import be.icc.pid.reservations.entity.Spectacle;
 import be.icc.pid.reservations.repository.ReservationRepository;
 import be.icc.pid.reservations.repository.SpectacleRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,52 +25,51 @@ public class ReservationController {
         this.spectacleRepository = spectacleRepository;
     }
 
-    // =========================
-    // GET ALL RESERVATIONS
-    // =========================
     @GetMapping
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
+    public ResponseEntity<List<Reservation>> getAllReservations() {
+        return ResponseEntity.ok(reservationRepository.findAll());
     }
 
-    // =========================
-    // GET RESERVATION BY ID
-    // =========================
     @GetMapping("/{id}")
-    public Reservation getReservationById(@PathVariable Long id) {
+    public ResponseEntity<Reservation> getReservationById(@PathVariable Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // =========================
-    // CREATE RESERVATION
-    // =========================
     @PostMapping
-    public Reservation createReservation(@RequestBody Reservation reservation) {
+    public ResponseEntity<?> createReservation(@RequestBody Reservation reservation) {
+        if (reservation.getNumberOfSeats() <= 0) {
+            return ResponseEntity.badRequest().body("Nombre de places invalide");
+        }
+        if (reservation.getSpectacle() == null || reservation.getSpectacle().getId() == null) {
+            return ResponseEntity.badRequest().body("Spectacle obligatoire");
+        }
 
         Long spectacleId = reservation.getSpectacle().getId();
 
         Spectacle spectacle = spectacleRepository.findById(spectacleId)
-                .orElseThrow(() -> new RuntimeException("Spectacle not found"));
+                .orElse(null);
+        if (spectacle == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Spectacle introuvable");
+        }
 
         reservation.setSpectacle(spectacle);
         reservation.setReservationDate(LocalDateTime.now());
         reservation.setStatus(ReservationStatus.CREATED);
         reservation.setCreatedAt(LocalDateTime.now());
+        reservation.setUpdatedAt(LocalDateTime.now());
 
-        return reservationRepository.save(reservation);
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationRepository.save(reservation));
     }
 
-    // =========================
-    // DELETE RESERVATION
-    // =========================
     @DeleteMapping("/{id}")
-    public void deleteReservation(@PathVariable Long id) {
-
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         if (!reservationRepository.existsById(id)) {
-            throw new RuntimeException("Reservation not found");
+            return ResponseEntity.notFound().build();
         }
 
         reservationRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
