@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Règles de collaboration – PID Réservations Groupe
-=======
-﻿# Règles de collaboration – PID Réservations Groupe
->>>>>>> b0a8b83 (Mise à jour de la documentation du projet groupe et des règles de collaboration)
+# Regles de collaboration - PID Reservations Groupe
 
 ## Dépôt officiel du groupe
 Le travail de groupe doit être réalisé uniquement sur le dépôt :
