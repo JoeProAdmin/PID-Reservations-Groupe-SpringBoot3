@@ -7,12 +7,10 @@ ICC 2025 - 2026
 
 ### Membres du groupe
 
-- 6613 - ASSAL Hatim
-- 7107 - AZAOUAGH Rania
-- 6368 - BENKADDOUR Redouane
-- 6976 - BOUSSAID Yassine
-- 7088 - RADI Mohamed
 - 6400 - QARNOUF Youssef
+- 6613 - ASSAL Hatim
+- 6368 - BENKADDOUR Redouane
+- 6451 - Abdulrahman SABBAGH
 
 ## État actuel du projet
 
