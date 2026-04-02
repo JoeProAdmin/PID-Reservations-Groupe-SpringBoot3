@@ -44,3 +44,12 @@ Toutes les contributions du groupe doivent être réalisées sur ce dépôt grou
 - répartir les tâches
 - organiser les contributions des membres
 - préparer la suite du développement collaboratif
+
+## Organisation des branches
+
+- main : version stable du projet groupe
+- Youssef : développement backend et administration (Youssef)
+
+Chaque membre du groupe doit créer sa propre branche et travailler dessus.
+
+Les modifications doivent passer par des Pull Requests vers la branche main.
