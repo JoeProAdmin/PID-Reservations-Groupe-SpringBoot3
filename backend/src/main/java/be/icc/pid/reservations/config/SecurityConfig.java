@@ -27,8 +27,23 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+
+                        // Authentification
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+
+                        // Accès temporaire pour permettre au frontend d'avancer
+                        .requestMatchers("/api/**").permitAll()
+
+                        // Ressources statiques éventuelles
+                        .requestMatchers(
+                                "/",
+                                "/index.html",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
+                        ).permitAll()
+
+                        // Tout le reste
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
