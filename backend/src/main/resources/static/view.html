@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>Détail artiste</title>
+        <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+        <link href="../css/styles.css" rel="stylesheet" />
+        <style>
+            .page-header-section {
+                background: linear-gradient(135deg, #212529 0%, #3d4149 100%);
+                padding: 8rem 0 4rem;
+                margin-top: 72px;
+            }
+            .artist-name-header {
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: #fff;
+                font-size: 2.8rem;
+                margin-bottom: 0.5rem;
+            }
+            .badge-genre-header {
+                background: #fec810;
+                color: #212529;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 0.75rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                padding: 0.4em 1em;
+                border-radius: 2px;
+                display: inline-block;
+                margin-bottom: 1rem;
+            }
+            .breadcrumb-item a { color: #fec810; text-decoration: none; }
+            .breadcrumb-item.active { color: #adb5bd; }
+            .breadcrumb-item + .breadcrumb-item::before { color: #6c757d; }
+
+            .detail-card {
+                background: #fff;
+                border-radius: 4px;
+                box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+                overflow: hidden;
+            }
+            .detail-card .card-accent { height: 5px; background: #fec810; }
+            .detail-card .card-body { padding: 2.5rem; }
+
+            .info-label {
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 700;
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                color: #adb5bd;
+                margin-bottom: 0.3rem;
+            }
+            .info-value {
+                font-family: 'Roboto Slab', serif;
+                font-size: 1rem;
+                color: #212529;
+                margin-bottom: 0;
+            }
+
+            .section-label {
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.72rem;
+                letter-spacing: 0.12em;
+                color: #fec810;
+                background: #212529;
+                display: inline-block;
+                padding: 0.3em 0.9em;
+                margin-bottom: 1rem;
+            }
+            .description-text {
+                font-family: 'Roboto Slab', serif;
+                font-size: 0.95rem;
+                color: #495057;
+                line-height: 1.8;
+            }
+            .divider {
+                border: none;
+                border-top: 1px solid #f0f0f0;
+                margin: 2rem 0;
+            }
+            .btn-back {
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 700;
+                font-size: 0.78rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                padding: 0.6rem 1.5rem;
+                border: 1px solid #dee2e6;
+                background: transparent;
+                color: #6c757d;
+                border-radius: 2px;
+                text-decoration: none;
+                transition: all 0.2s;
+            }
+            .btn-back:hover { background: #f8f9fa; color: #212529; }
+
+            .meta-info {
+                font-family: 'Roboto Slab', serif;
+                font-size: 0.8rem;
+                color: #adb5bd;
+            }
+            .empty-state {
+                text-align: center;
+                padding: 5rem 0;
+                font-family: 'Roboto Slab', serif;
+                color: #adb5bd;
+            }
+            .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+        </style>
+    </head>
+    <body id="page-top">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="/index.html">
+                    <i class="fas fa-music me-2"></i>ArtistDB
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
+                    Menu <i class="fas fa-bars ms-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link active" href="/index.html">Artistes</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/auth/login.html">Connexion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="page-header-section" id="pageHeader">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-3" style="background:transparent; padding:0;">
+                        <li class="breadcrumb-item"><a href="/index.html">Artistes</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumbName">Chargement...</li>
+                    </ol>
+                </nav>
+                <div id="headerContent">
+                    <div class="spinner-border text-warning" role="status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Section -->
+        <section class="page-section bg-light">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+
+                        <!-- Loading -->
+                        <div id="loadingState" class="empty-state">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-3">Chargement...</p>
+                        </div>
+
+                        <!-- Detail Card -->
+                        <div id="detailCard" style="display:none;">
+                            <div class="detail-card mb-4">
+                                <div class="card-accent"></div>
+                                <div class="card-body">
+
+                                    <!-- Infos principales -->
+                                    <div class="section-label">
+                                        <i class="fas fa-user me-2"></i>Informations
+                                    </div>
+
+                                    <div class="row g-4 mb-2">
+                                        <div class="col-md-4">
+                                            <p class="info-label">Nom</p>
+                                            <p class="info-value" id="artistName">—</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p class="info-label">Genre</p>
+                                            <p class="info-value" id="artistGenre">—</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <p class="info-label">Pays</p>
+                                            <p class="info-value" id="artistCountry">—</p>
+                                        </div>
+                                    </div>
+
+                                    <hr class="divider">
+
+                                    <!-- Description -->
+                                    <div class="section-label">
+                                        <i class="fas fa-file-alt me-2"></i>Biographie
+                                    </div>
+                                    <p class="description-text" id="artistDescription">—</p>
+
+                                    <hr class="divider">
+
+                                    <!-- Meta -->
+                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        <p class="meta-info mb-0">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            Ajouté le <span id="artistCreatedAt">—</span>
+                                        </p>
+                                        <a href="/index.html" class="btn-back">
+                                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error state -->
+                        <div id="errorState" style="display:none;" class="empty-state">
+                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                            <p>Artiste introuvable.</p>
+                            <a href="/index.html" class="btn btn-primary text-uppercase"
+                               style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.8rem;">
+                                Retour à la liste
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-lg-start" style="font-family:'Roboto Slab',serif;">Copyright &copy; ArtistDB 2026</div>
+                    <div class="col-lg-4 my-3 my-lg-0 text-center">
+                        <i class="fas fa-music text-primary"></i>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a class="link-dark text-decoration-none me-3" href="#">Politique de confidentialité</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="../js/scripts.js"></script>
+        <script>
+            const id = new URLSearchParams(window.location.search).get('id');
+
+            fetch(`/api/artists/${id}`)
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.json();
+                })
+                .then(artist => {
+                    // Header
+                    document.getElementById('breadcrumbName').textContent = artist.name;
+                    document.getElementById('headerContent').innerHTML = `
+                        <span class="badge-genre-header">${artist.genre || 'Genre inconnu'}</span>
+                        <h1 class="artist-name-header">${artist.name}</h1>
+                        <p style="font-family:'Roboto Slab',serif; color:#adb5bd;">
+                            <i class="fas fa-map-marker-alt me-1 text-warning"></i>${artist.country || 'Pays inconnu'}
+                        </p>
+                    `;
+                    document.title = `${artist.name} — ArtistDB`;
+
+                    // Champs
+                    document.getElementById('artistName').textContent = artist.name;
+                    document.getElementById('artistGenre').textContent = artist.genre || 'Non renseigné';
+                    document.getElementById('artistCountry').textContent = artist.country || 'Non renseigné';
+                    document.getElementById('artistDescription').textContent = artist.description || 'Aucune biographie disponible.';
+
+                    // Date
+                    if (artist.createdAt) {
+                        const date = new Date(artist.createdAt);
+                        document.getElementById('artistCreatedAt').textContent =
+                            date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                    }
+
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('detailCard').style.display = 'block';
+                })
+                .catch(() => {
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('errorState').style.display = 'block';
+                    document.getElementById('headerContent').innerHTML = `<h1 class="artist-name-header">Artiste introuvable</h1>`;
+                });
+        </script>
+    </body>
+</html>
