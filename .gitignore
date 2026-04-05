@@ -1,4 +1,7 @@
+# Environment
 .env
+backend/.env
+application-local.properties
 
 # Maven / Java
 target/
@@ -15,7 +18,3 @@ target/
 # OS
 .DS_Store
 Thumbs.db
-
-.env
-backend/.env
-application-local.properties
