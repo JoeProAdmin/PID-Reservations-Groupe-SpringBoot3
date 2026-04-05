@@ -1,53 +1,132 @@
-﻿# PID-Reservations-Groupe-SpringBoot3
+# PID-Reservations-Groupe-SpringBoot3
 
 Projet PID Réservations - Travail de groupe (Spring Boot 3)  
-ICC 2025 - 2026
+ICC 2025 - 2026  
+
+---
 
 ## Groupe SpringBoot 3
 
 ### Membres du groupe
 
-- 6400 - QARNOUF Youssef
-- 6613 - ASSAL Hatim
-- 6368 - BENKADDOUR Redouane
-- 6451 - Abdulrahman SABBAGH
+- 6400 - QARNOUF Youssef  
+- 6613 - ASSAL Hatim  
+- 6368 - BENKADDOUR Redouane  
+- 6451 - Abdulrahman SABBAGH  
+
+---
+
+## Répartition des tâches
+
+### QARNOUF Youssef (Responsable Backend & BDD)
+- Développement Backend (Spring Boot 3)
+- Gestion de la base de données MySQL
+- Sécurité JWT (authentification)
+- Gestion des rôles ADMIN / USER
+- Endpoints sécurisés (admin)
+
+### BENKADDOUR Redouane (Frontend)
+- Développement interface utilisateur
+- Bootstrap
+- Connexion API
+
+### Abdulrahman SABBAGH (Production)
+- Déploiement
+- Infrastructure
+
+### ASSAL Hatim (Documentation & UX)
+- Documentation
+- UX
+- Organisation
+
+---
 
 ## État actuel du projet
 
-Le dépôt groupe a été initialisé et structuré proprement.
+Backend fonctionnel et stable.
 
-### Progression validée
+---
 
-- dépôt GitHub groupe créé
-- documentation d’organisation créée
-- backend Spring Boot importé dans le dossier `backend`
-- projet Maven chargé correctement
-- application Spring Boot démarrée avec succès
-- endpoint de test `/hello` validé sur `http://localhost:8080/hello`
+## Backend
 
-## Structure actuelle
+- Spring Boot opérationnel
+- JWT fonctionnel
+- Login OK (Postman)
+- Rôles ADMIN / USER
+- Endpoints sécurisés
 
-- `backend/` : backend Spring Boot 3 du projet groupe
-- `docs/` : documentation d’organisation et de suivi
-- `README.md` : vue d’ensemble du projet groupe
+---
 
-## Règle de travail
+## Base de données
 
-Le dépôt individuel ne doit pas être utilisé pour le travail de groupe.  
-Toutes les contributions du groupe doivent être réalisées sur ce dépôt groupe.
+- MySQL (XAMPP)
+- Base : pid_reservations_group
+- Tables : users, artists, spectacles, reservations
 
-## Objectif immédiat
+Configuration :
 
-- stabiliser le backend groupe
-- répartir les tâches
-- organiser les contributions des membres
-- préparer la suite du développement collaboratif
+spring.jpa.hibernate.ddl-auto=update
 
-## Organisation des branches
+---
 
-- main : version stable du projet groupe
-- Youssef : développement backend et administration (Youssef)
+## data.sql
 
-Chaque membre du groupe doit créer sa propre branche et travailler dessus.
+Insertion sécurisée :
 
-Les modifications doivent passer par des Pull Requests vers la branche main.
+INSERT IGNORE INTO users (...)
+
+Compte ADMIN déjà existant
+
+---
+
+## Structure
+
+- backend/
+- docs/
+- README.md
+
+---
+
+## Organisation Git
+
+Branches :
+
+- main
+- youssef-admin-backend-v2
+- redouane-frontend
+- sabbagh-production
+- hatim-docs
+
+---
+
+## Règles
+
+- 1 branche par personne
+- Pas de travail sur main
+- Pull Request obligatoire
+
+---
+
+## Progression
+
+- Backend terminé
+- JWT OK
+- BDD OK
+- ADMIN OK
+- Login OK
+
+---
+
+## Objectif
+
+- Frontend
+- Intégration
+- Déploiement
+
+---
+
+## Statut
+
+Backend stable  
+BDD opérationnelle  
+Projet prêt pour suite
