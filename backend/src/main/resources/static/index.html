@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Liste des artistes</title>
+</head>
+<body>
+    <h2>Liste des artistes</h2>
+    <a href="/artists/create">Add new artist</a>
+
+    <table id="artistsTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Genre</th>
+                <th>Country</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="artistsList">
+            <!-- Les données seront injectées ici -->
+        </tbody>
+    </table>
+
+    <script>
+        fetch('/api/artists')
+            .then(res => res.json())
+            .then(artists => {
+                const tbody = document.getElementById('artistsList');
+                artists.forEach(artist => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${artist.name}</td>
+                            <td>${artist.genre}</td>
+                            <td>${artist.country}</td>
+                            <td>
+                                <a href="/artists/${artist.id}">View</a>
+                                <a href="/artists/${artist.id}/edit">Edit</a>
+                                <button onclick="deleteArtist(${artist.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+
+        function deleteArtist(id) {
+            if (confirm('Confirmer la suppression ?')) {
+                fetch(`/api/artists/${id}`, { method: 'DELETE' })
+                    .then(() => location.reload());
+            }
+        }
+    </script>
+</body>
+</html>
