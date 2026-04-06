@@ -1,0 +1,183 @@
+/* ── Headers ── */
+.page-header {
+    background: linear-gradient(to bottom, #212529, #3d4149);
+    padding: 8rem 0 3rem;
+    margin-top: 72px;
+}
+
+.page-header h2 {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+    font-size: 2.5rem;
+}
+
+.page-header p {
+    font-family: Roboto Slab, serif;
+    color: #adb5bd;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+.breadcrumb-link {
+    color: #fec810;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #adb5bd;
+}
+
+/* ── Cards ── */
+.agency-card {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+
+.agency-card .card-accent {
+    height: 5px;
+    background: #fec810;
+}
+
+.agency-card .card-content {
+    padding: 2rem;
+}
+
+/* ── Section label ── */
+.section-label {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: #fec810;
+    background: #212529;
+    display: inline-block;
+    padding: 0.3em 0.9em;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Form ── */
+.agency-label {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #495057;
+    margin-bottom: 0.4rem;
+}
+
+/* ── Badge genre ── */
+.badge-genre {
+    background: #212529;
+    color: #fec810;
+    font-family: Montserrat, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.3em 0.75em;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+}
+
+/* ── Count badge ── */
+.count-badge {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    background: #212529;
+    color: #fec810;
+    padding: 0.35em 0.9em;
+    border-radius: 2px;
+}
+
+/* ── Buttons ── */
+.btn-cancel {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 0.7rem 1.8rem;
+    border: 1px solid #dee2e6;
+    background: transparent;
+    color: #6c757d;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #f8f9fa;
+    color: #212529;
+}
+
+/* ── Artist card hover ── */
+.artist-card {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    height: 100%;
+}
+
+.artist-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.13);
+}
+
+/* ── Divider ── */
+.agency-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 2rem 0;
+}
+
+/* ── Char count ── */
+.char-count {
+    font-family: Roboto Slab, serif;
+    font-size: 0.78rem;
+    color: #adb5bd;
+    text-align: right;
+    margin-top: 0.3rem;
+}
+
+/* ── Alerts ── */
+.alert-error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #7f1d1d;
+    border-radius: 2px;
+    padding: 0.9rem 1.2rem;
+    font-family: Roboto Slab, serif;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Info label/value ── */
+.info-label {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #adb5bd;
+    margin-bottom: 0.3rem;
+}
+
+.info-value {
+    font-family: Roboto Slab, serif;
+    font-size: 1rem;
+    color: #212529;
+}
