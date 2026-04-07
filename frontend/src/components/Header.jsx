@@ -1,6 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const Navbar = () => {
+
+const Header = () => {
+    const location = useLocation();
+    const { token, logout } = useAuth();
+
+    const isActive = (path) => location.pathname === path;
+
     return (
         <nav className="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
             <div className="container">
@@ -14,11 +21,32 @@ const Navbar = () => {
                 <div className="collapse navbar-collapse" id="navbarResponsive">
                     <ul className="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/">Artistes</Link>
+                            <Link className={`nav-link ${isActive('/') ? 'active' : ''}`} to="/">
+                                Artistes
+                            </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/login">Connexion</Link>
-                        </li>
+                        {token ? (
+                            <li className="nav-item">
+                                <button className="nav-link btn btn-link text-uppercase"
+                                    onClick={logout}
+                                    style={{ color: '#fec810' }}>
+                                    <i className="fas fa-sign-out-alt me-1"></i>Déconnexion
+                                </button>
+                            </li>
+                        ) : (
+                            <>
+                                <li className="nav-item">
+                                    <Link className={`nav-link ${isActive('/login') ? 'active' : ''}`} to="/login">
+                                        Connexion
+                                    </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className={`nav-link ${isActive('/register') ? 'active' : ''}`} to="/register">
+                                        Inscription
+                                    </Link>
+                                </li>
+                            </>
+                        )}
                     </ul>
                 </div>
             </div>
@@ -26,4 +54,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default Header;
