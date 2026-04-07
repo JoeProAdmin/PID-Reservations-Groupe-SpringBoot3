@@ -6,11 +6,9 @@ import java.util.List;
 
 public interface AdminSpectacleService {
 
-    List<AdminSpectacleDTO> getAllSpectacles();
+    List<AdminSpectacleDTO> getAll();
 
-    AdminSpectacleDTO createSpectacle(AdminSpectacleDTO dto);
+    AdminSpectacleDTO create(AdminSpectacleDTO dto);
 
-    AdminSpectacleDTO updateSpectacle(Long id, AdminSpectacleDTO dto);
-
-    void deleteSpectacle(Long id);
+    void delete(Long id);
 }
