@@ -27,6 +27,7 @@
             text-decoration: none;
             border-radius: 4px;
             font-size: 14px;
+            margin-right: 5px;
         }
 
         .btn-add {
@@ -36,6 +37,11 @@
 
         .btn-delete {
             background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #007bff;
             color: white;
         }
 
@@ -100,12 +106,18 @@
 
             <td th:text="${spectacle.title}"></td>
 
-            <!-- CORRECTION DATE -->
             <td th:text="${#temporals.format(spectacle.date, 'dd/MM/yyyy HH:mm')}"></td>
 
             <td th:text="${spectacle.price}"></td>
 
             <td>
+                <!-- BOUTON EDIT -->
+                <a th:href="@{'/admin/spectacles/edit/' + ${spectacle.id}}"
+                   class="btn btn-edit">
+                    Modifier
+                </a>
+
+                <!-- BOUTON DELETE -->
                 <a th:href="@{'/admin/spectacles/delete/' + ${spectacle.id}}"
                    class="btn btn-delete">
                     Supprimer

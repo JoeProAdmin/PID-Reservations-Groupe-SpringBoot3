@@ -46,6 +46,30 @@ public class AdminSpectacleServiceImpl implements AdminSpectacleService {
         spectacleRepository.deleteById(id);
     }
 
+    @Override
+    public AdminSpectacleDTO getById(Long id) {
+        Spectacle s = spectacleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Spectacle introuvable avec id : " + id));
+
+        return mapToDTO(s);
+    }
+
+    @Override
+    public AdminSpectacleDTO update(Long id, AdminSpectacleDTO dto) {
+
+        Spectacle existing = spectacleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Spectacle introuvable avec id : " + id));
+
+        existing.setTitle(dto.getTitle());
+        existing.setDescription(dto.getDescription());
+        existing.setDate(dto.getDate());
+        existing.setPrice(dto.getPrice());
+
+        Spectacle updated = spectacleRepository.save(existing);
+
+        return mapToDTO(updated);
+    }
+
     private AdminSpectacleDTO mapToDTO(Spectacle s) {
         AdminSpectacleDTO dto = new AdminSpectacleDTO();
         dto.setId(s.getId());

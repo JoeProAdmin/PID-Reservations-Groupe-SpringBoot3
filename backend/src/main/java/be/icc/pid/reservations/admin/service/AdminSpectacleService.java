@@ -11,4 +11,8 @@ public interface AdminSpectacleService {
     AdminSpectacleDTO create(AdminSpectacleDTO dto);
 
     void delete(Long id);
+
+    AdminSpectacleDTO getById(Long id);
+
+    AdminSpectacleDTO update(Long id, AdminSpectacleDTO dto);
 }

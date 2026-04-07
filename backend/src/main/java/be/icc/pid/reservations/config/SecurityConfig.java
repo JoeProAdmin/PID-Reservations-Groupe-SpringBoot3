@@ -24,13 +24,20 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // TEMPORAIRE
+
+                        // FRONTEND GROUPE → OUVERT
+                        .requestMatchers("/api/**").permitAll()
+
+                        // ADMIN → PROTÉGÉ (phase 1 : login pas encore activé)
+                        .requestMatchers("/admin/**").permitAll() // temporaire
+
+                        // AUTRE → OUVERT
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
     }
 
-    // CORS pour React
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -47,7 +54,6 @@ public class SecurityConfig {
         return source;
     }
 
-    //  CORRECTION ERREUR ACTUELLE
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
