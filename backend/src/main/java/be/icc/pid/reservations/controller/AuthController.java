@@ -5,6 +5,7 @@ import be.icc.pid.reservations.dto.AuthResponse;
 import be.icc.pid.reservations.entity.User;
 import be.icc.pid.reservations.repository.UserRepository;
 import be.icc.pid.reservations.security.JwtService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,11 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    // =========================
+    // REGISTER
+    // =========================
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody AuthRequest request) {
 
         String email = request.getEmail().trim().toLowerCase();
 
@@ -46,12 +50,13 @@ public class AuthController {
         return ResponseEntity.ok("Utilisateur créé");
     }
 
+    // =========================
+    // LOGIN
+    // =========================
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest request) {
+    public AuthResponse login(@Valid @RequestBody AuthRequest request) {
 
         String email = request.getEmail().trim().toLowerCase();
-
-        System.out.println("EMAIL NORMALISE = [" + email + "]");
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));

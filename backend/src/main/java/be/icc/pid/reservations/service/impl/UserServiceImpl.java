@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,20 +24,20 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // =========================
-    // CREATE
-    // =========================
-
     @Override
     public UserResponseDTO saveUser(UserCreateDTO dto) {
 
         User user = new User();
-        user.setNom(dto.getNom());
-        user.setPrenom(dto.getPrenom());
-        user.setEmail(dto.getEmail());
-        user.setRole(dto.getRole());
 
-        // Hash sécurisé
+        // Alignement DTO actuel -> Entity actuelle
+        user.setPrenom(dto.getFirstname());
+        user.setNom(dto.getLastname());
+        user.setEmail(dto.getEmail());
+
+        // rôle temporaire par défaut
+        user.setRole("USER");
+
+        // hash du mot de passe
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User savedUser = userRepository.save(user);
@@ -44,21 +45,13 @@ public class UserServiceImpl implements UserService {
         return mapToDTO(savedUser);
     }
 
-    // =========================
-    // READ ALL
-    // =========================
-
     @Override
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(this::mapToDTO)
-                .toList();
+                .collect(Collectors.toList());
     }
-
-    // =========================
-    // READ BY ID
-    // =========================
 
     @Override
     public Optional<UserResponseDTO> getUserById(Long id) {
@@ -66,27 +59,18 @@ public class UserServiceImpl implements UserService {
                 .map(this::mapToDTO);
     }
 
-    // =========================
-    // DELETE
-    // =========================
-
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-    // =========================
-    // MAPPING
-    // =========================
-
     private UserResponseDTO mapToDTO(User user) {
-        return new UserResponseDTO(
-                user.getId(),
-                user.getNom(),
-                user.getPrenom(),
-                user.getEmail(),
-                user.getRole(),
-                user.getCreatedAt()
-        );
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setPrenom(user.getPrenom());
+        dto.setNom(user.getNom());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        return dto;
     }
 }
