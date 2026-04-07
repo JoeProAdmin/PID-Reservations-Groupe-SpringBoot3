@@ -2,38 +2,42 @@ package be.icc.pid.reservations.admin.controller;
 
 import be.icc.pid.reservations.admin.dto.AdminSpectacleDTO;
 import be.icc.pid.reservations.admin.service.AdminSpectacleService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/admin/spectacles")
+@Controller
+@RequestMapping("/admin/spectacles")
 public class AdminSpectacleController {
 
-    private final AdminSpectacleService adminSpectacleService;
+    private final AdminSpectacleService service;
 
-    public AdminSpectacleController(AdminSpectacleService adminSpectacleService) {
-        this.adminSpectacleService = adminSpectacleService;
+    public AdminSpectacleController(AdminSpectacleService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<AdminSpectacleDTO> getAllSpectacles() {
-        return adminSpectacleService.getAllSpectacles();
+    public String list(Model model) {
+        model.addAttribute("spectacles", service.getAll());
+        model.addAttribute("title", "Administration des spectacles");
+        return "admin/spectacles/index";
+    }
+
+    @GetMapping("/create")
+    public String createForm(Model model) {
+        model.addAttribute("spectacle", new AdminSpectacleDTO());
+        return "admin/spectacles/create";
     }
 
     @PostMapping
-    public AdminSpectacleDTO createSpectacle(@RequestBody AdminSpectacleDTO dto) {
-        return adminSpectacleService.createSpectacle(dto);
+    public String create(@ModelAttribute AdminSpectacleDTO dto) {
+        service.create(dto);
+        return "redirect:/admin/spectacles";
     }
 
-    @PutMapping("/{id}")
-    public AdminSpectacleDTO updateSpectacle(@PathVariable Long id,
-                                             @RequestBody AdminSpectacleDTO dto) {
-        return adminSpectacleService.updateSpectacle(id, dto);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteSpectacle(@PathVariable Long id) {
-        adminSpectacleService.deleteSpectacle(id);
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        service.delete(id);
+        return "redirect:/admin/spectacles";
     }
 }

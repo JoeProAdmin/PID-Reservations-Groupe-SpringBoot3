@@ -3,6 +3,7 @@ package be.icc.pid.reservations.controller;
 import be.icc.pid.reservations.dto.UserCreateDTO;
 import be.icc.pid.reservations.dto.UserResponseDTO;
 import be.icc.pid.reservations.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,16 +22,14 @@ public class UserController {
     // =========================
     // CREATE
     // =========================
-
     @PostMapping
-    public UserResponseDTO createUser(@RequestBody UserCreateDTO dto) {
+    public UserResponseDTO createUser(@Valid @RequestBody UserCreateDTO dto) {
         return userService.saveUser(dto);
     }
 
     // =========================
     // READ ALL
     // =========================
-
     @GetMapping
     public List<UserResponseDTO> getAllUsers() {
         return userService.getAllUsers();
@@ -39,7 +38,6 @@ public class UserController {
     // =========================
     // READ BY ID
     // =========================
-
     @GetMapping("/{id}")
     public Optional<UserResponseDTO> getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
@@ -48,7 +46,6 @@ public class UserController {
     // =========================
     // DELETE
     // =========================
-
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

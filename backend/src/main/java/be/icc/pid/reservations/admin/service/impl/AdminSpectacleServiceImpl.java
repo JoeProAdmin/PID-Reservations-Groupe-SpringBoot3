@@ -19,7 +19,7 @@ public class AdminSpectacleServiceImpl implements AdminSpectacleService {
     }
 
     @Override
-    public List<AdminSpectacleDTO> getAllSpectacles() {
+    public List<AdminSpectacleDTO> getAll() {
         return spectacleRepository.findAll()
                 .stream()
                 .map(this::mapToDTO)
@@ -27,47 +27,32 @@ public class AdminSpectacleServiceImpl implements AdminSpectacleService {
     }
 
     @Override
-    public AdminSpectacleDTO createSpectacle(AdminSpectacleDTO dto) {
-        Spectacle spectacle = mapToEntity(dto);
+    public AdminSpectacleDTO create(AdminSpectacleDTO dto) {
+
+        Spectacle spectacle = new Spectacle();
+
+        spectacle.setTitle(dto.getTitle());
+        spectacle.setDescription(dto.getDescription());
+        spectacle.setDate(dto.getDate());
+        spectacle.setPrice(dto.getPrice());
+
         Spectacle saved = spectacleRepository.save(spectacle);
+
         return mapToDTO(saved);
     }
 
     @Override
-    public AdminSpectacleDTO updateSpectacle(Long id, AdminSpectacleDTO dto) {
-        Spectacle spectacle = spectacleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Spectacle non trouvé"));
-
-        spectacle.setTitle(dto.getTitle());
-        spectacle.setDescription(dto.getDescription());
-        spectacle.setPrice(dto.getPrice());
-
-        Spectacle updated = spectacleRepository.save(spectacle);
-        return mapToDTO(updated);
-    }
-
-    @Override
-    public void deleteSpectacle(Long id) {
+    public void delete(Long id) {
         spectacleRepository.deleteById(id);
     }
 
-    //  Mapping Entity → DTO
-    private AdminSpectacleDTO mapToDTO(Spectacle spectacle) {
+    private AdminSpectacleDTO mapToDTO(Spectacle s) {
         AdminSpectacleDTO dto = new AdminSpectacleDTO();
-        dto.setId(spectacle.getId());
-        dto.setTitle(spectacle.getTitle());
-        dto.setDescription(spectacle.getDescription());
-        dto.setPrice(spectacle.getPrice());
-        dto.setBookable(true); // temporaire (pas dans entity)
+        dto.setId(s.getId());
+        dto.setTitle(s.getTitle());
+        dto.setDescription(s.getDescription());
+        dto.setDate(s.getDate());
+        dto.setPrice(s.getPrice());
         return dto;
-    }
-
-    //  Mapping DTO → Entity
-    private Spectacle mapToEntity(AdminSpectacleDTO dto) {
-        Spectacle spectacle = new Spectacle();
-        spectacle.setTitle(dto.getTitle());
-        spectacle.setDescription(dto.getDescription());
-        spectacle.setPrice(dto.getPrice());
-        return spectacle;
     }
 }

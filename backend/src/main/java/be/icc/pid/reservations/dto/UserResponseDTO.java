@@ -1,38 +1,24 @@
 package be.icc.pid.reservations.dto;
 
-import java.time.LocalDateTime;
-
 public class UserResponseDTO {
 
     private Long id;
-    private String nom;
     private String prenom;
+    private String nom;
     private String email;
     private String role;
-    private LocalDateTime createdAt;
 
-    public UserResponseDTO() {
-    }
-
-    public UserResponseDTO(Long id, String nom, String prenom, String email, String role, LocalDateTime createdAt) {
-        this.id = id;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.email = email;
-        this.role = role;
-        this.createdAt = createdAt;
-    }
-
+    // GETTERS
     public Long getId() {
         return id;
     }
 
-    public String getNom() {
-        return nom;
-    }
-
     public String getPrenom() {
         return prenom;
+    }
+
+    public String getNom() {
+        return nom;
     }
 
     public String getEmail() {
@@ -43,7 +29,24 @@ public class UserResponseDTO {
         return role;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    // SETTERS
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
