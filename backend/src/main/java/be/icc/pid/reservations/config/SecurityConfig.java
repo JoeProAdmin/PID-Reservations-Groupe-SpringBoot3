@@ -8,6 +8,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,14 +27,58 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
+
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // TEMPORAIRE
+
+                        // API → OUVERT (frontend groupe)
+                        .requestMatchers("/api/**").permitAll()
+
+                        // LOGIN → OUVERT
+                        .requestMatchers("/login").permitAll()
+
+                        // ADMIN → PROTÉGÉ
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // AUTRE
+                        .anyRequest().permitAll()
+                )
+
+                // LOGIN FORMULAIRE
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/admin/spectacles", true)
+                        .permitAll()
+                )
+
+                // LOGOUT
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
                 );
 
         return http.build();
     }
 
-    // CORS pour React
+    // USER ADMIN TEMPORAIRE
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+
+        var admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("admin123"))
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin);
+    }
+
+    // PASSWORD ENCODER
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -45,11 +93,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
-    }
-
-    //  CORRECTION ERREUR ACTUELLE
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

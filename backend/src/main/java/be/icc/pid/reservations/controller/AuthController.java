@@ -2,6 +2,7 @@ package be.icc.pid.reservations.controller;
 
 import be.icc.pid.reservations.dto.AuthRequest;
 import be.icc.pid.reservations.dto.AuthResponse;
+import be.icc.pid.reservations.dto.UserCreateDTO;
 import be.icc.pid.reservations.entity.User;
 import be.icc.pid.reservations.repository.UserRepository;
 import be.icc.pid.reservations.security.JwtService;
@@ -27,12 +28,12 @@ public class AuthController {
     }
 
     // =========================
-    // REGISTER
+    // REGISTER (UserCreateDTO)
     // =========================
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserCreateDTO dto) {
 
-        String email = request.getEmail().trim().toLowerCase();
+        String email = dto.getEmail().trim().toLowerCase();
 
         if (userRepository.findByEmail(email).isPresent()) {
             return ResponseEntity.badRequest().body("Email déjà utilisé");
@@ -40,9 +41,9 @@ public class AuthController {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setNom(request.getNom());
-        user.setPrenom(request.getPrenom());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setNom(dto.getLastname());
+        user.setPrenom(dto.getFirstname());
         user.setRole("USER");
 
         userRepository.save(user);
@@ -51,7 +52,7 @@ public class AuthController {
     }
 
     // =========================
-    // LOGIN
+    // LOGIN (AuthRequest)
     // =========================
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody AuthRequest request) {

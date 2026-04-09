@@ -40,4 +40,24 @@ public class AdminSpectacleController {
         service.delete(id);
         return "redirect:/admin/spectacles";
     }
+
+    // ========================
+    // EDIT FORM
+    // ========================
+    @GetMapping("/edit/{id}")
+    public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("spectacle", service.getById(id));
+        return "admin/spectacles/edit";
+    }
+
+    // ========================
+    // UPDATE ACTION
+    // ========================
+    @PostMapping("/update/{id}")
+    public String update(@PathVariable Long id,
+                         @ModelAttribute AdminSpectacleDTO dto) {
+
+        service.update(id, dto);
+        return "redirect:/admin/spectacles";
+    }
 }
