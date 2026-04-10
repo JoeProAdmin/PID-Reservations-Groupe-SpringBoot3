@@ -27,9 +27,6 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    // =========================
-    // REGISTER (UserCreateDTO)
-    // =========================
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserCreateDTO dto) {
 
@@ -51,9 +48,6 @@ public class AuthController {
         return ResponseEntity.ok("Utilisateur créé");
     }
 
-    // =========================
-    // LOGIN (AuthRequest)
-    // =========================
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody AuthRequest request) {
 
