@@ -1,7 +1,8 @@
 package be.icc.pid.reservations.controller;
 
 import be.icc.pid.reservations.entity.Spectacle;
-import be.icc.pid.reservations.repository.SpectacleRepository;
+import be.icc.pid.reservations.service.SpectacleService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,43 +11,55 @@ import java.util.List;
 @RequestMapping("/api/spectacles")
 public class SpectacleController {
 
-    private final SpectacleRepository spectacleRepository;
+    private final SpectacleService spectacleService;
 
-    public SpectacleController(SpectacleRepository spectacleRepository) {
-        this.spectacleRepository = spectacleRepository;
+    public SpectacleController(SpectacleService spectacleService) {
+        this.spectacleService = spectacleService;
     }
 
+    // =========================
     // GET ALL
+    // =========================
     @GetMapping
-    public List<Spectacle> getAll() {
-        return spectacleRepository.findAll();
+    public ResponseEntity<List<Spectacle>> getAll() {
+        return ResponseEntity.ok(spectacleService.getAllSpectacles());
     }
 
-    // POST
+    // =========================
+    // GET BY ID
+    // =========================
+    @GetMapping("/{id}")
+    public ResponseEntity<Spectacle> getById(@PathVariable Long id) {
+        return spectacleService.getSpectacleById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // =========================
+    // CREATE
+    // =========================
     @PostMapping
-    public Spectacle create(@RequestBody Spectacle spectacle) {
-        return spectacleRepository.save(spectacle);
+    public ResponseEntity<Spectacle> create(@RequestBody Spectacle spectacle) {
+        Spectacle createdSpectacle = spectacleService.createSpectacle(spectacle);
+        return ResponseEntity.ok(createdSpectacle);
     }
 
-    // PUT (UPDATE)
+    // =========================
+    // UPDATE
+    // =========================
     @PutMapping("/{id}")
-    public Spectacle update(@PathVariable Long id, @RequestBody Spectacle updatedSpectacle) {
-
-        Spectacle spectacle = spectacleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Spectacle introuvable"));
-
-        spectacle.setTitle(updatedSpectacle.getTitle());
-        spectacle.setDescription(updatedSpectacle.getDescription());
-        spectacle.setDate(updatedSpectacle.getDate());
-        spectacle.setLocation(updatedSpectacle.getLocation());
-        spectacle.setPrice(updatedSpectacle.getPrice());
-
-        return spectacleRepository.save(spectacle);
+    public ResponseEntity<Spectacle> update(@PathVariable Long id,
+                                            @RequestBody Spectacle updatedSpectacle) {
+        Spectacle spectacle = spectacleService.updateSpectacle(id, updatedSpectacle);
+        return ResponseEntity.ok(spectacle);
     }
 
+    // =========================
     // DELETE
+    // =========================
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        spectacleRepository.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        spectacleService.deleteSpectacle(id);
+        return ResponseEntity.noContent().build();
     }
 }
