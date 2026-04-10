@@ -4,6 +4,7 @@ import be.icc.pid.reservations.admin.dto.AdminSpectacleDTO;
 import be.icc.pid.reservations.admin.service.AdminSpectacleService;
 import be.icc.pid.reservations.entity.Spectacle;
 import be.icc.pid.reservations.repository.SpectacleRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,7 +44,15 @@ public class AdminSpectacleServiceImpl implements AdminSpectacleService {
 
     @Override
     public void delete(Long id) {
-        spectacleRepository.deleteById(id);
+
+        Spectacle spectacle = spectacleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Spectacle introuvable avec id : " + id));
+
+        try {
+            spectacleRepository.delete(spectacle);
+        } catch (DataIntegrityViolationException ex) {
+            throw new RuntimeException("Suppression impossible : ce spectacle est lié à des réservations.");
+        }
     }
 
     @Override
