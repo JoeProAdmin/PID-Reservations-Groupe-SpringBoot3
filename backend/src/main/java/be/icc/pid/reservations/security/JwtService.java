@@ -13,12 +13,11 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // Génère automatiquement une clé sécurisée 256 bits
-    private final SecretKey SECRET_KEY =
-            Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // CLÉ FIXE (IMPORTANT)
+    private static final String SECRET = "mysecretkeymysecretkeymysecretkey12";
 
     private SecretKey getSignInKey() {
-        return SECRET_KEY;
+        return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
     public String generateToken(String username) {
@@ -26,7 +25,7 @@ public class JwtService {
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(getSignInKey())
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 

@@ -1,16 +1,15 @@
 package be.icc.pid.reservations.config;
 
+import be.icc.pid.reservations.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -21,6 +20,12 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -30,55 +35,35 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // API → OUVERT (frontend groupe)
-                        .requestMatchers("/api/**").permitAll()
+                        // AUTH libre
+                        .requestMatchers("/api/auth/**").permitAll()
 
-                        // LOGIN → OUVERT
-                        .requestMatchers("/login").permitAll()
-
-                        // ADMIN → PROTÉGÉ
+                        // ADMIN → ROLE_ADMIN attendu
                         .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // AUTRE
+                        // API protégée
+                        .requestMatchers("/api/**").authenticated()
+
                         .anyRequest().permitAll()
                 )
 
-                // LOGIN FORMULAIRE
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/admin/spectacles", true)
-                        .permitAll()
-                )
+                // 🔥 JWT FILTER
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // FORM LOGIN (optionnel)
+                .formLogin(form -> form.disable())
 
                 // LOGOUT
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                );
+                .logout(logout -> logout.disable());
 
         return http.build();
     }
 
-    // USER ADMIN TEMPORAIRE
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-
-        var admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin);
-    }
-
-    // PASSWORD ENCODER
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
