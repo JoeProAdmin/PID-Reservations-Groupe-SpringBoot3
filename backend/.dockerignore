@@ -1,0 +1,12 @@
+# Fichiers exclus du build Docker - Backend
+target/
+.mvn/
+.env
+*.iml
+.idea/
+.vscode/
+*.log
+*.class
+node_modules/
+.git/
+README.md
