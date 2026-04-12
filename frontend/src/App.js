@@ -7,7 +7,11 @@ import ArtistEdit from "./pages/artists/ArtistEdit";
 import Header from "./components/Header";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from "./context/AuthContext";
+import SpectacleList from "./pages/spectacles/SpectacleList.jsx";
+import SpectacleDetail from "./pages/spectacles/SpectacleDetail.jsx";
+import SpectacleCreate from "./pages/spectacles/SpectacleCreate.jsx";
+import SpectacleEdit from "./pages/spectacles/SpectacleEdit.jsx";
 
 function App() {
   return (
@@ -15,7 +19,11 @@ function App() {
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route path="/" element={<ArtistList />} />
+          <Route path="/" element={<SpectacleList />} />
+          <Route path="/spectacles/:id" element={<SpectacleDetail />} />
+          <Route path="/spectacles/create" element={<SpectacleCreate />} />
+          <Route path="/spectacles/:id/edit" element={<SpectacleEdit />} />
+          <Route path="/artists" element={<ArtistList />} />
           <Route path="/artists/create" element={<ArtistCreate />} />
           <Route path="/artists/:id" element={<ArtistDetail />} />
           <Route path="/artists/:id/edit" element={<ArtistEdit />} />
