@@ -22,8 +22,8 @@ public class Reservation {
     private ReservationStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "spectacle_id", nullable = false)
-    private Spectacle spectacle;
+    @JoinColumn(name = "representation_id", nullable = false)
+    private Representation representation;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -32,6 +32,10 @@ public class Reservation {
     private LocalDateTime updatedAt;
 
     public Reservation() {
+        this.reservationDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.status = ReservationStatus.CREATED;
     }
 
     public Long getId() {
@@ -62,12 +66,12 @@ public class Reservation {
         this.status = status;
     }
 
-    public Spectacle getSpectacle() {
-        return spectacle;
+    public Representation getRepresentation() {
+        return representation;
     }
 
-    public void setSpectacle(Spectacle spectacle) {
-        this.spectacle = spectacle;
+    public void setRepresentation(Representation representation) {
+        this.representation = representation;
     }
 
     public LocalDateTime getCreatedAt() {
