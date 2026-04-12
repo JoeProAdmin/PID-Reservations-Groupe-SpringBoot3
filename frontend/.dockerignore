@@ -1,0 +1,9 @@
+# Fichiers exclus du build Docker - Frontend
+node_modules/
+build/
+.env
+.env.local
+.vscode/
+.git/
+README.md
+*.log

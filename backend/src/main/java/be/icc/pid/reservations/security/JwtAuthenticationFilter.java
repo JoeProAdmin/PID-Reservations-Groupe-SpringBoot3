@@ -48,9 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (user != null) {
 
-                // 🔥 ICI LA CORRECTION IMPORTANTE
+                // ✅ CORRECTION ICI → ROLE_
+                String role = "ROLE_" + user.getRole();
+
                 SimpleGrantedAuthority authority =
-                        new SimpleGrantedAuthority(user.getRole());
+                        new SimpleGrantedAuthority(role);
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(

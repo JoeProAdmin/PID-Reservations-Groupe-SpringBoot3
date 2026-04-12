@@ -14,12 +14,6 @@ public class AuthRequest {
     @Size(min = 6, message = "Minimum 6 caractères")
     private String password;
 
-    @NotBlank(message = "Nom obligatoire")
-    private String nom;
-
-    @NotBlank(message = "Prénom obligatoire")
-    private String prenom;
-
     // GETTERS / SETTERS
 
     public String getEmail() {
@@ -36,21 +30,5 @@ public class AuthRequest {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
     }
 }

@@ -1,9 +1,12 @@
 package be.icc.pid.reservations.config;
 
+import be.icc.pid.reservations.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,20 +20,50 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
+
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // TEMPORAIRE
-                );
+
+                        // AUTH libre
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // ADMIN → ROLE_ADMIN attendu
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        // API protégée
+                        .requestMatchers("/api/**").authenticated()
+
+                        .anyRequest().permitAll()
+                )
+
+                // 🔥 JWT FILTER
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // FORM LOGIN (optionnel)
+                .formLogin(form -> form.disable())
+
+                // LOGOUT
+                .logout(logout -> logout.disable());
 
         return http.build();
     }
 
-    // CORS pour React
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
@@ -45,11 +78,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
-    }
-
-    //  CORRECTION ERREUR ACTUELLE
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
