@@ -37,7 +37,7 @@ public class AuthController {
 
         User user = new User();
         user.setEmail(email);
-        user.setPassword(dto.getPassword()); // simple temporaire
+        user.setPassword(dto.getPassword()); // TEMPORAIRE
         user.setNom(dto.getLastname());
         user.setPrenom(dto.getFirstname());
         user.setRole("USER");
@@ -48,19 +48,22 @@ public class AuthController {
     }
 
     // ========================
-    // LOGIN SIMPLIFIÉ (DEBUG MODE)
+    // LOGIN PROPRE
     // ========================
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) {
 
         String email = request.getEmail().trim().toLowerCase();
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        User user = userRepository.findByEmail(email).orElse(null);
 
-        //  TEMPORAIRE : on ignore le password pour débloquer
+        if (user == null) {
+            return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
+        }
+
+        // TEMPORAIRE : password ignoré pour le moment
         String token = jwtService.generateToken(user.getEmail());
 
-        return new AuthResponse(token);
+        return ResponseEntity.ok(new AuthResponse(token, user.getRole()));
     }
 }

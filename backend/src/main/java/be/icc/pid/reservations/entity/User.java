@@ -48,6 +48,10 @@ public class User {
         return id;
     }
 
+    public void setId(Long id) {   // AJOUT PROPRE
+        this.id = id;
+    }
+
     public String getNom() {
         return nom;
     }
