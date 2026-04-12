@@ -24,27 +24,33 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // =========================
+    // CREATE
+    // =========================
     @Override
     public UserResponseDTO saveUser(UserCreateDTO dto) {
 
+        String email = dto.getEmail().trim().toLowerCase();
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email déjà utilisé");
+        }
+
         User user = new User();
-
-        // Alignement DTO actuel -> Entity actuelle
-        user.setPrenom(dto.getFirstname());
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNom(dto.getLastname());
-        user.setEmail(dto.getEmail());
-
-        // rôle temporaire par défaut
+        user.setPrenom(dto.getFirstname());
         user.setRole("USER");
 
-        // hash du mot de passe
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user = userRepository.save(user);
 
-        User savedUser = userRepository.save(user);
-
-        return mapToDTO(savedUser);
+        return mapToDTO(user);
     }
 
+    // =========================
+    // READ ALL
+    // =========================
     @Override
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll()
@@ -53,17 +59,34 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    // =========================
+    // READ BY ID
+    // =========================
     @Override
     public Optional<UserResponseDTO> getUserById(Long id) {
         return userRepository.findById(id)
                 .map(this::mapToDTO);
     }
 
+    // =========================
+    // DELETE
+    // =========================
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
+    // =========================
+    // CHECK EMAIL
+    // =========================
+    @Override
+    public boolean emailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    // =========================
+    // ENTITY -> DTO
+    // =========================
     private UserResponseDTO mapToDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());

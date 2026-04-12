@@ -15,4 +15,6 @@ public interface UserService {
     Optional<UserResponseDTO> getUserById(Long id);
 
     void deleteUser(Long id);
+
+    boolean emailExists(String email);
 }
