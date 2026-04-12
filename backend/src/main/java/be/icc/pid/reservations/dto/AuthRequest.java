@@ -1,20 +1,14 @@
 package be.icc.pid.reservations.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 public class AuthRequest {
 
-    @NotBlank(message = "Email obligatoire")
-    @Email(message = "Email invalide")
+    @NotBlank
     private String email;
 
-    @NotBlank(message = "Mot de passe obligatoire")
-    @Size(min = 6, message = "Minimum 6 caractères")
+    @NotBlank
     private String password;
-
-    // GETTERS / SETTERS
 
     public String getEmail() {
         return email;
