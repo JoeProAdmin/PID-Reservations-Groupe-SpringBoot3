@@ -1,10 +1,8 @@
 package be.icc.pid.reservations.service.impl;
 
-import be.icc.pid.reservations.entity.Representation;
-import be.icc.pid.reservations.entity.Reservation;
-import be.icc.pid.reservations.entity.ReservationStatus;
-import be.icc.pid.reservations.repository.RepresentationRepository;
+import be.icc.pid.reservations.entity.*;
 import be.icc.pid.reservations.repository.ReservationRepository;
+import be.icc.pid.reservations.repository.RepresentationRepository;
 import be.icc.pid.reservations.service.ReservationService;
 import org.springframework.stereotype.Service;
 
@@ -26,24 +24,32 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation createReservation(Reservation reservation) {
 
-        Representation representation = representationRepository.findById(
-                reservation.getRepresentation().getId()
-        ).orElseThrow(() -> new RuntimeException("Representation introuvable"));
+        // 1. Vérifier que la représentation existe
+        Long representationId = reservation.getRepresentation().getId();
 
-        // 🔥 LOGIQUE MÉTIER
+        Representation representation = representationRepository.findById(representationId)
+                .orElseThrow(() -> new RuntimeException("Representation introuvable"));
+
+        // 2. Vérifier places disponibles
         if (representation.getPlacesDisponibles() < reservation.getNumberOfSeats()) {
             throw new RuntimeException("Pas assez de places disponibles");
         }
 
-        // 🔥 décrémentation
+        // 3. Décrémenter les places
         representation.setPlacesDisponibles(
                 representation.getPlacesDisponibles() - reservation.getNumberOfSeats()
         );
 
+        representationRepository.save(representation);
+
+        // 4. Construire la réservation
         reservation.setRepresentation(representation);
         reservation.setReservationDate(LocalDateTime.now());
         reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setCreatedAt(LocalDateTime.now());
+        reservation.setUpdatedAt(LocalDateTime.now());
 
+        // 5. Sauvegarde
         return reservationRepository.save(reservation);
     }
 
@@ -55,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation getById(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reservation introuvable"));
+                .orElseThrow(() -> new RuntimeException("Reservation non trouvée"));
     }
 
     @Override
