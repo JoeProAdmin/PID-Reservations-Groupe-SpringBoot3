@@ -21,9 +21,19 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status;
 
+    // ========================
+    // RELATION REPRESENTATION
+    // ========================
     @ManyToOne
-    @JoinColumn(name = "spectacle_id", nullable = false)
-    private Spectacle spectacle;
+    @JoinColumn(name = "representation_id", nullable = false)
+    private Representation representation;
+
+    // ========================
+    // RELATION USER (NOUVEAU)
+    // ========================
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -31,8 +41,19 @@ public class Reservation {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // ========================
+    // CONSTRUCTEUR
+    // ========================
     public Reservation() {
+        this.reservationDate = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.status = ReservationStatus.CREATED;
     }
+
+    // ========================
+    // GETTERS / SETTERS
+    // ========================
 
     public Long getId() {
         return id;
@@ -62,12 +83,20 @@ public class Reservation {
         this.status = status;
     }
 
-    public Spectacle getSpectacle() {
-        return spectacle;
+    public Representation getRepresentation() {
+        return representation;
     }
 
-    public void setSpectacle(Spectacle spectacle) {
-        this.spectacle = spectacle;
+    public void setRepresentation(Representation representation) {
+        this.representation = representation;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDateTime getCreatedAt() {
