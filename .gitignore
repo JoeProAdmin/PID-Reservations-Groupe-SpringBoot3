@@ -1,12 +1,17 @@
-# Environment
+# Environment (ne PAS tracker .env, seulement .env.docker)
 .env
 backend/.env
+frontend/.env.local
 application-local.properties
 
 # Maven / Java
 target/
 *.class
 *.log
+
+# Node.js
+node_modules/
+frontend/build/
 
 # IntelliJ
 .idea/
@@ -18,3 +23,6 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+# Divers
+
