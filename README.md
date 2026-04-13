@@ -9,10 +9,10 @@ ICC 2025 - 2026
 
 ### Membres du groupe
 
-- 6400 - QARNOUF Youssef
-- 6613 - ASSAL Hatim
-- 6368 - BENKADDOUR Redouane
-- 6451 - Abdulrahman SABBAGH
+- 6400 - QARNOUF Youssef  
+- 6613 - ASSAL Hatim  
+- 6368 - BENKADDOUR Redouane  
+- 6451 - Abdulrahman SABBAGH  
 
 ---
 
@@ -55,110 +55,89 @@ Backend fonctionnel, sécurisé et stabilisé.
 ## Backend
 
 - Spring Boot 3 opérationnel
-- Architecture propre :
-    - Controller
-    - Service
-    - DTO
-    - Repository
+- Architecture Controller / Service / DTO / Repository
 - Sécurité complète :
-    - JWT (Json Web Token)
-    - UserDetailsService
-    - AuthenticationProvider
+  - JWT
+  - UserDetailsService
+  - AuthenticationProvider
 - Authentification :
-    - Register fonctionnel
-    - Login fonctionnel (tests Postman validés)
-- Gestion des utilisateurs :
-    - DTO (Create / Update / Response)
-    - Service métier structuré
+  - Register OK
+  - Login OK
+- Gestion utilisateurs :
+  - DTO Create / Update / Response
+  - Mapping propre DTO vers Entity
 - Rôles :
-    - ROLE_ADMIN
-    - ROLE_USER
+  - ROLE_ADMIN
+  - ROLE_USER
 - Endpoints sécurisés
 
 ---
 
 ## Base de données
 
-- Système : MySQL (XAMPP)
-- Base : `pid_reservations_group`
+- MySQL (XAMPP)
+- Base : pid_reservations_group
 
-### Tables principales
+Tables :
 
-- `users`
-- `artists`
-- `spectacles`
-- `reservations`
-
-### Configuration
-
-`spring.jpa.hibernate.ddl-auto=update`
-
-### data.sql
-
-`INSERT IGNORE INTO users (...)`
-
-- Insertion sécurisée
-- Compte ADMIN disponible
+- users
+- artists
+- spectacles
+- reservations
 
 ---
 
-## Architecture du projet
+## Architecture
 
-    backend/
-    └── src/main/java/be/icc/pid/reservations/
-        ├── controller/
-        ├── dto/
-        ├── entity/
-        ├── repository/
-        ├── security/
-        ├── service/
-        └── service/impl/
-
-    resources/
-    └── application.properties
+backend/
+  └── src/main/java/be/icc/pid/reservations/
+      ├── controller/
+      ├── dto/
+      ├── entity/
+      ├── repository/
+      ├── security/
+      ├── service/
+      └── service/impl/
 
 ---
 
 ## Organisation Git
 
-### Branches
+Branches :
 
-- `main`
-- `youssef-admin-backend-v2`
-- `redouane-frontend`
-- `sabbagh-production`
-- `hatim-docs`
+- main  
+- youssef-admin-backend-v2  
+- redouane-frontend  
+- sabbagh-production  
+- hatim-docs  
 
-### Règles
+Règles :
 
-- 1 branche par personne
-- Pas de travail direct sur `main`
-- Pull Request obligatoire
+- 1 branche par personne  
+- Pas de travail direct sur main  
+- Pull Request obligatoire  
 
 ---
 
 ## Progression
 
-- Backend terminé
+- Backend stabilisé
 - Sécurité JWT opérationnelle
 - Authentification complète
-- Gestion des utilisateurs stabilisée
+- Gestion utilisateurs fonctionnelle
 - Base de données opérationnelle
 
 ---
 
-## Objectifs à venir
+## Prochaine étape
 
 - Intégration Frontend
 - Module Paiement
-- Déploiement de l’application
-- Finalisation TFE
+- Déploiement
 
 ---
 
-## Statut du projet
+## Statut
 
-- Backend stable
-- Sécurité opérationnelle
-- Architecture conforme
-- Projet prêt pour intégration frontend et extension fonctionnelle
+Projet stable côté backend  
+Prêt pour intégration frontend et extension fonctionnelle
