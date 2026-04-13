@@ -89,17 +89,17 @@ Tables :
 
 ## Architecture
 
+```text
 backend/
-  └── src/main/java/be/icc/pid/reservations/
-      ├── controller/
-      ├── dto/
-      ├── entity/
-      ├── repository/
-      ├── security/
-      ├── service/
-      └── service/impl/
-
----
+└── src/main/java/be/icc/pid/reservations/
+    ├── controller/
+    ├── dto/
+    ├── entity/
+    ├── repository/
+    ├── security/
+    ├── service/
+    └── service/impl/
+```
 
 ## Organisation Git
 
