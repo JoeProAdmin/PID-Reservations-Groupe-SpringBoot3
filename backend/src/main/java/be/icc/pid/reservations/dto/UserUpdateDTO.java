@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class UserCreateDTO {
+public class UserUpdateDTO {
 
     @NotBlank(message = "Le prénom est obligatoire")
     private String firstName;
@@ -18,17 +18,16 @@ public class UserCreateDTO {
     @NotBlank(message = "L'email est obligatoire")
     private String email;
 
-    @NotBlank(message = "Le mot de passe est obligatoire")
     @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
     private String password;
 
     @NotNull(message = "Le rôle est obligatoire")
     private Role role;
 
-    public UserCreateDTO() {
+    public UserUpdateDTO() {
     }
 
-    public UserCreateDTO(String firstName, String lastName, String email, String password, Role role) {
+    public UserUpdateDTO(String firstName, String lastName, String email, String password, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -44,11 +43,11 @@ public class UserCreateDTO {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
+    public String getLastName() {   //  CORRECT
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(String lastName) {   //  CORRECT
         this.lastName = lastName;
     }
 
@@ -64,12 +63,12 @@ public class UserCreateDTO {
         return password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public void setRole(Role role) {

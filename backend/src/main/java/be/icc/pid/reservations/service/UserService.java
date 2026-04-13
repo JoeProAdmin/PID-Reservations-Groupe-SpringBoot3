@@ -2,19 +2,19 @@ package be.icc.pid.reservations.service;
 
 import be.icc.pid.reservations.dto.UserCreateDTO;
 import be.icc.pid.reservations.dto.UserResponseDTO;
+import be.icc.pid.reservations.dto.UserUpdateDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
-    UserResponseDTO saveUser(UserCreateDTO dto);
-
     List<UserResponseDTO> getAllUsers();
 
-    Optional<UserResponseDTO> getUserById(Long id);
+    UserResponseDTO getUserById(Long id);
+
+    UserResponseDTO createUser(UserCreateDTO dto);
+
+    UserResponseDTO updateUser(Long id, UserUpdateDTO dto);
 
     void deleteUser(Long id);
-
-    boolean emailExists(String email);
 }

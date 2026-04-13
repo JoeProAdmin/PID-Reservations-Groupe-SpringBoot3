@@ -2,15 +2,15 @@ package be.icc.pid.reservations.service.impl;
 
 import be.icc.pid.reservations.dto.UserCreateDTO;
 import be.icc.pid.reservations.dto.UserResponseDTO;
+import be.icc.pid.reservations.dto.UserUpdateDTO;
 import be.icc.pid.reservations.entity.User;
 import be.icc.pid.reservations.repository.UserRepository;
 import be.icc.pid.reservations.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,76 +24,79 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // =========================
-    // CREATE
-    // =========================
-    @Override
-    public UserResponseDTO saveUser(UserCreateDTO dto) {
-
-        String email = dto.getEmail().trim().toLowerCase();
-
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Email déjà utilisé");
-        }
-
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setNom(dto.getLastname());
-        user.setPrenom(dto.getFirstname());
-        user.setRole("USER");
-
-        user = userRepository.save(user);
-
-        return mapToDTO(user);
-    }
-
-    // =========================
-    // READ ALL
-    // =========================
     @Override
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .map(this::mapToResponseDTO)
+                .toList();
     }
 
-    // =========================
-    // READ BY ID
-    // =========================
     @Override
-    public Optional<UserResponseDTO> getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(this::mapToDTO);
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id));
+
+        return mapToResponseDTO(user);
     }
 
-    // =========================
-    // DELETE
-    // =========================
+    @Override
+    public UserResponseDTO createUser(UserCreateDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà");
+        }
+
+        User user = new User();
+        user.setPrenom(dto.getFirstName());
+        user.setNom(dto.getLastName());
+        user.setEmail(dto.getEmail().trim().toLowerCase());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole(dto.getRole().name());
+
+        User savedUser = userRepository.save(user);
+        return mapToResponseDTO(savedUser);
+    }
+
+    @Override
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO dto) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id));
+
+        String normalizedEmail = dto.getEmail().trim().toLowerCase();
+
+        if (!existingUser.getEmail().equalsIgnoreCase(normalizedEmail)
+                && userRepository.existsByEmail(normalizedEmail)) {
+            throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà");
+        }
+
+        existingUser.setPrenom(dto.getFirstName());
+        existingUser.setNom(dto.getLastName());
+        existingUser.setEmail(normalizedEmail);
+        existingUser.setRole(dto.getRole().name());
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        User updatedUser = userRepository.save(existingUser);
+        return mapToResponseDTO(updatedUser);
+    }
+
     @Override
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id));
+
+        userRepository.delete(existingUser);
     }
 
-    // =========================
-    // CHECK EMAIL
-    // =========================
-    @Override
-    public boolean emailExists(String email) {
-        return userRepository.findByEmail(email).isPresent();
-    }
-
-    // =========================
-    // ENTITY -> DTO
-    // =========================
-    private UserResponseDTO mapToDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getId());
-        dto.setPrenom(user.getPrenom());
-        dto.setNom(user.getNom());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
-        return dto;
+    private UserResponseDTO mapToResponseDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getPrenom(),
+                user.getNom(),
+                user.getEmail(),
+                user.getRole()
+        );
     }
 }
