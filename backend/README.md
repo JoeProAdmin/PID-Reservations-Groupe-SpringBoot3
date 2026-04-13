@@ -16,44 +16,149 @@ ICC 2025 - 2026
 
 ---
 
+## Répartition des tâches
+
+### QARNOUF Youssef (Responsable Backend & BDD)
+
+- Développement Backend (Spring Boot 3)
+- Gestion de la base de données MySQL
+- Sécurité JWT (authentification)
+- Gestion des rôles ADMIN / USER
+- Endpoints sécurisés
+- Implémentation UserDetailsService
+
+### BENKADDOUR Redouane (Frontend)
+
+- Développement interface utilisateur
+- Bootstrap
+- Connexion API
+
+### Abdulrahman SABBAGH (Production)
+
+- Déploiement
+- Infrastructure
+
+### ASSAL Hatim (Documentation & UX)
+
+- Documentation
+- UX
+- Organisation
+
+---
+
 ## État actuel du projet
 
-Le projet backend est **fonctionnel, sécurisé et prêt pour le travail collaboratif**.
+Backend fonctionnel, sécurisé et stabilisé.
 
 ---
 
-## Progression validée
+## Backend
 
-- Dépôt GitHub groupe créé
-- Organisation du projet définie
-- Backend Spring Boot intégré dans `/backend`
-- Projet Maven fonctionnel
-- Application démarrée avec succès
-- Endpoint `/hello` validé
-- Connexion MySQL (XAMPP) opérationnelle
-- Création automatique des tables via Hibernate (`ddl-auto=update`)
-- Injection automatique des données via `data.sql`
-- Authentification JWT fonctionnelle
-- Gestion des rôles : `ADMIN` / `USER`
-- Sécurisation des endpoints `/api/admin/**`
-- Endpoint login fonctionnel (Postman validé)
-- Base de données stabilisée et partagée
-
----
-
-## Setup projet (IMPORTANT)
-
-### Prérequis
-
-- Java 17
-- IntelliJ IDEA
-- XAMPP (MySQL)
+- Spring Boot 3 opérationnel
+- Architecture propre :
+  - Controller
+  - Service
+  - DTO
+  - Repository
+- Sécurité complète :
+  - JWT (Json Web Token)
+  - UserDetailsService
+  - AuthenticationProvider
+- Authentification :
+  - Register fonctionnel
+  - Login fonctionnel (tests Postman validés)
+- Gestion des utilisateurs :
+  - DTO (Create / Update / Response)
+  - Service métier structuré
+- Rôles :
+  - ROLE_ADMIN
+  - ROLE_USER
+- Endpoints sécurisés
 
 ---
 
-### Installation
+## Base de données
 
-1. Cloner le projet :
+- Système : MySQL (XAMPP)
+- Base : `pid_reservations_group`
 
-```bash
-git clone https://github.com/JoeProAdmin/PID-Reservations-Groupe-SpringBoot3.git
+### Tables principales
+
+- `users`
+- `artists`
+- `spectacles`
+- `reservations`
+
+### Configuration
+
+`spring.jpa.hibernate.ddl-auto=update`
+
+### data.sql
+
+`INSERT IGNORE INTO users (...)`
+
+- Insertion sécurisée
+- Compte ADMIN disponible
+
+---
+
+## Architecture du projet
+
+    backend/
+    └── src/main/java/be/icc/pid/reservations/
+        ├── controller/
+        ├── dto/
+        ├── entity/
+        ├── repository/
+        ├── security/
+        ├── service/
+        └── service/impl/
+
+    resources/
+    └── application.properties
+
+---
+
+## Organisation Git
+
+### Branches
+
+- `main`
+- `youssef-admin-backend-v2`
+- `redouane-frontend`
+- `sabbagh-production`
+- `hatim-docs`
+
+### Règles
+
+- 1 branche par personne
+- Pas de travail direct sur `main`
+- Pull Request obligatoire
+
+---
+
+## Progression
+
+- Backend terminé
+- Sécurité JWT opérationnelle
+- Authentification complète
+- Gestion des utilisateurs stabilisée
+- Base de données opérationnelle
+
+---
+
+## Objectifs à venir
+
+- Intégration Frontend
+- Module Paiement
+- Déploiement de l’application
+- Finalisation TFE
+
+---
+
+## Statut du projet
+
+- Backend stable
+- Sécurité opérationnelle
+- Architecture conforme
+- Projet prêt pour intégration frontend et extension fonctionnelle
