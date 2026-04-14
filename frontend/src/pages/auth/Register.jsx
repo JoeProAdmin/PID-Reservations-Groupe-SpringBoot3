@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
+import API_URL from '../../config';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -18,6 +19,14 @@ const Register = () => {
             setError('Tous les champs sont obligatoires.');
             return;
         }
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            setError('Email invalide.');
+            return;
+        }
+        if (formData.password.length < 6) {
+            setError('Le mot de passe doit contenir au moins 6 caractères.');
+            return;
+        }
         if (formData.password !== formData.confirmPassword) {
             setError('Les mots de passe ne correspondent pas.');
             return;
@@ -25,14 +34,15 @@ const Register = () => {
         setLoading(true);
         setError(null);
 
-        fetch('http://localhost:8080/api/auth/register', {
+        fetch(`${API_URL}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                nom: formData.nom,
-                prenom: formData.prenom,
+                firstName: formData.prenom,
+                lastName: formData.nom,
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
+                role: 'ROLE_USER'
             })
         })
         .then(res => {
