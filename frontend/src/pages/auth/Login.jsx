@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
+import API_URL from '../../config';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -21,17 +22,20 @@ const Login = () => {
         setLoading(true);
         setError(null);
 
-        fetch('http://localhost:8080/api/auth/login', {
+        fetch(`${API_URL}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+                email: formData.email.trim().toLowerCase(),
+                password: formData.password
+            })
         })
         .then(res => {
-            if (!res.ok) throw new Error('Email ou mot de passe incorrect');
+            if (!res.ok) return res.text().then(text => { throw new Error(text || 'Email ou mot de passe incorrect'); });
             return res.json();
         })
         .then(data => {
-            login(data.token, 'USER'); // le rôle sera géré plus tard
+            login(data.token, data.role, data.prenom, data.nom);
             navigate('/');
         })
         .catch(err => {
