@@ -152,7 +152,6 @@ Backend fonctionnel, sécurisé et stabilisé.
 - Intégration Frontend
 - Module Paiement
 - Déploiement de l’application
-- Finalisation TFE
 
 ---
 
