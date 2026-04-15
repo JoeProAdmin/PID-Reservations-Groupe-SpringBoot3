@@ -61,6 +61,7 @@ Ce document pose la structure generale des ecrans du projet afin d'aider l'integ
 - ajouter le parcours reservation apres validation des donnees backend
 - ajouter les pages membre quand l'authentification frontend est stabilisee
 - cadrer le module commentaires avant de l'integrer si le groupe le valide
+- utiliser docs/integration-frontend-backend.md comme reference pour les points bloquants frontend/backend
 
 ## Principes UX
 - navigation simple et constante

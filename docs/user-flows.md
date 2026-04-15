@@ -79,3 +79,4 @@ Ce document decrit les parcours principaux des utilisateurs afin d'aligner le ba
 - confirmer si le module commentaires fait partie de la prochaine etape
 - confirmer les roles actifs dans la premiere version livrable
 - confirmer les endpoints disponibles avant d'ajouter de nouvelles pages frontend
+- suivre les points d'integration dans docs/integration-frontend-backend.md
