@@ -35,32 +35,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id)
+                );
 
         return mapToResponseDTO(user);
     }
 
     @Override
     public UserResponseDTO createUser(UserCreateDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
+
+        String normalizedEmail = dto.getEmail().trim().toLowerCase();
+
+        if (userRepository.existsByEmail(normalizedEmail)) {
             throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà");
         }
 
         User user = new User();
         user.setPrenom(dto.getFirstName());
         user.setNom(dto.getLastName());
-        user.setEmail(dto.getEmail().trim().toLowerCase());
+        user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(dto.getRole().name());
+
+        // rôle fixé côté backend
+        user.setRole("ROLE_USER");
 
         User savedUser = userRepository.save(user);
+
         return mapToResponseDTO(savedUser);
     }
 
     @Override
     public UserResponseDTO updateUser(Long id, UserUpdateDTO dto) {
+
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id)
+                );
 
         String normalizedEmail = dto.getEmail().trim().toLowerCase();
 
@@ -72,31 +83,36 @@ public class UserServiceImpl implements UserService {
         existingUser.setPrenom(dto.getFirstName());
         existingUser.setNom(dto.getLastName());
         existingUser.setEmail(normalizedEmail);
-        existingUser.setRole(dto.getRole().name());
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
+        // on garde un rôle contrôlé backend
+        existingUser.setRole("ROLE_USER");
+
         User updatedUser = userRepository.save(existingUser);
+
         return mapToResponseDTO(updatedUser);
     }
 
     @Override
     public void deleteUser(Long id) {
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id));
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Utilisateur introuvable avec l'id : " + id)
+                );
 
         userRepository.delete(existingUser);
     }
 
     private UserResponseDTO mapToResponseDTO(User user) {
-        return new UserResponseDTO(
-                user.getId(),
-                user.getPrenom(),
-                user.getNom(),
-                user.getEmail(),
-                user.getRole()
-        );
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getPrenom());
+        dto.setLastName(user.getNom());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        return dto;
     }
 }

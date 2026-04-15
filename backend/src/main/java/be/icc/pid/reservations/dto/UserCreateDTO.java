@@ -1,39 +1,41 @@
 package be.icc.pid.reservations.dto;
 
-import be.icc.pid.reservations.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class UserCreateDTO {
 
-    @NotBlank(message = "Le prénom est obligatoire")
-    private String firstName;
-
-    @NotBlank(message = "Le nom est obligatoire")
-    private String lastName;
-
+    @NotBlank(message = "Email obligatoire")
     @Email(message = "Email invalide")
-    @NotBlank(message = "L'email est obligatoire")
     private String email;
 
-    @NotBlank(message = "Le mot de passe est obligatoire")
+    @NotBlank(message = "Mot de passe obligatoire")
     @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
     private String password;
 
-    @NotNull(message = "Le rôle est obligatoire")
-    private Role role;
+    @NotBlank(message = "Prénom obligatoire")
+    private String firstName;
 
-    public UserCreateDTO() {
+    @NotBlank(message = "Nom obligatoire")
+    private String lastName;
+
+    public UserCreateDTO() {}
+
+    public String getEmail() {
+        return email;
     }
 
-    public UserCreateDTO(String firstName, String lastName, String email, String password, Role role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
-        this.role = role;
     }
 
     public String getFirstName() {
@@ -50,29 +52,5 @@ public class UserCreateDTO {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 }
