@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
+import { useAuth } from '../../context/AuthContext';
 
 const ArtistCreate = () => {
+    const { token } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -21,11 +23,12 @@ const ArtistCreate = () => {
         setLoading(true);
         fetch('http://localhost:8080/api/artists', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' ,
+                'Authorization': `Bearer ${token}`},
             body: JSON.stringify(formData)
         })
         .then(res => { if (!res.ok) throw new Error('Erreur serveur'); return res.json(); })
-        .then(() => navigate('/'))
+        .then(() => navigate('/artists'))
         .catch(err => { setError(err.message); setLoading(false); });
     };
 

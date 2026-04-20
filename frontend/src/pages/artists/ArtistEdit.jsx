@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
+import { useAuth } from '../../context/AuthContext';
 
 const ArtistEdit = () => {
+    const { token } = useAuth();
     const { id } = useParams();
     const navigate = useNavigate();
     const [saving, setSaving] = useState(false);
@@ -28,7 +30,8 @@ const ArtistEdit = () => {
         setSaving(true);
         fetch(`http://localhost:8080/api/artists/${id}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json' ,
+                'Authorization': `Bearer ${token}`},
             body: JSON.stringify(formData)
         })
         .then(res => { if (!res.ok) throw new Error('Erreur serveur'); return res.json(); })
