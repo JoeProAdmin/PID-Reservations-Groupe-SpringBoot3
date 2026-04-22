@@ -53,37 +53,41 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 ### Base de données
 - MySQL / XAMPP
 - Base : `pid_reservations_group`
-- Tables principales :
-  - `users`
-  - `artists`
-  - `spectacles`
-  - `representations`
-  - `reservations`
-  - `paiements`
 
-### Fonctionnalités validées
+### Tables principales
+- `users`
+- `artists`
+- `spectacles`
+- `representations`
+- `reservations`
+- `paiements`
+
+## Fonctionnalités validées
 - Authentification utilisateur
 - Création et connexion utilisateur
 - CRUD backend principal
 - Liaison Spectacle / Representation / Reservation
 - Endpoint représentations par spectacle
+- Endpoint POST `/api/representations`
+- Endpoint DELETE `/api/representations`
 - Paiement déclenché avec réservation
 - Correction des enums et stabilisation JPA
 - Protection des données sensibles côté API
+- Correction login BCrypt
+- Backend stabilisé pour l’intégration frontend
 
 ## Organisation Git
 
-### Branches
+### Branches actuelles
 - `main`
-- `youssef-admin-backend-v2`
-- `redouane-frontend`
-- `sabbagh-production`
-- `hatim-docs`
+- `FrontEnd`
+- `hatim-assal`
+- `sabbagh`
 
 ### Règles
-- 1 branche par membre
-- travail isolé par fonctionnalité
-- intégration via Pull Request
+- 1 branche par membre pour chaque nouvelle évolution
+- Travail isolé par fonctionnalité
+- Intégration via Pull Request
 - `main` contient l’état consolidé du projet
 
 ## Avancement technique
@@ -95,6 +99,7 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - SecurityConfig stabilisé
 - User flow corrigé
 - README et structure projet mis à jour
+- Backend merge sur `main`
 
 ## Objectif final
 
@@ -111,7 +116,6 @@ Projet backend largement avancé et stable.
 Le travail de groupe peut continuer sur une base propre et exploitable.
 
 ## Mise à jour backend
-
 - Ajout création de représentations
 - Sécurisation JWT active
 - Correction login BCrypt
