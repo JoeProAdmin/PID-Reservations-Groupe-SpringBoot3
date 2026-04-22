@@ -109,3 +109,10 @@ Finaliser l’intégration complète :
 
 Projet backend largement avancé et stable.  
 Le travail de groupe peut continuer sur une base propre et exploitable.
+
+## Mise à jour backend
+
+- Ajout création de représentations
+- Sécurisation JWT active
+- Correction login BCrypt
+- Backend stabilisé
