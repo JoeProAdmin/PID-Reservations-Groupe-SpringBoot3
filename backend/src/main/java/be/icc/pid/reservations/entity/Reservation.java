@@ -21,16 +21,10 @@ public class Reservation {
     @Column(nullable = false)
     private ReservationStatus status;
 
-    // ========================
-    // RELATION REPRESENTATION
-    // ========================
     @ManyToOne
     @JoinColumn(name = "representation_id", nullable = false)
     private Representation representation;
 
-    // ========================
-    // RELATION USER (NOUVEAU)
-    // ========================
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -41,19 +35,26 @@ public class Reservation {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // ========================
-    // CONSTRUCTEUR
-    // ========================
     public Reservation() {
         this.reservationDate = LocalDateTime.now();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.status = ReservationStatus.CREATED;
+        this.status = ReservationStatus.EN_ATTENTE;
     }
 
-    // ========================
-    // GETTERS / SETTERS
-    // ========================
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = ReservationStatus.EN_ATTENTE;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;

@@ -13,55 +13,36 @@ public class Paiement {
 
     private Double montant;
 
-    private LocalDateTime datePaiement;
+    private String methode; // CARD, CASH, ONLINE
 
-    @Enumerated(EnumType.STRING)
-    private PaiementStatut statut;
+    private String statut; // EN_ATTENTE, PAYE, REFUSE
+
+    private LocalDateTime datePaiement;
 
     @OneToOne
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
 
-    public Paiement() {
+    @PrePersist
+    public void prePersist() {
+        this.datePaiement = LocalDateTime.now();
     }
 
-    public Long getId() {
-        return id;
-    }
+    // GETTERS / SETTERS
 
-    public Double getMontant() {
-        return montant;
-    }
+    public Long getId() { return id; }
 
-    public LocalDateTime getDatePaiement() {
-        return datePaiement;
-    }
+    public Double getMontant() { return montant; }
+    public void setMontant(Double montant) { this.montant = montant; }
 
-    public PaiementStatut getStatut() {
-        return statut;
-    }
+    public String getMethode() { return methode; }
+    public void setMethode(String methode) { this.methode = methode; }
 
-    public Reservation getReservation() {
-        return reservation;
-    }
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public LocalDateTime getDatePaiement() { return datePaiement; }
 
-    public void setMontant(Double montant) {
-        this.montant = montant;
-    }
-
-    public void setDatePaiement(LocalDateTime datePaiement) {
-        this.datePaiement = datePaiement;
-    }
-
-    public void setStatut(PaiementStatut statut) {
-        this.statut = statut;
-    }
-
-    public void setReservation(Reservation reservation) {
-        this.reservation = reservation;
-    }
+    public Reservation getReservation() { return reservation; }
+    public void setReservation(Reservation reservation) { this.reservation = reservation; }
 }

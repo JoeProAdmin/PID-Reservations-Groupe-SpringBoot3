@@ -1,9 +1,8 @@
 package be.icc.pid.reservations.entity;
 
 public enum ReservationStatus {
-
-    CREATED,
-    CONFIRMED,
-    CANCELLED,
+    EN_ATTENTE,
+    CONFIRMEE,
+    ANNULEE,
     TERMINEE
 }
