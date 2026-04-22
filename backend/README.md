@@ -161,3 +161,10 @@ Backend fonctionnel, sécurisé et stabilisé.
 - Sécurité opérationnelle
 - Architecture conforme
 - Projet prêt pour intégration frontend et extension fonctionnelle
+
+## Backend - Mise à jour Youssef
+
+- Sécurisation des endpoints representations (ADMIN)
+- Ajout POST /api/representations
+- Correction login JWT + BCrypt
+- Backend stabilisé pour intégration frontend
