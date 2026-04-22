@@ -3,8 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
 import API_URL from '../../config';
+import { useAuth } from '../../context/AuthContext';
+
 
 const SpectacleCreate = () => {
+    const { token } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -24,7 +27,9 @@ const SpectacleCreate = () => {
 
         fetch(`${API_URL}/api/spectacles`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+             },
             body: JSON.stringify({
                 ...formData,
                 price: parseFloat(formData.price),

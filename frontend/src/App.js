@@ -12,6 +12,9 @@ import SpectacleList from "./pages/spectacles/SpectacleList.jsx";
 import SpectacleDetail from "./pages/spectacles/SpectacleDetail.jsx";
 import SpectacleCreate from "./pages/spectacles/SpectacleCreate.jsx";
 import SpectacleEdit from "./pages/spectacles/SpectacleEdit.jsx";
+import Profile from './pages/profile/Profile';
+import ProfileEdit from './pages/profile/ProfileEdit';
+
 
 function App() {
   return (
@@ -27,6 +30,8 @@ function App() {
           <Route path="/artists/create" element={<ArtistCreate />} />
           <Route path="/artists/:id" element={<ArtistDetail />} />
           <Route path="/artists/:id/edit" element={<ArtistEdit />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/profile/:id/edit" element={<ProfileEdit />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

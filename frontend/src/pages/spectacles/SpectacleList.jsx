@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import API_URL from '../../config';
 
+
 const SpectacleList = () => {
     const [spectacles, setSpectacles] = useState([]);
     const [loading, setLoading] = useState(true);
