@@ -7,14 +7,21 @@ import API_URL from '../../config';
 const SpectacleDetail = () => {
     const { id } = useParams();
     const [spectacle, setSpectacle] = useState(null);
+    const [representations, setRepresentations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [representationError, setRepresentationError] = useState(null);
 
     useEffect(() => {
         fetch(`${API_URL}/api/spectacles/${id}`)
             .then(res => { if (!res.ok) throw new Error('Spectacle introuvable'); return res.json(); })
             .then(data => { setSpectacle(data); setLoading(false); })
             .catch(err => { setError(err.message); setLoading(false); });
+
+        fetch(`${API_URL}/api/representations/spectacle/${id}`)
+            .then(res => { if (!res.ok) throw new Error('Representations indisponibles'); return res.json(); })
+            .then(data => setRepresentations(Array.isArray(data) ? data : []))
+            .catch(err => setRepresentationError(err.message));
     }, [id]);
 
     if (loading) return <div className="text-center py-5 mt-5"><div className="spinner-border text-primary"></div></div>;
@@ -68,6 +75,45 @@ const SpectacleDetail = () => {
                                     <p style={{ fontFamily: 'Roboto Slab, serif', fontSize: '0.95rem', color: '#495057', lineHeight: 1.8 }}>
                                         {spectacle.description || 'Aucune description disponible.'}
                                     </p>
+
+                                    <hr className="agency-divider" />
+                                    <SectionLabel icon="calendar-alt" text="Representations" />
+                                    {representationError && (
+                                        <p className="text-danger">{representationError}</p>
+                                    )}
+                                    {!representationError && representations.length === 0 && (
+                                        <p className="text-muted">Aucune representation disponible pour ce spectacle.</p>
+                                    )}
+                                    {!representationError && representations.length > 0 && (
+                                        <div className="table-responsive">
+                                            <table className="table align-middle">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Places disponibles</th>
+                                                        <th>Statut</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {representations.map(representation => (
+                                                        <tr key={representation.id}>
+                                                            <td>
+                                                                {new Date(representation.dateHeure).toLocaleString('fr-FR', {
+                                                                    day: 'numeric',
+                                                                    month: 'long',
+                                                                    year: 'numeric',
+                                                                    hour: '2-digit',
+                                                                    minute: '2-digit'
+                                                                })}
+                                                            </td>
+                                                            <td>{representation.placesDisponibles}</td>
+                                                            <td>{representation.placesDisponibles > 0 ? 'Disponible' : 'Complet'}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
 
                                     <hr className="agency-divider" />
                                     <div className="d-flex justify-content-between align-items-center">
