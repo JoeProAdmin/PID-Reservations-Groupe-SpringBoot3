@@ -7,12 +7,13 @@ import { useAuth } from '../../context/AuthContext';
 
 const SpectacleDetail = () => {
     const { id } = useParams();
-    const { token } = useAuth();
+    const { token, role } = useAuth();
     const [representations, setRepresentations] = useState([]);
     const [cartMessage, setCartMessage] = useState(null);
     const [spectacle, setSpectacle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
 
     useEffect(() => {
         Promise.all([
@@ -108,7 +109,15 @@ const SpectacleDetail = () => {
                                     </p>
                                     <hr className="agency-divider" />
                                     <SectionLabel icon="calendar" text="Représentations disponibles" />
-
+                                    {role === 'ROLE_ADMIN' && (
+                                        <div className="mb-3 d-flex justify-content-end">
+                                            <Link to={`/spectacles/${id}/representations/create`}
+                                                className="btn btn-primary btn-sm text-uppercase"
+                                                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
+                                                <i className="fas fa-plus me-2"></i>Ajouter une représentation
+                                            </Link>
+                                        </div>
+                                    )}
                                     {representations.length === 0 ? (
                                         <p style={{ fontFamily: 'Roboto Slab, serif', color: '#adb5bd', fontSize: '0.9rem' }}>
                                             Aucune représentation disponible.
