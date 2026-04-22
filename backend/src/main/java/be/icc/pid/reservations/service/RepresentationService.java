@@ -7,4 +7,8 @@ import java.util.List;
 public interface RepresentationService {
 
     List<Representation> getBySpectacleId(Long spectacleId);
+
+    Representation save(Representation representation);
+
+    void delete(Long id);
 }

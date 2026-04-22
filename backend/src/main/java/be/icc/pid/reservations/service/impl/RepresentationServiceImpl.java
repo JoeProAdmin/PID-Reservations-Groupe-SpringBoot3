@@ -20,4 +20,14 @@ public class RepresentationServiceImpl implements RepresentationService {
     public List<Representation> getBySpectacleId(Long spectacleId) {
         return representationRepository.findBySpectacleId(spectacleId);
     }
+
+    @Override
+    public Representation save(Representation representation) {
+        return representationRepository.save(representation);
+    }
+
+    @Override
+    public void delete(Long id) {
+        representationRepository.deleteById(id);
+    }
 }
