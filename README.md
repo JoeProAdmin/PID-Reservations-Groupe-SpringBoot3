@@ -1,143 +1,111 @@
 # PID-Reservations-Groupe-SpringBoot3
 
-Projet PID Réservations - Travail de groupe (Spring Boot 3)  
+Projet PID Réservations - Travail de groupe  
 ICC 2025 - 2026
-
----
 
 ## Groupe SpringBoot 3
 
 ### Membres du groupe
-
-- 6400 - QARNOUF Youssef  
-- 6613 - ASSAL Hatim  
-- 6368 - BENKADDOUR Redouane  
-- 6451 - Abdulrahman SABBAGH  
-
----
+- 6400 - QARNOUF Youssef
+- 6368 - BENKADDOUR Redouane
+- 6451 - Abdulrahman SABBAGH
+- 6613 - ASSAL Hatim
 
 ## Répartition des tâches
 
-### QARNOUF Youssef (Responsable Backend & BDD)
-
-- Développement Backend (Spring Boot 3)
+### QARNOUF Youssef
+- Développement backend Spring Boot 3
 - Gestion de la base de données MySQL
-- Sécurité JWT (authentification)
-- Gestion des rôles ADMIN / USER
-- Endpoints sécurisés
-- Implémentation UserDetailsService
+- Authentification JWT
+- Gestion des rôles
+- Stabilisation de l’architecture backend
+- Gestion des réservations
+- Intégration du flux paiement
 
-### BENKADDOUR Redouane (Frontend)
+### BENKADDOUR Redouane
+- Développement frontend React
+- Intégration API
+- Interface utilisateur
 
-- Développement interface utilisateur
-- Bootstrap
-- Connexion API
-
-### Abdulrahman SABBAGH (Production)
-
+### Abdulrahman SABBAGH
+- Production
 - Déploiement
 - Infrastructure
 
-### ASSAL Hatim (Documentation & UX)
-
+### ASSAL Hatim
 - Documentation
 - UX
 - Organisation
 
----
-
 ## État actuel du projet
 
-Backend fonctionnel, sécurisé et stabilisé.
+Le backend est stable et structuré. Les principales fonctionnalités métier sont opérationnelles.
 
----
-
-## Backend
-
-- Spring Boot 3 opérationnel
-- Architecture Controller / Service / DTO / Repository
-- Sécurité complète :
-  - JWT
-  - UserDetailsService
-  - AuthenticationProvider
-- Authentification :
-  - Register OK
-  - Login OK
-- Gestion utilisateurs :
-  - DTO Create / Update / Response
-  - Mapping propre DTO vers Entity
-- Rôles :
-  - ROLE_ADMIN
-  - ROLE_USER
+### Backend
+- Spring Boot opérationnel
+- Authentification JWT fonctionnelle
+- Login / Register opérationnels
+- Gestion des rôles
 - Endpoints sécurisés
+- CORS configuré pour le frontend
+- Architecture controller / service / repository respectée
 
----
+### Base de données
+- MySQL / XAMPP
+- Base : `pid_reservations_group`
+- Tables principales :
+  - `users`
+  - `artists`
+  - `spectacles`
+  - `representations`
+  - `reservations`
+  - `paiements`
 
-## Base de données
-
-- MySQL (XAMPP)
-- Base : pid_reservations_group
-
-Tables :
-
-- users
-- artists
-- spectacles
-- reservations
-
----
-
-## Architecture
-
-```text
-backend/
-└── src/main/java/be/icc/pid/reservations/
-    ├── controller/
-    ├── dto/
-    ├── entity/
-    ├── repository/
-    ├── security/
-    ├── service/
-    └── service/impl/
-```
+### Fonctionnalités validées
+- Authentification utilisateur
+- Création et connexion utilisateur
+- CRUD backend principal
+- Liaison Spectacle / Representation / Reservation
+- Endpoint représentations par spectacle
+- Paiement déclenché avec réservation
+- Correction des enums et stabilisation JPA
+- Protection des données sensibles côté API
 
 ## Organisation Git
 
-Branches :
+### Branches
+- `main`
+- `youssef-admin-backend-v2`
+- `redouane-frontend`
+- `sabbagh-production`
+- `hatim-docs`
 
-- main  
-- youssef-admin-backend-v2  
-- redouane-frontend  
-- sabbagh-production  
-- hatim-docs  
+### Règles
+- 1 branche par membre
+- travail isolé par fonctionnalité
+- intégration via Pull Request
+- `main` contient l’état consolidé du projet
 
-Règles :
+## Avancement technique
 
-- 1 branche par personne  
-- Pas de travail direct sur main  
-- Pull Request obligatoire  
+### Avancement backend consolidé
+- Auth JWT validée
+- Réservations stabilisées
+- Paiement backend validé
+- SecurityConfig stabilisé
+- User flow corrigé
+- README et structure projet mis à jour
 
----
+## Objectif final
 
-## Progression
-
-- Backend stabilisé
-- Sécurité JWT opérationnelle
-- Authentification complète
-- Gestion utilisateurs fonctionnelle
-- Base de données opérationnelle
-
----
-
-## Prochaine étape
-
-- Intégration Frontend
-- Module Paiement
-- Déploiement
-
----
+Finaliser l’intégration complète :
+- frontend
+- paiements
+- documentation
+- déploiement
+- livrables TFE
 
 ## Statut
 
-Projet stable côté backend  
-Prêt pour intégration frontend et extension fonctionnelle
+Projet backend largement avancé et stable.  
+Le travail de groupe peut continuer sur une base propre et exploitable.
