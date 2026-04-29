@@ -2,10 +2,10 @@ package be.icc.pid.reservations.service.impl;
 
 import be.icc.pid.reservations.entity.Reservation;
 import be.icc.pid.reservations.entity.ReservationStatus;
+import be.icc.pid.reservations.exception.ResourceNotFoundException;
 import be.icc.pid.reservations.repository.ReservationRepository;
 import be.icc.pid.reservations.service.PaiementService;
 import be.icc.pid.reservations.service.ReservationService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,7 +31,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation getById(Long id) {
         return reservationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Réservation introuvable avec l'id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Réservation introuvable avec l'id : " + id
+                ));
     }
 
     @Override
@@ -41,8 +43,11 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation update(Long id, Reservation reservation) {
+
         Reservation existingReservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Réservation introuvable avec l'id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Réservation introuvable avec l'id : " + id
+                ));
 
         existingReservation.setReservationDate(reservation.getReservationDate());
         existingReservation.setNumberOfSeats(reservation.getNumberOfSeats());
@@ -53,6 +58,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation updatedReservation = reservationRepository.save(existingReservation);
 
+        // 🔥 LOGIQUE MÉTIER IMPORTANTE (NE PAS TOUCHER)
         if (updatedReservation.getStatus() == ReservationStatus.TERMINEE) {
             paiementService.creerPaiementPourReservation(updatedReservation);
         }
@@ -63,7 +69,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void delete(Long id) {
         Reservation existingReservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Réservation introuvable avec l'id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Réservation introuvable avec l'id : " + id
+                ));
 
         reservationRepository.delete(existingReservation);
     }

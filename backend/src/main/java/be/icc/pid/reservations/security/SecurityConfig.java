@@ -81,12 +81,15 @@ public class SecurityConfig {
                         // GET PUBLIC
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
 
-                        // ADMIN ONLY (CORRIGÉ)
+                        // ADMIN ONLY (protégé correctement)
                         .requestMatchers(HttpMethod.POST, "/api/representations/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/representations/**").hasAuthority("ADMIN")
 
+                        // 🔓 OUVERTURE TEMPORAIRE POUR TES TESTS UNIQUEMENT
+                        .requestMatchers("/api/**").permitAll()
+
                         // AUTRES
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

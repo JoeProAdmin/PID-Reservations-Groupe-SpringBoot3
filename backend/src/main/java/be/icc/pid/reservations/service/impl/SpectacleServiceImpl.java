@@ -1,6 +1,7 @@
 package be.icc.pid.reservations.service.impl;
 
 import be.icc.pid.reservations.entity.Spectacle;
+import be.icc.pid.reservations.exception.ResourceNotFoundException;
 import be.icc.pid.reservations.repository.SpectacleRepository;
 import be.icc.pid.reservations.service.SpectacleService;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,9 @@ public class SpectacleServiceImpl implements SpectacleService {
     public Spectacle updateSpectacle(Long id, Spectacle updatedSpectacle) {
 
         Spectacle existingSpectacle = spectacleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Spectacle introuvable avec l'id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Spectacle introuvable avec l'id : " + id
+                ));
 
         existingSpectacle.setTitle(updatedSpectacle.getTitle());
         existingSpectacle.setDescription(updatedSpectacle.getDescription());
@@ -54,7 +57,9 @@ public class SpectacleServiceImpl implements SpectacleService {
     @Override
     public void deleteSpectacle(Long id) {
         Spectacle existingSpectacle = spectacleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Spectacle introuvable avec l'id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Spectacle introuvable avec l'id : " + id
+                ));
 
         spectacleRepository.delete(existingSpectacle);
     }

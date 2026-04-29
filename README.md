@@ -119,4 +119,4 @@ Le travail de groupe peut continuer sur une base propre et exploitable.
 - Ajout création de représentations
 - Sécurisation JWT active
 - Correction login BCrypt
-- Backend stabilisé
+- Backend stabilisé 
