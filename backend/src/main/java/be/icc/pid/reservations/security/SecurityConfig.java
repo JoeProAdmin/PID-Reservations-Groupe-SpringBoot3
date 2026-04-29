@@ -32,13 +32,11 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    //  PASSWORD ENCODER
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    //  AUTH PROVIDER
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -47,7 +45,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    // 🔓 CORS CONFIG (POUR REACT)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -63,20 +60,32 @@ public class SecurityConfig {
         return source;
     }
 
-    // 🔐 SECURITY FILTER
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {}) // active le bean CORS
+                .cors(cors -> {})
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
+
+                        // AUTH PUBLIC
                         .requestMatchers("/api/auth/**").permitAll()
+
+                        // GET PUBLIC
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        .anyRequest().authenticated()
+
+                        // ADMIN ONLY
+                        .requestMatchers(HttpMethod.POST, "/api/representations/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/representations/**").hasAuthority("ADMIN")
+
+                        //  OUVERTURE TEMPORAIRE POUR TEST
+                        .requestMatchers("/api/**").permitAll()
+
+                        // AUTRES
+                        .anyRequest().permitAll()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

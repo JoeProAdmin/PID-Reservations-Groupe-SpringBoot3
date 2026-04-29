@@ -108,4 +108,14 @@ Finaliser l’intégration complète :
 ## Statut
 
 Projet backend largement avancé et stable.  
+<<<<<<< HEAD
 Le travail de groupe peut continuer sur une base propre et exploitable.
+=======
+Le travail de groupe peut continuer sur une base propre et exploitable.
+
+## Mise à jour backend
+- Ajout création de représentations
+- Sécurisation JWT active
+- Correction login BCrypt
+- Backend stabilisé 
+>>>>>>> 3803a615 (Add global exception handling and service validation (Spectacle, Reservation, Representation))

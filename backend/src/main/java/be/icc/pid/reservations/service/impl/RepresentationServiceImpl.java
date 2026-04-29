@@ -1,6 +1,7 @@
 package be.icc.pid.reservations.service.impl;
 
 import be.icc.pid.reservations.entity.Representation;
+import be.icc.pid.reservations.exception.ResourceNotFoundException;
 import be.icc.pid.reservations.repository.RepresentationRepository;
 import be.icc.pid.reservations.service.RepresentationService;
 import org.springframework.stereotype.Service;
@@ -19,5 +20,21 @@ public class RepresentationServiceImpl implements RepresentationService {
     @Override
     public List<Representation> getBySpectacleId(Long spectacleId) {
         return representationRepository.findBySpectacleId(spectacleId);
+    }
+
+    @Override
+    public Representation save(Representation representation) {
+        return representationRepository.save(representation);
+    }
+
+    @Override
+    public void delete(Long id) {
+
+        Representation existingRepresentation = representationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Représentation introuvable avec l'id : " + id
+                ));
+
+        representationRepository.delete(existingRepresentation);
     }
 }
