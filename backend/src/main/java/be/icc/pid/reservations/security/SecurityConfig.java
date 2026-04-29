@@ -32,13 +32,11 @@ public class SecurityConfig {
         this.userDetailsService = userDetailsService;
     }
 
-    // PASSWORD ENCODER
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // AUTH PROVIDER
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -47,7 +45,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    // CORS CONFIG
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -63,7 +60,6 @@ public class SecurityConfig {
         return source;
     }
 
-    // SECURITY FILTER
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -81,11 +77,11 @@ public class SecurityConfig {
                         // GET PUBLIC
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
 
-                        // ADMIN ONLY (protégé correctement)
+                        // ADMIN ONLY
                         .requestMatchers(HttpMethod.POST, "/api/representations/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/representations/**").hasAuthority("ADMIN")
 
-                        // 🔓 OUVERTURE TEMPORAIRE POUR TES TESTS UNIQUEMENT
+                        //  OUVERTURE TEMPORAIRE POUR TEST
                         .requestMatchers("/api/**").permitAll()
 
                         // AUTRES

@@ -21,6 +21,7 @@ ICC 2025 - 2026
 - Stabilisation de l’architecture backend
 - Gestion des réservations
 - Intégration du flux paiement
+- Implémentation du Global Exception Handler
 
 ### BENKADDOUR Redouane
 - Développement frontend React
@@ -49,6 +50,7 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - Endpoints sécurisés
 - CORS configuré pour le frontend
 - Architecture controller / service / repository respectée
+- Global Exception Handler implémenté
 
 ### Base de données
 - MySQL / XAMPP
@@ -74,6 +76,7 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - Correction des enums et stabilisation JPA
 - Protection des données sensibles côté API
 - Correction login BCrypt
+- Gestion des erreurs centralisée (Exception Handler)
 - Backend stabilisé pour l’intégration frontend
 
 ## Organisation Git
@@ -83,6 +86,7 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - `FrontEnd`
 - `hatim-assal`
 - `sabbagh`
+- `youssef-admin-backend-v2`
 
 ### Règles
 - 1 branche par membre pour chaque nouvelle évolution
@@ -98,8 +102,9 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - Paiement backend validé
 - SecurityConfig stabilisé
 - User flow corrigé
-- README et structure projet mis à jour
-- Backend merge sur `main`
+- Global Exception Handler opérationnel
+- Services sécurisés (Spectacle, Reservation, Representation)
+- Backend prêt pour intégration frontend
 
 ## Objectif final
 
@@ -114,9 +119,3 @@ Finaliser l’intégration complète :
 
 Projet backend largement avancé et stable.  
 Le travail de groupe peut continuer sur une base propre et exploitable.
-
-## Mise à jour backend
-- Ajout création de représentations
-- Sécurisation JWT active
-- Correction login BCrypt
-- Backend stabilisé 
