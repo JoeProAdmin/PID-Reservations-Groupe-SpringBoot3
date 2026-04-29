@@ -21,6 +21,7 @@ ICC 2025 - 2026
 - Stabilisation de l’architecture backend
 - Gestion des réservations
 - Intégration du flux paiement
+- Implémentation du Global Exception Handler
 
 ### BENKADDOUR Redouane
 - Développement frontend React
@@ -49,41 +50,48 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - Endpoints sécurisés
 - CORS configuré pour le frontend
 - Architecture controller / service / repository respectée
+- Global Exception Handler implémenté
 
 ### Base de données
 - MySQL / XAMPP
 - Base : `pid_reservations_group`
-- Tables principales :
-  - `users`
-  - `artists`
-  - `spectacles`
-  - `representations`
-  - `reservations`
-  - `paiements`
 
-### Fonctionnalités validées
+### Tables principales
+- `users`
+- `artists`
+- `spectacles`
+- `representations`
+- `reservations`
+- `paiements`
+
+## Fonctionnalités validées
 - Authentification utilisateur
 - Création et connexion utilisateur
 - CRUD backend principal
 - Liaison Spectacle / Representation / Reservation
 - Endpoint représentations par spectacle
+- Endpoint POST `/api/representations`
+- Endpoint DELETE `/api/representations`
 - Paiement déclenché avec réservation
 - Correction des enums et stabilisation JPA
 - Protection des données sensibles côté API
+- Correction login BCrypt
+- Gestion des erreurs centralisée (Exception Handler)
+- Backend stabilisé pour l’intégration frontend
 
 ## Organisation Git
 
-### Branches
+### Branches actuelles
 - `main`
+- `FrontEnd`
+- `hatim-assal`
+- `sabbagh`
 - `youssef-admin-backend-v2`
-- `redouane-frontend`
-- `sabbagh-production`
-- `hatim-docs`
 
 ### Règles
-- 1 branche par membre
-- travail isolé par fonctionnalité
-- intégration via Pull Request
+- 1 branche par membre pour chaque nouvelle évolution
+- Travail isolé par fonctionnalité
+- Intégration via Pull Request
 - `main` contient l’état consolidé du projet
 
 ## Avancement technique
@@ -94,7 +102,9 @@ Le backend est stable et structuré. Les principales fonctionnalités métier so
 - Paiement backend validé
 - SecurityConfig stabilisé
 - User flow corrigé
-- README et structure projet mis à jour
+- Global Exception Handler opérationnel
+- Services sécurisés (Spectacle, Reservation, Representation)
+- Backend prêt pour intégration frontend
 
 ## Objectif final
 
@@ -108,14 +118,4 @@ Finaliser l’intégration complète :
 ## Statut
 
 Projet backend largement avancé et stable.  
-<<<<<<< HEAD
 Le travail de groupe peut continuer sur une base propre et exploitable.
-=======
-Le travail de groupe peut continuer sur une base propre et exploitable.
-
-## Mise à jour backend
-- Ajout création de représentations
-- Sécurisation JWT active
-- Correction login BCrypt
-- Backend stabilisé 
->>>>>>> 3803a615 (Add global exception handling and service validation (Spectacle, Reservation, Representation))

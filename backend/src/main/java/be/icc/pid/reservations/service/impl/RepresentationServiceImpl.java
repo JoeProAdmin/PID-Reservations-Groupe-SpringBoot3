@@ -29,7 +29,6 @@ public class RepresentationServiceImpl implements RepresentationService {
 
     @Override
     public void delete(Long id) {
-
         Representation existingRepresentation = representationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Représentation introuvable avec l'id : " + id
