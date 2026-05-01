@@ -9,15 +9,18 @@
 
 ```
 PID-Reservations-Groupe-SpringBoot3/
-│
+|
 ├── docker-compose.yml              ← Orchestration de tous les services
-├── .env.docker                     ← Template des variables d'environnement
+├── .env.docker                     ← Variables Docker préconfigurées
+├── .env.example                    ← Template des variables d'environnement
+├── .gitattributes                  ← Gestion des fins de ligne (CRLF/LF)
+├── start.ps1                       ← Script de démarrage rapide (Windows)
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                  ← Pipeline CI/CD GitHub Actions
 │
 ├── backend/
-│   ├── Dockerfile                  ← Image Docker backend
+│   ├── Dockerfile                  ← Image Docker backend (multi-stage)
 │   ├── docker-entrypoint.sh        ← Script de démarrage
 │   ├── .dockerignore               ← Exclusions Docker
 │   └── src/main/resources/
@@ -26,8 +29,8 @@ PID-Reservations-Groupe-SpringBoot3/
 │       └── application-prod.properties ← Profil production
 │
 ├── frontend/
-│   ├── Dockerfile                  ← Image Docker frontend
-│   ├── nginx.conf                  ← Configuration Nginx
+│   ├── Dockerfile                  ← Image Docker frontend (Nginx)
+│   ├── nginx.conf                  ← Configuration Nginx + proxy API
 │   └── .dockerignore               ← Exclusions Docker
 │
 └── docs/
@@ -59,10 +62,15 @@ PID-Reservations-Groupe-SpringBoot3/
 -  Volume persistant pour les données MySQL
 
 ### CI/CD
--  Build automatique à chaque push
+-  Build automatique a chaque push
 -  Tests avec service MySQL dans le pipeline
--  Build Docker vérifié automatiquement
+-  Build Docker verifie automatiquement
 -  Cache Maven et npm dans GitHub Actions
+
+### Qualite du code
+-  Gestion globale des exceptions (GlobalExceptionHandler)
+-  Validation dans les services (Spectacle, Reservation, Representation)
+-  Separation des DTOs (Create, Update, Response)
 
 ---
 
