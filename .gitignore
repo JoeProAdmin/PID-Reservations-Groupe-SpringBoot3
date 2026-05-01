@@ -1,3 +1,8 @@
+# ============================================
+# .gitignore - PID Reservations Groupe
+# ICC 2025-2026
+# ============================================
+
 # Environment (ne PAS tracker .env, seulement .env.docker)
 .env
 backend/.env
@@ -8,21 +13,40 @@ application-local.properties
 target/
 *.class
 *.log
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
 
 # Node.js
 node_modules/
 frontend/build/
+frontend/.env
 
-# IntelliJ
+# IDE - IntelliJ
 .idea/
 *.iml
 
-# VS Code
+# IDE - VS Code
 .vscode/
+
+# IDE - NetBeans
+nbactions.xml
+nb-configuration.xml
+nbproject/
+
+# IDE - Eclipse
+.project
+.classpath
+.settings/
 
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Docker (volumes locaux)
+mysql_data/
 
 # Divers
-nbactions.xml
+*.swp
+*.swo
+*~
