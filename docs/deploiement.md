@@ -2,7 +2,7 @@
 
 > **Auteur** : Abdulrahman SABBAGH (Production & Infrastructure)  
 > **Projet** : PID Réservations Groupe SpringBoot 3 — ICC 2025-2026  
-> **Dernière mise à jour** : Avril 2026
+> **Dernière mise à jour** : Mai 2026
 
 ---
 
@@ -75,7 +75,8 @@
 │                Port exposé: 3307 → 3306              │
 │                                                      │
 │  - Base : pid_reservations_group                     │
-│  - Tables : users, artists, spectacles, reservations │
+│  - Tables : users, artists, spectacles, reservations,│
+│    representations, paiements                         │
 │  - Volume persistant : mysql_data                    │
 └─────────────────────────────────────────────────────┘
 ```
@@ -165,7 +166,7 @@ docker-compose up -d
 ## ️ CI/CD - GitHub Actions
 
 Le pipeline CI/CD s'exécute automatiquement à chaque :
-- **Push** sur les branches : `main`, `sabbagh-production`, `youssef-admin-backend-v2`, `redouane-frontend`, `hatim-docs`
+- **Push** sur les branches : `main`, `sabbagh`, `youssef-admin-backend-v2`, `FrontEnd`, `hatim-assal`
 - **Pull Request** vers `main`
 
 ### Jobs du pipeline
