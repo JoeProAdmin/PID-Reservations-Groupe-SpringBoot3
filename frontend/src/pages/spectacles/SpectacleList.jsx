@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import API_URL from '../../config';
+import { useAuth } from '../../context/AuthContext';
 
 
 const SpectacleList = () => {
     const [spectacles, setSpectacles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { role } = useAuth();
 
     useEffect(() => {
         fetch(`${API_URL}/api/spectacles`)
@@ -33,10 +35,12 @@ const SpectacleList = () => {
                         <span className="count-badge">
                             {spectacles.length} spectacle{spectacles.length !== 1 ? 's' : ''}
                         </span>
+                        {role === 'ROLE_ADMIN' && (
                         <Link to="/spectacles/create" className="btn btn-primary text-uppercase"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
                             <i className="fas fa-plus me-2"></i>Nouveau spectacle
                         </Link>
+                        )}
                     </div>
 
                     {spectacles.length === 0 ? (
@@ -84,11 +88,14 @@ const SpectacleList = () => {
                                                 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
                                                 <i className="fas fa-eye me-1"></i>Voir
                                             </Link>
+
+                                            {role === 'ROLE_ADMIN' && (
                                             <Link to={`/spectacles/${spectacle.id}/edit`}
                                                 className="btn btn-sm btn-warning"
                                                 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
                                                 <i className="fas fa-pen me-1"></i>Modifier
                                             </Link>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
