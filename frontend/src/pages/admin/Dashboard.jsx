@@ -14,6 +14,8 @@ const Dashboard = () => {
   const [loadingSpectacles, setLoadingSpectacles] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [activeTab, setActiveTab] = useState("spectacles");
+  const [importing, setImporting] = useState(false);
+  const [importMessage, setImportMessage] = useState(null);
 
   useEffect(() => {
     if (role !== "ROLE_ADMIN") {
@@ -192,6 +194,62 @@ const Dashboard = () => {
     URL.revokeObjectURL(url);
   };
 
+  const importCSV = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImporting(true);
+    setImportMessage(null);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target.result;
+      const lines = text.split("\n").slice(1); // ignore header
+
+      const promises = lines
+        .filter((line) => line.trim())
+        .map((line) => {
+          const [id, title, date, location, price, description] = line
+            .split(",")
+            .map((cell) => cell.replace(/^"|"$/g, "").trim());
+
+          return fetch(`${API_URL}/api/spectacles`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              title,
+              date: new Date(date.split("/").reverse().join("-")).toISOString(),
+              location,
+              price: parseFloat(price),
+              description,
+            }),
+          });
+        });
+
+      Promise.all(promises)
+        .then(() => {
+          setImportMessage({
+            type: "success",
+            text: `${lines.length} spectacles importés !`,
+          });
+          // Recharge la liste
+          fetch(`${API_URL}/api/spectacles`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((res) => res.json())
+            .then((data) => setSpectacles(data));
+        })
+        .catch(() =>
+          setImportMessage({ type: "error", text: "Erreur lors de l'import." }),
+        )
+        .finally(() => setImporting(false));
+    };
+    reader.readAsText(file);
+    e.target.value = ""; // reset input
+  };
   return (
     <>
       <PageHeader
@@ -271,7 +329,16 @@ const Dashboard = () => {
               <i className="fas fa-users me-2"></i>Utilisateurs
             </button>
           </div>
-
+          {importMessage && (
+            <div
+              className={`${importMessage.type === "success" ? "alert-success-custom" : "alert-error"} mb-4`}
+            >
+              <i
+                className={`fas fa-${importMessage.type === "success" ? "check-circle" : "exclamation-circle"} me-2`}
+              ></i>
+              {importMessage.text}
+            </div>
+          )}
           {/* Tables */}
           {activeTab === "spectacles" && (
             <div className="agency-card">
@@ -294,7 +361,34 @@ const Dashboard = () => {
                     <i className="fas fa-plus me-2"></i>Nouveau
                   </Link>
                 </div>
+
                 <div className="d-flex gap-2">
+                  <label
+                    className="btn btn-outline-secondary btn-sm text-uppercase mb-0"
+                    style={{
+                      fontFamily: "Montserrat, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {importing ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2"></span>
+                        Import...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-upload me-2"></i>Import CSV
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept=".csv"
+                      onChange={importCSV}
+                      style={{ display: "none" }}
+                    />
+                  </label>
                   <button
                     onClick={exportCSV}
                     className="btn btn-outline-secondary btn-sm text-uppercase"
