@@ -15,6 +15,7 @@ import SpectacleEdit from "./pages/spectacles/SpectacleEdit.jsx";
 import Profile from './pages/profile/Profile';
 import ProfileEdit from './pages/profile/ProfileEdit';
 import RepresentationCreate from './pages/representations/RepresentationCreate';
+import Dashboard from './pages/admin/Dashboard';
 
 
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/spectacles/:spectacleId/representations/create" element={<RepresentationCreate />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
         </Routes>
         <Footer />
       </BrowserRouter>
