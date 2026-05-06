@@ -39,14 +39,17 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
+
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
+
         return provider;
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:3000"));
@@ -54,7 +57,9 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
 
         return source;
@@ -69,6 +74,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
                 .authorizeHttpRequests(auth -> auth
 
                         // AUTH PUBLIC
@@ -78,17 +84,25 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
 
                         // ADMIN ONLY
-                        .requestMatchers(HttpMethod.POST, "/api/representations/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/representations/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/representations/**")
+                        .hasAuthority("ROLE_ADMIN")
 
-                        //  OUVERTURE TEMPORAIRE POUR TEST
+                        .requestMatchers(HttpMethod.DELETE, "/api/representations/**")
+                        .hasAuthority("ROLE_ADMIN")
+
+                        // OUVERTURE TEMPORAIRE POUR TEST
                         .requestMatchers("/api/**").permitAll()
 
                         // AUTRES
                         .anyRequest().permitAll()
                 )
+
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
