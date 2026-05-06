@@ -39,15 +39,16 @@ public class Reservation {
         this.reservationDate = LocalDateTime.now();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.status = ReservationStatus.EN_ATTENTE;
+        this.status = ReservationStatus.CREATED;
     }
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+
         if (this.status == null) {
-            this.status = ReservationStatus.EN_ATTENTE;
+            this.status = ReservationStatus.CREATED;
         }
     }
 

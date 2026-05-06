@@ -58,8 +58,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation updatedReservation = reservationRepository.save(existingReservation);
 
-        // 🔥 LOGIQUE MÉTIER IMPORTANTE (NE PAS TOUCHER)
-        if (updatedReservation.getStatus() == ReservationStatus.TERMINEE) {
+        // Paiement déclenché uniquement si réservation confirmée
+        if (updatedReservation.getStatus() == ReservationStatus.CONFIRMED) {
             paiementService.creerPaiementPourReservation(updatedReservation);
         }
 
@@ -68,6 +68,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void delete(Long id) {
+
         Reservation existingReservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Réservation introuvable avec l'id : " + id
