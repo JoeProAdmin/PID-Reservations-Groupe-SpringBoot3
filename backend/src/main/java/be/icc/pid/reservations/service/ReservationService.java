@@ -25,4 +25,6 @@ public interface ReservationService {
     Reservation updateReservation(Long id, Reservation reservation);
 
     void deleteReservation(Long id);
+
+    List<Reservation> getByUserId(Long userId);
 }

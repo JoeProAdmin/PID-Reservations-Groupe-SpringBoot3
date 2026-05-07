@@ -1,6 +1,8 @@
 package be.icc.pid.reservations.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,6 +31,11 @@ public class Spectacle {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "artist_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Artist artist;
 
     public Long getId() {
         return id;
@@ -92,5 +99,13 @@ public class Spectacle {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Artist getArtist() {
+        return artist;
+    }
+
+    public void setArtist(Artist artist) {
+        this.artist = artist;
     }
 }
