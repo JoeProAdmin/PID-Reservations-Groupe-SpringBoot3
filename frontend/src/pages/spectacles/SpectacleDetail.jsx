@@ -175,14 +175,7 @@ const SpectacleDetail = () => {
 
                   <hr className="agency-divider" />
                   <SectionLabel icon="file-alt" text="Description" />
-                  <p
-                    style={{
-                      fontFamily: "Roboto Slab, serif",
-                      fontSize: "0.95rem",
-                      color: "#495057",
-                      lineHeight: 1.8,
-                    }}
-                  >
+                  <p className="text-description">
                     {spectacle.description || "Aucune description disponible."}
                   </p>
                   <hr className="agency-divider" />
@@ -194,12 +187,7 @@ const SpectacleDetail = () => {
                     <div className="mb-3 d-flex justify-content-end">
                       <Link
                         to={`/spectacles/${id}/representations/create`}
-                        className="btn btn-primary btn-sm text-uppercase"
-                        style={{
-                          fontFamily: "Montserrat, sans-serif",
-                          fontWeight: 700,
-                          fontSize: "0.75rem",
-                        }}
+                        className="btn btn-primary btn-sm text-uppercase btn-admin"
                       >
                         <i className="fas fa-plus me-2"></i>Ajouter une
                         représentation
@@ -207,32 +195,16 @@ const SpectacleDetail = () => {
                     </div>
                   )}
                   {representations.length === 0 ? (
-                    <p
-                      style={{
-                        fontFamily: "Roboto Slab, serif",
-                        color: "#adb5bd",
-                        fontSize: "0.9rem",
-                      }}
-                    >
+                    <p className="info-label">
                       Aucune représentation disponible.
                     </p>
                   ) : (
                     <div className="row g-3">
                       {representations.map((rep) => (
                         <div className="col-md-6" key={rep.id}>
-                          <div
-                            style={{
-                              border: "1px solid #f0f0f0",
-                              borderRadius: "4px",
-                              padding: "1rem",
-                              background: "#fafafa",
-                            }}
-                          >
+                          <div className="rep-card">
                             <p className="info-label">Date et heure</p>
-                            <p
-                              className="info-value"
-                              style={{ fontSize: "0.9rem" }}
-                            >
+                            <p className="info-value">
                               {new Date(rep.dateHeure).toLocaleDateString(
                                 "fr-FR",
                                 {
@@ -247,19 +219,15 @@ const SpectacleDetail = () => {
                             <p className="info-label mt-2">
                               Places disponibles
                             </p>
-                            <p
-                              className="info-value"
-                              style={{ fontSize: "0.9rem" }}
-                            >
+                            <p className="info-value">
                               <span
-                                style={{
-                                  color:
-                                    rep.placesDisponibles > 10
-                                      ? "#28a745"
-                                      : rep.placesDisponibles > 0
-                                        ? "#ffc107"
-                                        : "#dc3545",
-                                }}
+                                className={
+                                  rep.placesDisponibles > 10
+                                    ? "places-high"
+                                    : rep.placesDisponibles > 0
+                                      ? "places-low"
+                                      : "places-none"
+                                }
                               >
                                 {rep.placesDisponibles > 0
                                   ? `${rep.placesDisponibles} places`
@@ -269,14 +237,10 @@ const SpectacleDetail = () => {
                             <button
                               onClick={() => reserve(rep)}
                               disabled={rep.placesDisponibles === 0}
-                              className="btn btn-primary btn-sm text-uppercase w-100 mt-2"
-                              style={{
-                                fontFamily: "Montserrat, sans-serif",
-                                fontWeight: 700,
-                                fontSize: "0.75rem",
-                              }}
+                              className="btn btn-primary btn-sm text-uppercase w-100 mt-2 btn-admin"
+                              
                             >
-                              <i className="fas fa-ticket-alt me-2"></i>
+                              
                               {rep.placesDisponibles === 0
                                 ? "Complet"
                                 : "Réserver"}
@@ -287,38 +251,9 @@ const SpectacleDetail = () => {
                     </div>
                   )}
                   {selectedRep && (
-                    <div
-                      style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: "rgba(0,0,0,0.5)",
-                        zIndex: 1000,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <div
-                        style={{
-                          background: "#fff",
-                          borderRadius: "4px",
-                          padding: "2rem",
-                          maxWidth: "400px",
-                          width: "90%",
-                          boxShadow: "0 4px 30px rgba(0,0,0,0.2)",
-                        }}
-                      >
-                        <h5
-                          style={{
-                            fontFamily: "Montserrat, sans-serif",
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            marginBottom: "1rem",
-                          }}
-                        >
+                    <div className="modal-overlay">
+                      <div className="modal-box">
+                        <h5 className="modal-title">
                           Confirmer la réservation
                         </h5>
                         <p className="info-label">Spectacle</p>
@@ -348,29 +283,21 @@ const SpectacleDetail = () => {
                           }
                         />
                         <p className="info-label">Total</p>
-                        <p
-                          className="info-value mb-4"
-                          style={{ color: "#fec810", fontWeight: 700 }}
-                        >
+                        <p className="info-value total-price mb-4">
                           {(numberOfSeats * spectacle.price).toFixed(2)} €
                         </p>
                         <div className="d-flex gap-3">
                           <button
                             onClick={() => setSelectedRep(null)}
-                            className="btn-cancel w-50"
-                            style={{ textAlign: "center" }}
+                            className="btn-cancel w-50 text-center"
                           >
                             Annuler
                           </button>
                           <button
                             onClick={confirmReservation}
                             disabled={reserving}
-                            className="btn btn-primary text-uppercase w-50"
-                            style={{
-                              fontFamily: "Montserrat, sans-serif",
-                              fontWeight: 700,
-                              fontSize: "0.8rem",
-                            }}
+                            className="btn btn-primary text-uppercase w-50 btn-admin"
+                            
                           >
                             {reserving ? (
                               <>
@@ -397,23 +324,15 @@ const SpectacleDetail = () => {
                       <div className="d-flex gap-2">
                         <Link
                           to={`/spectacles/${spectacle.id}/edit`}
-                          className="btn btn-warning text-uppercase"
-                          style={{
-                            fontFamily: "Montserrat, sans-serif",
-                            fontWeight: 700,
-                            fontSize: "0.8rem",
-                          }}
+                          className="btn btn-warning text-uppercase btn-admin"
+                          
                         >
                           <i className="fas fa-pen me-2"></i>Modifier
                         </Link>
                         <button
                           onClick={deleteSpectacle}
-                          className="btn btn-outline-danger text-uppercase"
-                          style={{
-                            fontFamily: "Montserrat, sans-serif",
-                            fontWeight: 700,
-                            fontSize: "0.8rem",
-                          }}
+                          className="btn btn-outline-danger text-uppercase btn-admin"
+                          
                         >
                           <i className="fas fa-trash me-2"></i>Supprimer
                         </button>
