@@ -2,7 +2,9 @@ package be.icc.pid.reservations.service.impl;
 
 import be.icc.pid.reservations.entity.Reservation;
 import be.icc.pid.reservations.entity.ReservationStatus;
+import be.icc.pid.reservations.entity.Representation;
 import be.icc.pid.reservations.exception.ResourceNotFoundException;
+import be.icc.pid.reservations.repository.RepresentationRepository;
 import be.icc.pid.reservations.repository.ReservationRepository;
 import be.icc.pid.reservations.service.PaiementService;
 import be.icc.pid.reservations.service.ReservationService;
@@ -15,11 +17,16 @@ import java.util.List;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final RepresentationRepository representationRepository;
     private final PaiementService paiementService;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository,
-                                  PaiementService paiementService) {
+    public ReservationServiceImpl(
+            ReservationRepository reservationRepository,
+            RepresentationRepository representationRepository,
+            PaiementService paiementService
+    ) {
         this.reservationRepository = reservationRepository;
+        this.representationRepository = representationRepository;
         this.paiementService = paiementService;
     }
 
@@ -38,6 +45,25 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation create(Reservation reservation) {
+
+        Representation representation = representationRepository.findById(
+                reservation.getRepresentation().getId()
+        ).orElseThrow(() -> new ResourceNotFoundException(
+                "Représentation introuvable"
+        ));
+
+        int placesRestantes =
+                representation.getPlacesDisponibles()
+                        - reservation.getNumberOfSeats();
+
+        if (placesRestantes < 0) {
+            throw new RuntimeException("Pas assez de places disponibles");
+        }
+
+        representation.setPlacesDisponibles(placesRestantes);
+
+        representationRepository.save(representation);
+
         return reservationRepository.save(reservation);
     }
 
@@ -58,7 +84,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation updatedReservation = reservationRepository.save(existingReservation);
 
-        // Paiement déclenché uniquement si réservation confirmée
         if (updatedReservation.getStatus() == ReservationStatus.CONFIRMED) {
             paiementService.creerPaiementPourReservation(updatedReservation);
         }
@@ -100,5 +125,10 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void deleteReservation(Long id) {
         delete(id);
+    }
+
+    @Override
+    public List<Reservation> getByUserId(Long userId) {
+        return reservationRepository.findByUserId(userId);
     }
 }
