@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import API_URL from "../../config";
+
 import { useAuth } from "../../context/AuthContext";
 
 const SpectacleDetail = () => {
@@ -16,6 +17,7 @@ const SpectacleDetail = () => {
   const [selectedRep, setSelectedRep] = useState(null);
   const [numberOfSeats, setNumberOfSeats] = useState(1);
   const [reserving, setReserving] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([
@@ -36,6 +38,15 @@ const SpectacleDetail = () => {
         setLoading(false);
       });
   }, [id]);
+
+  const deleteSpectacle = () => {
+    if (window.confirm(`Supprimer "${spectacle.title}" ?`)) {
+      fetch(`${API_URL}/api/spectacles/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }).then(() => navigate("/"));
+    }
+  };
 
   if (loading)
     return (
@@ -73,8 +84,7 @@ const SpectacleDetail = () => {
         representation: { id: selectedRep.id },
         user: { id: parseInt(userId) },
         numberOfSeats: parseInt(numberOfSeats),
-        status: "EN_ATTENTE",
-        
+        status: "CREATED",
       }),
     })
       .then((res) => {
@@ -383,17 +393,32 @@ const SpectacleDetail = () => {
                     <Link to="/" className="btn-cancel">
                       <i className="fas fa-arrow-left me-2"></i>Retour
                     </Link>
-                    <Link
-                      to={`/spectacles/${spectacle.id}/edit`}
-                      className="btn btn-warning text-uppercase"
-                      style={{
-                        fontFamily: "Montserrat, sans-serif",
-                        fontWeight: 700,
-                        fontSize: "0.8rem",
-                      }}
-                    >
-                      <i className="fas fa-pen me-2"></i>Modifier
-                    </Link>
+                    {role === "ROLE_ADMIN" && (
+                      <div className="d-flex gap-2">
+                        <Link
+                          to={`/spectacles/${spectacle.id}/edit`}
+                          className="btn btn-warning text-uppercase"
+                          style={{
+                            fontFamily: "Montserrat, sans-serif",
+                            fontWeight: 700,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          <i className="fas fa-pen me-2"></i>Modifier
+                        </Link>
+                        <button
+                          onClick={deleteSpectacle}
+                          className="btn btn-outline-danger text-uppercase"
+                          style={{
+                            fontFamily: "Montserrat, sans-serif",
+                            fontWeight: 700,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          <i className="fas fa-trash me-2"></i>Supprimer
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

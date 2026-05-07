@@ -89,13 +89,7 @@ const SpectacleList = () => {
                                                 <i className="fas fa-eye me-1"></i>Voir
                                             </Link>
 
-                                            {role === 'ROLE_ADMIN' && (
-                                            <Link to={`/spectacles/${spectacle.id}/edit`}
-                                                className="btn btn-sm btn-warning"
-                                                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
-                                                <i className="fas fa-pen me-1"></i>Modifier
-                                            </Link>
-                                            )}
+                                            
                                         </div>
                                     </div>
                                 </div>

@@ -18,12 +18,6 @@ const ArtistList = () => {
             .catch(err => { setError(err.message); setLoading(false); });
     }, []);
 
-    const deleteArtist = (id, name) => {
-        if (window.confirm(`Supprimer "${name}" ?`)) {
-            fetch(`${API_URL}/api/artists/${id}`, { method: 'DELETE' })
-                .then(() => setArtists(artists.filter(a => a.id !== id)));
-        }
-    };
 
     if (loading) return <div className="text-center py-5 mt-5"><div className="spinner-border text-primary"></div></div>;
     if (error) return <div className="container mt-5 pt-5 text-center text-danger">{error}</div>;
@@ -76,19 +70,7 @@ const ArtistList = () => {
                                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
                                             <i className="fas fa-eye me-1"></i>Voir
                                         </Link>
-                                        {role === 'ROLE_ADMIN' && (
-                                        <Link to={`/artists/${artist.id}/edit`} className="btn btn-sm btn-warning"
-                                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
-                                            <i className="fas fa-pen me-1"></i>Modifier
-                                        </Link>
-                                        )}
-                                        {role === 'ROLE_ADMIN' && (
-                                        <button onClick={() => deleteArtist(artist.id, artist.name)}
-                                            className="btn btn-sm btn-outline-danger ms-auto"
-                                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
-                                            <i className="fas fa-trash me-1"></i>Supprimer
-                                        </button>
-                                        )}
+                                        
                                     </div>
                                 </div>
                             </div>
