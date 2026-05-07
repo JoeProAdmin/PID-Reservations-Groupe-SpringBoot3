@@ -10,7 +10,7 @@ name: CI - PID Reservations
 
 on:
   push:
-    branches: [ main, sabbagh-production, youssef-admin-backend-v2, redouane-frontend, hatim-docs ]
+    branches: [ main, sabbagh, youssef-admin-backend-v2, FrontEnd, hatim-assal ]
   pull_request:
     branches: [ main ]
 
@@ -100,13 +100,13 @@ jobs:
           cache-dependency-path: './frontend/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Frontend
         run: npm run build
         env:
           CI: false
-          REACT_APP_API_URL: http://backend:8080
+          REACT_APP_API_URL: http://localhost:8080
 
   # ==========================================
   # Job 3 : Build Docker Images
@@ -126,6 +126,7 @@ jobs:
       - name: Build Frontend Image
         run: docker build -t pid-frontend:latest ./frontend
 
-      - name: Check Docker Images
+      - name: Verification des images Docker
         run: |
           docker images | grep pid
+          echo "Build Docker OK"
