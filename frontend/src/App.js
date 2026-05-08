@@ -16,6 +16,7 @@ import Profile from './pages/profile/Profile';
 import ProfileEdit from './pages/profile/ProfileEdit';
 import RepresentationCreate from './pages/representations/RepresentationCreate';
 import Dashboard from './pages/admin/Dashboard';
+import MyReservations from './pages/reservations/MyReservations';
 
 
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/spectacles/:spectacleId/representations/create" element={<RepresentationCreate />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/mes-reservations" element={<MyReservations />} />
         </Routes>
         <Footer />
       </BrowserRouter>

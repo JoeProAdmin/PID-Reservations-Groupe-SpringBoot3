@@ -51,6 +51,11 @@ const Header = () => {
                     {prenom} {nom}
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/mes-reservations">
+                    Mes réservations
+                  </Link>
+                </li>
                 {role === "ROLE_ADMIN" && (
                   <li className="nav-item">
                     <Link className="nav-link" to="/admin/dashboard">
