@@ -35,7 +35,7 @@ const ArtistEdit = () => {
             body: JSON.stringify(formData)
         })
         .then(res => { if (!res.ok) throw new Error('Erreur serveur'); return res.json(); })
-        .then(() => navigate('/'))
+        .then(() => navigate('/artists'))
         .catch(err => { setError(err.message); setSaving(false); });
     };
 

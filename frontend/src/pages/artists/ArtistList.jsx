@@ -1,25 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
+import API_URL from '../../config';
+import { useAuth } from '../../context/AuthContext'; 
+
 
 const ArtistList = () => {
     const [artists, setArtists] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { role } = useAuth();
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/artists')
+        fetch(`${API_URL}/api/artists`)
             .then(res => res.json())
             .then(data => { setArtists(data); setLoading(false); })
             .catch(err => { setError(err.message); setLoading(false); });
     }, []);
 
-    const deleteArtist = (id, name) => {
-        if (window.confirm(`Supprimer "${name}" ?`)) {
-            fetch(`http://localhost:8080/api/artists/${id}`, { method: 'DELETE' })
-                .then(() => setArtists(artists.filter(a => a.id !== id)));
-        }
-    };
 
     if (loading) return <div className="text-center py-5 mt-5"><div className="spinner-border text-primary"></div></div>;
     if (error) return <div className="container mt-5 pt-5 text-center text-danger">{error}</div>;
@@ -38,10 +36,13 @@ const ArtistList = () => {
                         <span className="count-badge">
                             {artists.length} artiste{artists.length !== 1 ? 's' : ''}
                         </span>
+                        {role === 'ROLE_ADMIN' && (
+    
                         <Link to="/artists/create" className="btn btn-primary text-uppercase"
                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
                             <i className="fas fa-plus me-2"></i>Nouvel artiste
                         </Link>
+                    )}
                     </div>
 
                     <div className="row g-4">
@@ -69,15 +70,7 @@ const ArtistList = () => {
                                             style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
                                             <i className="fas fa-eye me-1"></i>Voir
                                         </Link>
-                                        <Link to={`/artists/${artist.id}/edit`} className="btn btn-sm btn-warning"
-                                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
-                                            <i className="fas fa-pen me-1"></i>Modifier
-                                        </Link>
-                                        <button onClick={() => deleteArtist(artist.id, artist.name)}
-                                            className="btn btn-sm btn-outline-danger ms-auto"
-                                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
-                                            <i className="fas fa-trash me-1"></i>Supprimer
-                                        </button>
+                                        
                                     </div>
                                 </div>
                             </div>
