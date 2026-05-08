@@ -99,6 +99,16 @@ public class ReservationServiceImpl implements ReservationService {
                         "Réservation introuvable avec l'id : " + id
                 ));
 
+        Representation representation =
+                existingReservation.getRepresentation();
+
+        representation.setPlacesDisponibles(
+                representation.getPlacesDisponibles()
+                        + existingReservation.getNumberOfSeats()
+        );
+
+        representationRepository.save(representation);
+
         reservationRepository.delete(existingReservation);
     }
 
