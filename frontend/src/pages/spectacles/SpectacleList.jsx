@@ -36,8 +36,7 @@ const SpectacleList = () => {
                             {spectacles.length} spectacle{spectacles.length !== 1 ? 's' : ''}
                         </span>
                         {role === 'ROLE_ADMIN' && (
-                        <Link to="/spectacles/create" className="btn btn-primary text-uppercase"
-                            style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
+                        <Link to="/spectacles/create" className="btn btn-primary text-uppercase btn-admin">
                             <i className="fas fa-plus me-2"></i>Nouveau spectacle
                         </Link>
                         )}
@@ -46,7 +45,7 @@ const SpectacleList = () => {
                     {spectacles.length === 0 ? (
                         <div className="text-center py-5">
                             <i className="fas fa-theater-masks fa-3x text-muted mb-3"></i>
-                            <p style={{ fontFamily: 'Roboto Slab, serif', color: '#adb5bd' }}>
+                            <p className="info-label">
                                 Aucun spectacle disponible.
                             </p>
                         </div>
@@ -55,19 +54,19 @@ const SpectacleList = () => {
                             {spectacles.map(spectacle => (
                                 <div className="col-lg-4 col-md-6" key={spectacle.id}>
                                     <div className="artist-card">
-                                        <div style={{ height: '5px', background: '#fec810' }}></div>
+                                        <div className="card-accent"></div>
                                         <div className="p-4">
-                                            <h5 style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, textTransform: 'uppercase' }}>
+                                            <h5 className="artist-card-title">
                                                 {spectacle.title}
                                             </h5>
-                                            <p style={{ fontFamily: 'Roboto Slab, serif', color: '#6c757d', fontSize: '0.85rem' }}>
+                                            <p className="info-value">
                                                 <i className="fas fa-calendar me-1 text-warning"></i>
                                                 {new Date(spectacle.date).toLocaleDateString('fr-FR', {
                                                     day: 'numeric', month: 'long', year: 'numeric'
                                                 })}
                                             </p>
                                             {spectacle.location && (
-                                                <p style={{ fontFamily: 'Roboto Slab, serif', color: '#6c757d', fontSize: '0.85rem' }}>
+                                                <p className="info-value">
                                                     <i className="fas fa-map-marker-alt me-1 text-warning"></i>
                                                     {spectacle.location}
                                                 </p>
@@ -75,21 +74,24 @@ const SpectacleList = () => {
                                             <span className="count-badge">
                                                 {spectacle.price} €
                                             </span>
+                                            {spectacle.artist && (
+                                                <p className="info-value">
+                                                    <i className="fas fa-user me-1 text-warning"></i>
+                                                    {spectacle.artist.name}
+                                                </p>
+                                            )}
                                             {spectacle.description && (
-                                                <p className="mt-2" style={{ fontFamily: 'Roboto Slab, serif', color: '#495057', fontSize: '0.85rem' }}>
+                                                <p className="text-description mt-2">
                                                     {spectacle.description.substring(0, 80)}
                                                     {spectacle.description.length > 80 ? '...' : ''}
                                                 </p>
                                             )}
                                         </div>
-                                        <div className="d-flex gap-2 px-4 pb-4" style={{ borderTop: '1px solid #f0f0f0', paddingTop: '1rem' }}>
+                                        <div className="d-flex gap-2 px-4 pb-4 card-footer-actions">
                                             <Link to={`/spectacles/${spectacle.id}`}
-                                                className="btn btn-sm btn-dark text-warning"
-                                                style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.75rem' }}>
+                                                className="btn btn-sm btn-dark text-warning btn-admin">
                                                 <i className="fas fa-eye me-1"></i>Voir
                                             </Link>
-
-                                            
                                         </div>
                                     </div>
                                 </div>
