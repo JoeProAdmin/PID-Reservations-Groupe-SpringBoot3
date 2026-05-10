@@ -7,25 +7,23 @@
 -- Utilise INSERT IGNORE pour eviter les doublons
 
 -- ========== ADMIN ==========
-INSERT IGNORE INTO users (email, password, nom, prenom, role, created_at)
+INSERT IGNORE INTO users (email, password, nom, prenom, role)
 VALUES (
     'admin@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
     'Admin',
     'Test',
-    'ROLE_ADMIN',
-    NOW()
+    'ROLE_ADMIN'
 );
 
 -- ========== UTILISATEUR DEMO ==========
-INSERT IGNORE INTO users (email, password, nom, prenom, role, created_at)
+INSERT IGNORE INTO users (email, password, nom, prenom, role)
 VALUES (
     'user@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
     'Dupont',
     'Jean',
-    'ROLE_USER',
-    NOW()
+    'ROLE_USER'
 );
 
 -- ========== ARTISTES ==========
@@ -38,7 +36,6 @@ VALUES
     ('Plastic Bertrand', 'Punk/Pop', 'Belgique', 'Celebre pour le tube Ca plane pour moi, icone du punk belge des annees 70.', NOW(), NOW());
 
 -- ========== SPECTACLES (lies aux artistes) ==========
--- On utilise des sous-requetes pour lier chaque spectacle a son artiste
 INSERT IGNORE INTO spectacles (title, description, date, location, price, artist_id, created_at, updated_at)
 VALUES
     ('Multitude Tour', 'La tournee evenement de Stromae - un spectacle visuel et musical exceptionnel avec ses plus grands hits.', '2026-06-15 20:00:00', 'Forest National, Bruxelles', 75.00, (SELECT id FROM artists WHERE name = 'Stromae' LIMIT 1), NOW(), NOW()),
@@ -48,7 +45,6 @@ VALUES
     ('Festival Rock Belge', 'Une soiree rock et punk avec les classiques du rock belge, ambiance garage et energie pure.', '2026-08-01 18:00:00', 'Botanique, Bruxelles', 25.00, (SELECT id FROM artists WHERE name = 'Plastic Bertrand' LIMIT 1), NOW(), NOW());
 
 -- ========== REPRESENTATIONS ==========
--- Chaque spectacle a 2 representations (dates differentes, places disponibles)
 INSERT IGNORE INTO representations (date_heure, places_disponibles, spectacle_id)
 VALUES
     ('2026-06-15 20:00:00', 200, (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1)),
@@ -63,7 +59,6 @@ VALUES
     ('2026-08-02 18:00:00', 400, (SELECT id FROM spectacles WHERE title = 'Festival Rock Belge' LIMIT 1));
 
 -- ========== RESERVATIONS DE DEMO ==========
--- 3 reservations pour l utilisateur demo (user@test.com)
 INSERT IGNORE INTO reservations (reservation_date, number_of_seats, status, representation_id, user_id, created_at, updated_at)
 VALUES
     (NOW(), 2, 'CONFIRMED',
@@ -80,7 +75,6 @@ VALUES
      NOW(), NOW());
 
 -- ========== PAIEMENTS DE DEMO ==========
--- 2 paiements : 1 paye (Stromae) + 1 en attente (Brel)
 INSERT IGNORE INTO paiements (montant, methode, statut, stripe_payment_intent_id, reservation_id, date_paiement)
 VALUES
     (150.00, 'CARD', 'PAYE', 'pi_demo_stromae_001',
