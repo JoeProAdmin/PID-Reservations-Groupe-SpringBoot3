@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
@@ -132,7 +132,12 @@ const PaymentPage = () => {
   const [success, setSuccess] = useState(false);
   const spectacleTitle = searchParams.get("spectacle") || "Spectacle";
 
+  const fetchedRef = useRef(false);
+
   useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
+
     // Creer le PaymentIntent via le backend
     fetch(`${API_URL}/api/paiements/create-payment-intent?reservationId=${reservationId}`, {
       method: "POST",
@@ -145,9 +150,10 @@ const PaymentPage = () => {
         } else {
           setClientSecret(data.clientSecret);
           setMontant(data.montant);
+          setError(null);
         }
       })
-      .catch((err) => setError("Impossible de charger le paiement."));
+      .catch((err) => setError("Impossible de charger le paiement: " + err.message));
   }, [reservationId, token]);
 
   if (success) {
