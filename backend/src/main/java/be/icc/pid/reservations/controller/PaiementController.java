@@ -30,6 +30,14 @@ public class PaiementController {
     }
 
     // ================================================
+    // Liste de tous les paiements (admin)
+    // ================================================
+    @GetMapping
+    public ResponseEntity<java.util.List<Paiement>> getAll() {
+        return ResponseEntity.ok(paiementRepository.findAll());
+    }
+
+    // ================================================
     // Etape 1 : Creer un PaymentIntent Stripe
     // Le frontend recoit le clientSecret pour le formulaire
     // ================================================
