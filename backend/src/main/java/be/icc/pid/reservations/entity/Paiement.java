@@ -19,6 +19,9 @@ public class Paiement {
 
     private LocalDateTime datePaiement;
 
+    @Column(name = "stripe_payment_intent_id")
+    private String stripePaymentIntentId;
+
     @OneToOne
     @JoinColumn(name = "reservation_id")
     private Reservation reservation;
@@ -42,6 +45,9 @@ public class Paiement {
     public void setStatut(String statut) { this.statut = statut; }
 
     public LocalDateTime getDatePaiement() { return datePaiement; }
+
+    public String getStripePaymentIntentId() { return stripePaymentIntentId; }
+    public void setStripePaymentIntentId(String stripePaymentIntentId) { this.stripePaymentIntentId = stripePaymentIntentId; }
 
     public Reservation getReservation() { return reservation; }
     public void setReservation(Reservation reservation) { this.reservation = reservation; }

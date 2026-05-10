@@ -91,22 +91,13 @@ const SpectacleDetail = () => {
         if (!res.ok) throw new Error("Erreur lors de la réservation");
         return res.json();
       })
-      .then(() => {
-        setCartMessage({
-          type: "success",
-          text: `Réservation confirmée pour ${numberOfSeats} place(s) !`,
-        });
+      .then((data) => {
+        // Redirection vers la page de paiement Stripe
+        const reservationIdFromResponse = data.id;
         setSelectedRep(null);
         setNumberOfSeats(1);
         setReserving(false);
-        // Met à jour les places disponibles
-        setRepresentations(
-          representations.map((r) =>
-            r.id === selectedRep.id
-              ? { ...r, placesDisponibles: r.placesDisponibles - numberOfSeats }
-              : r,
-          ),
-        );
+        navigate(`/paiement/${reservationIdFromResponse}?spectacle=${encodeURIComponent(spectacle.title)}`);
       })
       .catch((err) => {
         setCartMessage({ type: "error", text: err.message });
