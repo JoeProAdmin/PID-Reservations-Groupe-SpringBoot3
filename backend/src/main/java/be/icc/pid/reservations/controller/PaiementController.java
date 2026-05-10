@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @RestController
 @RequestMapping("/api/paiements")
 @CrossOrigin(origins = "*")
@@ -41,6 +43,7 @@ public class PaiementController {
     // Etape 1 : Creer un PaymentIntent Stripe
     // Le frontend recoit le clientSecret pour le formulaire
     // ================================================
+    @Transactional
     @PostMapping("/create-payment-intent")
     public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestParam Long reservationId) {
 
@@ -89,6 +92,7 @@ public class PaiementController {
     // Etape 2 : Confirmer le paiement apres succes Stripe
     // Le frontend appelle cet endpoint apres le paiement
     // ================================================
+    @Transactional
     @PostMapping("/confirmer")
     public ResponseEntity<Map<String, String>> confirmerPaiement(@RequestParam Long reservationId) {
 

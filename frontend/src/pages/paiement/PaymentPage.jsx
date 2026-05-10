@@ -51,6 +51,7 @@ const CheckoutForm = ({ clientSecret, reservationId, montant, onSuccess }) => {
   };
 
   const cardStyle = {
+    hidePostalCode: true,
     style: {
       base: {
         color: "#32325d",
