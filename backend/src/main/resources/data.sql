@@ -37,11 +37,55 @@ VALUES
     ('Django Reinhardt', 'Jazz', 'Belgique', 'Guitariste de jazz manouche, considere comme l un des plus grands musiciens du XXe siecle.', NOW(), NOW()),
     ('Plastic Bertrand', 'Punk/Pop', 'Belgique', 'Celebre pour le tube Ca plane pour moi, icone du punk belge des annees 70.', NOW(), NOW());
 
--- ========== SPECTACLES ==========
-INSERT IGNORE INTO spectacles (title, description, date, location, price, created_at, updated_at)
+-- ========== SPECTACLES (lies aux artistes) ==========
+-- On utilise des sous-requetes pour lier chaque spectacle a son artiste
+INSERT IGNORE INTO spectacles (title, description, date, location, price, artist_id, created_at, updated_at)
 VALUES
-    ('Multitude Tour', 'La tournee evenement de Stromae - un spectacle visuel et musical exceptionnel avec ses plus grands hits.', '2026-06-15 20:00:00', 'Forest National, Bruxelles', 75.00, NOW(), NOW()),
-    ('Nonante-Cinq Tour', 'Le concert d Angele dans une atmosphere intimiste et festive avec ses meilleurs titres.', '2026-06-22 20:30:00', 'Ancienne Belgique, Bruxelles', 55.00, NOW(), NOW()),
-    ('Hommage a Brel', 'Soiree hommage au grand Jacques Brel avec orchestre symphonique et artistes invites.', '2026-07-05 19:30:00', 'Palais des Beaux-Arts, Bruxelles', 45.00, NOW(), NOW()),
-    ('Jazz Manouche Night', 'Soiree speciale jazz manouche en hommage a Django Reinhardt avec les meilleurs musiciens actuels.', '2026-07-12 21:00:00', 'Jazz Station, Saint-Josse', 30.00, NOW(), NOW()),
-    ('Festival Rock Belge', 'Une soiree rock et punk avec les classiques du rock belge, ambiance garage et energie pure.', '2026-08-01 18:00:00', 'Botanique, Bruxelles', 25.00, NOW(), NOW());
+    ('Multitude Tour', 'La tournee evenement de Stromae - un spectacle visuel et musical exceptionnel avec ses plus grands hits.', '2026-06-15 20:00:00', 'Forest National, Bruxelles', 75.00, (SELECT id FROM artists WHERE name = 'Stromae' LIMIT 1), NOW(), NOW()),
+    ('Nonante-Cinq Tour', 'Le concert d Angele dans une atmosphere intimiste et festive avec ses meilleurs titres.', '2026-06-22 20:30:00', 'Ancienne Belgique, Bruxelles', 55.00, (SELECT id FROM artists WHERE name = 'Angele' LIMIT 1), NOW(), NOW()),
+    ('Hommage a Brel', 'Soiree hommage au grand Jacques Brel avec orchestre symphonique et artistes invites.', '2026-07-05 19:30:00', 'Palais des Beaux-Arts, Bruxelles', 45.00, (SELECT id FROM artists WHERE name = 'Jacques Brel' LIMIT 1), NOW(), NOW()),
+    ('Jazz Manouche Night', 'Soiree speciale jazz manouche en hommage a Django Reinhardt avec les meilleurs musiciens actuels.', '2026-07-12 21:00:00', 'Jazz Station, Saint-Josse', 30.00, (SELECT id FROM artists WHERE name = 'Django Reinhardt' LIMIT 1), NOW(), NOW()),
+    ('Festival Rock Belge', 'Une soiree rock et punk avec les classiques du rock belge, ambiance garage et energie pure.', '2026-08-01 18:00:00', 'Botanique, Bruxelles', 25.00, (SELECT id FROM artists WHERE name = 'Plastic Bertrand' LIMIT 1), NOW(), NOW());
+
+-- ========== REPRESENTATIONS ==========
+-- Chaque spectacle a 2 representations (dates differentes, places disponibles)
+INSERT IGNORE INTO representations (date_heure, places_disponibles, spectacle_id)
+VALUES
+    ('2026-06-15 20:00:00', 200, (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1)),
+    ('2026-06-16 20:00:00', 150, (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1)),
+    ('2026-06-22 20:30:00', 120, (SELECT id FROM spectacles WHERE title = 'Nonante-Cinq Tour' LIMIT 1)),
+    ('2026-06-23 20:30:00', 100, (SELECT id FROM spectacles WHERE title = 'Nonante-Cinq Tour' LIMIT 1)),
+    ('2026-07-05 19:30:00', 300, (SELECT id FROM spectacles WHERE title = 'Hommage a Brel' LIMIT 1)),
+    ('2026-07-06 19:30:00', 250, (SELECT id FROM spectacles WHERE title = 'Hommage a Brel' LIMIT 1)),
+    ('2026-07-12 21:00:00', 80, (SELECT id FROM spectacles WHERE title = 'Jazz Manouche Night' LIMIT 1)),
+    ('2026-07-13 21:00:00', 60, (SELECT id FROM spectacles WHERE title = 'Jazz Manouche Night' LIMIT 1)),
+    ('2026-08-01 18:00:00', 500, (SELECT id FROM spectacles WHERE title = 'Festival Rock Belge' LIMIT 1)),
+    ('2026-08-02 18:00:00', 400, (SELECT id FROM spectacles WHERE title = 'Festival Rock Belge' LIMIT 1));
+
+-- ========== RESERVATIONS DE DEMO ==========
+-- 3 reservations pour l utilisateur demo (user@test.com)
+INSERT IGNORE INTO reservations (reservation_date, number_of_seats, status, representation_id, user_id, created_at, updated_at)
+VALUES
+    (NOW(), 2, 'CONFIRMED',
+     (SELECT id FROM representations WHERE spectacle_id = (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1) LIMIT 1),
+     (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1),
+     NOW(), NOW()),
+    (NOW(), 4, 'CONFIRMED',
+     (SELECT id FROM representations WHERE spectacle_id = (SELECT id FROM spectacles WHERE title = 'Hommage a Brel' LIMIT 1) LIMIT 1),
+     (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1),
+     NOW(), NOW()),
+    (NOW(), 1, 'CREATED',
+     (SELECT id FROM representations WHERE spectacle_id = (SELECT id FROM spectacles WHERE title = 'Jazz Manouche Night' LIMIT 1) LIMIT 1),
+     (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1),
+     NOW(), NOW());
+
+-- ========== PAIEMENTS DE DEMO ==========
+-- 2 paiements : 1 paye (Stromae) + 1 en attente (Brel)
+INSERT IGNORE INTO paiements (montant, methode, statut, stripe_payment_intent_id, reservation_id, date_paiement)
+VALUES
+    (150.00, 'CARD', 'PAYE', 'pi_demo_stromae_001',
+     (SELECT r.id FROM reservations r JOIN representations rep ON r.representation_id = rep.id JOIN spectacles s ON rep.spectacle_id = s.id WHERE s.title = 'Multitude Tour' LIMIT 1),
+     NOW()),
+    (180.00, 'CARD', 'PAYE', 'pi_demo_brel_001',
+     (SELECT r.id FROM reservations r JOIN representations rep ON r.representation_id = rep.id JOIN spectacles s ON rep.spectacle_id = s.id WHERE s.title = 'Hommage a Brel' LIMIT 1),
+     NOW());
