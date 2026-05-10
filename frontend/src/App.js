@@ -17,6 +17,7 @@ import ProfileEdit from './pages/profile/ProfileEdit';
 import RepresentationCreate from './pages/representations/RepresentationCreate';
 import Dashboard from './pages/admin/Dashboard';
 import PaymentPage from './pages/paiement/PaymentPage';
+import MesReservations from './pages/reservations/MesReservations';
 
 
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/spectacles/:spectacleId/representations/create" element={<RepresentationCreate />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/paiement/:reservationId" element={<PaymentPage />} />
+          <Route path="/mes-reservations" element={<MesReservations />} />
         </Routes>
         <Footer />
       </BrowserRouter>
