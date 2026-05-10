@@ -10,10 +10,10 @@
 INSERT IGNORE INTO users (email, password, nom, prenom, role, created_at)
 VALUES (
     'admin@test.com',
-    '$2a$10$7QJ8K8x1vX0cF8r8Jc9y6eJxW3G5k8L9mN2pQ3rS4tU5vW6xY7z8a',
+    '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
     'Admin',
     'Test',
-    'ADMIN',
+    'ROLE_ADMIN',
     NOW()
 );
 
@@ -21,10 +21,10 @@ VALUES (
 INSERT IGNORE INTO users (email, password, nom, prenom, role, created_at)
 VALUES (
     'user@test.com',
-    '$2a$10$7QJ8K8x1vX0cF8r8Jc9y6eJxW3G5k8L9mN2pQ3rS4tU5vW6xY7z8a',
+    '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
     'Dupont',
     'Jean',
-    'USER',
+    'ROLE_USER',
     NOW()
 );
 
