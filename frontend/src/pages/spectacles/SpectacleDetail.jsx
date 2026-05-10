@@ -162,6 +162,14 @@ const SpectacleDetail = () => {
                       <p className="info-label">Prix</p>
                       <p className="info-value">{spectacle.price} €</p>
                     </div>
+                    <div className="col-md-3">
+                      <p className="info-label">Artiste</p>
+                      <p className="info-value">
+                        {spectacle.artist
+                          ? spectacle.artist.name
+                          : "Non renseigné"}
+                      </p>
+                    </div>
                   </div>
 
                   <hr className="agency-divider" />
@@ -229,9 +237,7 @@ const SpectacleDetail = () => {
                               onClick={() => reserve(rep)}
                               disabled={rep.placesDisponibles === 0}
                               className="btn btn-primary btn-sm text-uppercase w-100 mt-2 btn-admin"
-                              
                             >
-                              
                               {rep.placesDisponibles === 0
                                 ? "Complet"
                                 : "Réserver"}
@@ -288,7 +294,6 @@ const SpectacleDetail = () => {
                             onClick={confirmReservation}
                             disabled={reserving}
                             className="btn btn-primary text-uppercase w-50 btn-admin"
-                            
                           >
                             {reserving ? (
                               <>
@@ -316,14 +321,12 @@ const SpectacleDetail = () => {
                         <Link
                           to={`/spectacles/${spectacle.id}/edit`}
                           className="btn btn-warning text-uppercase btn-admin"
-                          
                         >
                           <i className="fas fa-pen me-2"></i>Modifier
                         </Link>
                         <button
                           onClick={deleteSpectacle}
                           className="btn btn-outline-danger text-uppercase btn-admin"
-                          
                         >
                           <i className="fas fa-trash me-2"></i>Supprimer
                         </button>
