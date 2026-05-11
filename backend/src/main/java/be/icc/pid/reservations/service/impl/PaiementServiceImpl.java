@@ -28,5 +28,8 @@ public class PaiementServiceImpl implements PaiementService {
         reservation.setStatus(ReservationStatus.CONFIRMED);
 
         return paiementRepository.save(paiement);
+
     }
+
+    
 }
