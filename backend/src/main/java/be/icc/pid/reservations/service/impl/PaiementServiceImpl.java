@@ -6,6 +6,7 @@ import be.icc.pid.reservations.entity.ReservationStatus;
 import be.icc.pid.reservations.repository.PaiementRepository;
 import be.icc.pid.reservations.service.PaiementService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PaiementServiceImpl implements PaiementService {
@@ -28,5 +29,13 @@ public class PaiementServiceImpl implements PaiementService {
         reservation.setStatus(ReservationStatus.CONFIRMED);
 
         return paiementRepository.save(paiement);
+
     }
+
+    @Override
+    @Transactional
+    public void deleteByReservationId(Long reservationId) {
+        paiementRepository.deleteByReservationId(reservationId);
+    }
+
 }

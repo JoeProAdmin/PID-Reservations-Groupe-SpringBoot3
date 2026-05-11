@@ -107,6 +107,7 @@ public class ReservationServiceImpl implements ReservationService {
                         + existingReservation.getNumberOfSeats()
         );
 
+        paiementService.deleteByReservationId(id);
         representationRepository.save(representation);
 
         reservationRepository.delete(existingReservation);

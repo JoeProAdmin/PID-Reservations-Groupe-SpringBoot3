@@ -7,4 +7,6 @@ public interface PaiementService {
 
     Paiement creerPaiementPourReservation(Reservation reservation);
 
+    void deleteByReservationId(Long reservationId);
+
 }
