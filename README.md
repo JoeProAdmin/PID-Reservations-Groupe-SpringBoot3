@@ -3,119 +3,235 @@
 Projet PID Réservations - Travail de groupe  
 ICC 2025 - 2026
 
-## Groupe SpringBoot 3
+---
 
-### Membres du groupe
+# Présentation du projet
+
+Application web de réservation de spectacles développée dans le cadre du cours Projet d’Intégration Développement (PID).
+
+Le projet permet :
+
+- la gestion des spectacles
+- la gestion des artistes
+- la réservation de places
+- l’authentification sécurisée JWT
+- un dashboard administrateur
+- un système de paiement Stripe (mode test)
+
+---
+
+# Technologies utilisées
+
+## Backend
+
+- Java 17
+- Spring Boot 3
+- Spring Security
+- JWT Authentication
+- Hibernate / JPA
+- MySQL
+
+## Frontend
+
+- React
+- React Router
+- Bootstrap
+
+## Outils
+
+- GitHub
+- IntelliJ IDEA
+- Postman
+- XAMPP
+- Docker
+
+---
+
+# Membres du groupe
+
 - 6400 - QARNOUF Youssef
+- 6613 - ASSAL Hatim
 - 6368 - BENKADDOUR Redouane
 - 6451 - Abdulrahman SABBAGH
-- 6613 - ASSAL Hatim
 
-## Répartition des tâches
+---
 
-### QARNOUF Youssef
-- Développement backend Spring Boot 3
-- Gestion de la base de données MySQL
-- Authentification JWT
+# Répartition des tâches
+
+## QARNOUF Youssef — Backend & Base de données
+
+- Architecture backend Spring Boot
+- Sécurité JWT
+- Authentification / autorisation
 - Gestion des rôles
-- Stabilisation de l’architecture backend
-- Gestion des réservations
-- Intégration du flux paiement
-- Implémentation du Global Exception Handler
+- Services métier
+- Structure DTO / Repository / Service
+- Base de données MySQL
 
-### BENKADDOUR Redouane
-- Développement frontend React
+## BENKADDOUR Redouane — Frontend
+
+- Interface utilisateur React
 - Intégration API
-- Interface utilisateur
+- Navigation frontend
+- Pages de réservation
 
-### Abdulrahman SABBAGH
-- Production
+## Abdulrahman SABBAGH — Production
+
 - Déploiement
-- Infrastructure
+- Configuration infrastructure
+- Environnement Docker
 
-### ASSAL Hatim
+## ASSAL Hatim — Documentation & UX
+
 - Documentation
 - UX
-- Organisation
+- Organisation du projet
 
-## État actuel du projet
+---
 
-Le backend est stable et structuré. Les principales fonctionnalités métier sont opérationnelles.
+# Fonctionnalités
 
-### Backend
-- Spring Boot opérationnel
-- Authentification JWT fonctionnelle
-- Login / Register opérationnels
-- Gestion des rôles
-- Endpoints sécurisés
-- CORS configuré pour le frontend
-- Architecture controller / service / repository respectée
-- Global Exception Handler implémenté
+## Utilisateur
 
-### Base de données
-- MySQL / XAMPP
-- Base : `pid_reservations_group`
+- Inscription
+- Connexion sécurisée JWT
+- Consultation des spectacles
+- Réservation
+- Paiement Stripe
+- Consultation des réservations
 
-### Tables principales
-- `users`
-- `artists`
-- `spectacles`
-- `representations`
-- `reservations`
-- `paiements`
+## Administrateur
 
-## Fonctionnalités validées
-- Authentification utilisateur
-- Création et connexion utilisateur
-- CRUD backend principal
-- Liaison Spectacle / Representation / Reservation
-- Endpoint représentations par spectacle
-- Endpoint POST `/api/representations`
-- Endpoint DELETE `/api/representations`
-- Paiement déclenché avec réservation
-- Correction des enums et stabilisation JPA
-- Protection des données sensibles côté API
-- Correction login BCrypt
-- Gestion des erreurs centralisée (Exception Handler)
-- Backend stabilisé pour l’intégration frontend
+- Gestion des spectacles
+- Gestion des artistes
+- Dashboard administrateur
+- Gestion des réservations
 
-## Organisation Git
+---
 
-### Branches actuelles
-- `main`
-- `FrontEnd`
-- `hatim-assal`
-- `sabbagh`
-- `youssef-admin-backend-v2`
+# Architecture du projet
 
-### Règles
-- 1 branche par membre pour chaque nouvelle évolution
-- Travail isolé par fonctionnalité
-- Intégration via Pull Request
-- `main` contient l’état consolidé du projet
+backend/
+└── src/main/java/be/icc/pid/reservations/
+├── controller/
+├── dto/
+├── entity/
+├── repository/
+├── security/
+├── service/
+└── service/impl/
 
-## Avancement technique
+frontend/
+└── src/
+├── components/
+├── pages/
+├── context/
+└── services/
 
-### Avancement backend consolidé
-- Auth JWT validée
-- Réservations stabilisées
-- Paiement backend validé
-- SecurityConfig stabilisé
-- User flow corrigé
-- Global Exception Handler opérationnel
-- Services sécurisés (Spectacle, Reservation, Representation)
-- Backend prêt pour intégration frontend
+---
 
-## Objectif final
+# Base de données
 
-Finaliser l’intégration complète :
-- frontend
+## Système
+
+MySQL (XAMPP)
+
+## Base utilisée
+
+pid_reservations_group
+
+## Tables principales
+
+- users
+- artists
+- spectacles
+- reservations
 - paiements
-- documentation
-- déploiement
-- livrables TFE
 
-## Statut
+---
 
-Projet backend largement avancé et stable.  
-Le travail de groupe peut continuer sur une base propre et exploitable.
+# Comptes de démonstration
+
+## ADMIN
+
+Email :  
+admin@test.com
+
+Mot de passe :  
+password
+
+## USER
+
+Email :  
+user@test.com
+
+Mot de passe :  
+password
+
+---
+
+# Carte Stripe de test
+
+Numéro :  
+4242 4242 4242 4242
+
+Date :  
+12/34
+
+CVC :  
+123
+
+---
+
+# Lancement du projet
+
+## Backend
+
+```bash
+cd backend
+mvnw spring-boot:run
+```
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+---
+
+# Organisation Git
+
+## Branches
+
+- main
+- youssef-admin-backend-v2
+- FrontEnd
+- sabbagh
+- hatim-assal
+
+## Workflow
+
+- 1 branche par membre
+- Pull Request obligatoire
+- Validation collaborative
+
+---
+
+# État final du projet
+
+- Backend stable
+- Frontend intégré
+- JWT opérationnel
+- Réservations opérationnelles
+- Paiement Stripe intégré
+- Base de données fonctionnelle
+- Projet prêt pour démonstration
+
+---
+
+# Projet réalisé dans le cadre du cours PID
+
+ICC 2025 - 2026
