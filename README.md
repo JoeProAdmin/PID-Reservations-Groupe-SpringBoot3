@@ -96,7 +96,7 @@ Le projet permet :
 - Inscription
 - Connexion sécurisée JWT
 - Consultation des spectacles
-- Réservation
+- Réservation de places
 - Paiement Stripe
 - Consultation des réservations
 
@@ -111,34 +111,44 @@ Le projet permet :
 
 # Architecture du projet
 
+## Backend
+
+```text
 backend/
 └── src/main/java/be/icc/pid/reservations/
-├── controller/
-├── dto/
-├── entity/
-├── repository/
-├── security/
-├── service/
-└── service/impl/
+    ├── controller/
+    ├── dto/
+    ├── entity/
+    ├── repository/
+    ├── security/
+    ├── service/
+    └── service/impl/
+```
 
+## Frontend
+
+```text
 frontend/
 └── src/
-├── components/
-├── pages/
-├── context/
-└── services/
+    ├── components/
+    ├── pages/
+    ├── context/
+    └── services/
+```
 
 ---
 
 # Base de données
 
-## Système
+## Système utilisé
 
 MySQL (XAMPP)
 
 ## Base utilisée
 
+```text
 pid_reservations_group
+```
 
 ## Tables principales
 
@@ -154,32 +164,55 @@ pid_reservations_group
 
 ## ADMIN
 
-Email :  
-admin@test.com
+Email :
 
-Mot de passe :  
+```text
+admin@test.com
+```
+
+Mot de passe :
+
+```text
 password
+```
+
+---
 
 ## USER
 
-Email :  
-user@test.com
+Email :
 
-Mot de passe :  
+```text
+user@test.com
+```
+
+Mot de passe :
+
+```text
 password
+```
 
 ---
 
 # Carte Stripe de test
 
-Numéro :  
+Numéro :
+
+```text
 4242 4242 4242 4242
+```
 
-Date :  
+Date :
+
+```text
 12/34
+```
 
-CVC :  
+CVC :
+
+```text
 123
+```
 
 ---
 
