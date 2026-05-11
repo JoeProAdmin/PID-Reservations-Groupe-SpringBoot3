@@ -1,14 +1,17 @@
 package be.icc.pid.reservations.service.impl;
 
+import be.icc.pid.reservations.entity.Paiement;
 import be.icc.pid.reservations.entity.Reservation;
 import be.icc.pid.reservations.entity.ReservationStatus;
 import be.icc.pid.reservations.entity.Representation;
 import be.icc.pid.reservations.exception.ResourceNotFoundException;
+import be.icc.pid.reservations.repository.PaiementRepository;
 import be.icc.pid.reservations.repository.RepresentationRepository;
 import be.icc.pid.reservations.repository.ReservationRepository;
 import be.icc.pid.reservations.service.PaiementService;
 import be.icc.pid.reservations.service.ReservationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,15 +22,18 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final RepresentationRepository representationRepository;
     private final PaiementService paiementService;
+    private final PaiementRepository paiementRepository;
 
     public ReservationServiceImpl(
             ReservationRepository reservationRepository,
             RepresentationRepository representationRepository,
-            PaiementService paiementService
+            PaiementService paiementService,
+            PaiementRepository paiementRepository
     ) {
         this.reservationRepository = reservationRepository;
         this.representationRepository = representationRepository;
         this.paiementService = paiementService;
+        this.paiementRepository = paiementRepository;
     }
 
     @Override
@@ -92,6 +98,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
 
         Reservation existingReservation = reservationRepository.findById(id)
@@ -99,14 +106,19 @@ public class ReservationServiceImpl implements ReservationService {
                         "Réservation introuvable avec l'id : " + id
                 ));
 
-        Representation representation =
-                existingReservation.getRepresentation();
+        // Supprimer le paiement associe d'abord (contrainte FK @OneToOne)
+        java.util.Optional<Paiement> paiement = paiementRepository.findByReservation(existingReservation);
+        paiement.ifPresent(p -> {
+            paiementRepository.delete(p);
+            paiementRepository.flush();
+        });
 
+        // Remettre les places disponibles
+        Representation representation = existingReservation.getRepresentation();
         representation.setPlacesDisponibles(
                 representation.getPlacesDisponibles()
                         + existingReservation.getNumberOfSeats()
         );
-
         representationRepository.save(representation);
 
         reservationRepository.delete(existingReservation);
