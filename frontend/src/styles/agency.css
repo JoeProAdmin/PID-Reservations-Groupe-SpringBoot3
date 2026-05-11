@@ -277,3 +277,14 @@
     font-weight: 700;
     font-size: 0.8rem;
 }
+
+.artist-card-title {
+    font-family: Montserrat, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.card-footer-actions {
+    border-top: 1px solid #f0f0f0;
+    padding-top: 1rem;
+}
