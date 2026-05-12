@@ -63,6 +63,8 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       # Stripe (paiement)
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      # CORS (origines autorisees du frontend, separees par virgule)
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3000}
     ports:
       - "${BACKEND_PORT:-8080}:8080"
     networks:
