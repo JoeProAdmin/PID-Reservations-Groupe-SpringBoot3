@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const SpectacleList = () => {
     const [spectacles, setSpectacles] = useState([]);
+    const [searchText, setSearchText] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState('date');
@@ -33,6 +34,14 @@ const SpectacleList = () => {
             ? spectacles.filter(s => s.location === filterLocation)
             : [...spectacles];
 
+        if (searchText) {
+            result = result.filter(s =>
+                [s.title, s.location, s.artist?.name].some(v =>
+                    v?.toLowerCase().includes(searchText.toLowerCase())
+                )
+            );
+        }
+
         result.sort((a, b) => {
             let cmp = 0;
             if (sortBy === 'date') {
@@ -46,7 +55,7 @@ const SpectacleList = () => {
         });
 
         return result;
-    }, [spectacles, sortBy, sortOrder, filterLocation]);
+    }, [spectacles, sortBy, sortOrder, filterLocation, searchText]);
 
     if (loading) return <div className="text-center py-5 mt-5"><div className="spinner-border text-primary"></div></div>;
     if (error) return <div className="container mt-5 pt-5 text-center text-danger">{error}</div>;
@@ -66,14 +75,14 @@ const SpectacleList = () => {
                             {displayedSpectacles.length} spectacle{displayedSpectacles.length !== 1 ? 's' : ''}
                         </span>
                         {role === 'ROLE_ADMIN' && (
-                        <Link to="/spectacles/create" className="btn btn-primary text-uppercase btn-admin">
-                            <i className="fas fa-plus me-2"></i>Nouveau spectacle
-                        </Link>
+                            <Link to="/spectacles/create" className="btn btn-primary text-uppercase btn-admin">
+                                <i className="fas fa-plus me-2"></i>Nouveau spectacle
+                            </Link>
                         )}
                     </div>
 
                     <div className="row g-2 mb-4">
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <label className="form-label info-label mb-1">
                                 <i className="fas fa-sort me-1 text-warning"></i>Trier par
                             </label>
@@ -87,7 +96,7 @@ const SpectacleList = () => {
                                 <option value="name">Nom</option>
                             </select>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <label className="form-label info-label mb-1">
                                 <i className="fas fa-arrows-alt-v me-1 text-warning"></i>Ordre
                             </label>
@@ -100,7 +109,7 @@ const SpectacleList = () => {
                                 <option value="desc">Descendant</option>
                             </select>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-3">
                             <label className="form-label info-label mb-1">
                                 <i className="fas fa-map-marker-alt me-1 text-warning"></i>Lieu
                             </label>
@@ -114,6 +123,18 @@ const SpectacleList = () => {
                                     <option key={loc} value={loc}>{loc}</option>
                                 ))}
                             </select>
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label info-label mb-1">
+                                <i className="fas fa-search me-1 text-warning"></i>Rechercher
+                            </label>
+                            <input
+                                type="text"
+                                className="form-select"
+                                placeholder="Titre, lieu, artiste..."
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                            />
                         </div>
                     </div>
 
