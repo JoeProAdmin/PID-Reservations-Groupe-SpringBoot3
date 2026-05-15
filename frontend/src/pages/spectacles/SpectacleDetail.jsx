@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
+import Comments from "../../components/Comments";
 import API_URL from "../../config";
 
 import { useAuth } from "../../context/AuthContext";
@@ -9,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 const SpectacleDetail = () => {
   const { id } = useParams();
   const { token, role, userId } = useAuth();
+  const currentUserId = userId ? parseInt(userId) : null;
   const [representations, setRepresentations] = useState([]);
   const [cartMessage, setCartMessage] = useState(null);
   const [spectacle, setSpectacle] = useState(null);
@@ -310,6 +312,10 @@ const SpectacleDetail = () => {
                       </div>
                     </div>
                   )}
+
+                  <hr className="agency-divider" />
+                  <SectionLabel icon="comments" text="Avis des spectateurs" />
+                  <Comments spectacleId={id} />
 
                   <hr className="agency-divider" />
                   <div className="d-flex justify-content-between align-items-center">
