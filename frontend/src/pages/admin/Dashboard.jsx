@@ -14,11 +14,15 @@ const Dashboard = () => {
   const [artists, setArtists] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [paiements, setPaiements] = useState([]);
+  const [commentaires, setCommentaires] = useState([]);
+  const [pendingProducteurs, setPendingProducteurs] = useState([]);
+  const [loadingPending, setLoadingPending] = useState(true);
   const [loadingSpectacles, setLoadingSpectacles] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingArtists, setLoadingArtists] = useState(true);
   const [loadingReservations, setLoadingReservations] = useState(true);
   const [loadingPaiements, setLoadingPaiements] = useState(true);
+  const [loadingCommentaires, setLoadingCommentaires] = useState(true);
   const [activeTab, setActiveTab] = useState("spectacles");
   const [importing, setImporting] = useState(false);
   const [importMessage, setImportMessage] = useState(null);
@@ -31,10 +35,10 @@ const Dashboard = () => {
     }
     const headers = { Authorization: `Bearer ${token}` };
 
-    fetch(`${API_URL}/api/spectacles`, { headers })
+    fetch(`${API_URL}/api/spectacles?size=1000`, { headers })
       .then((res) => res.json())
       .then((data) => {
-        setSpectacles(data);
+        setSpectacles(Array.isArray(data) ? data : data.content || []);
         setLoadingSpectacles(false);
       })
       .catch(() => setLoadingSpectacles(false));
@@ -70,7 +74,106 @@ const Dashboard = () => {
         setLoadingPaiements(false);
       })
       .catch(() => setLoadingPaiements(false));
+
+    fetch(`${API_URL}/api/commentaires`, { headers })
+      .then((res) => res.json())
+      .then((data) => {
+        setCommentaires(Array.isArray(data) ? data : []);
+        setLoadingCommentaires(false);
+      })
+      .catch(() => setLoadingCommentaires(false));
+
+    fetch(`${API_URL}/api/admin/producteurs/pending`, { headers })
+      .then((res) => res.json())
+      .then((data) => {
+        setPendingProducteurs(Array.isArray(data) ? data : []);
+        setLoadingPending(false);
+      })
+      .catch(() => setLoadingPending(false));
   }, [token, role, navigate]);
+
+  // ============================
+  // PRODUCTEUR HANDLERS
+  // ============================
+  const approveProducteur = (userId) => {
+    fetch(`${API_URL}/api/admin/producteurs/${userId}/approve`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      if (res.ok) {
+        setPendingProducteurs(pendingProducteurs.filter((p) => p.id !== userId));
+        // Refresh users list aussi
+        fetch(`${API_URL}/api/users`, { headers: { Authorization: `Bearer ${token}` } })
+          .then((r) => r.json())
+          .then((data) => setUsers(data));
+      }
+    });
+  };
+
+  const rejectProducteur = (userId) => {
+    if (!window.confirm("Rejeter cette demande producteur ?")) return;
+    fetch(`${API_URL}/api/admin/producteurs/${userId}/reject`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      if (res.ok) {
+        setPendingProducteurs(pendingProducteurs.filter((p) => p.id !== userId));
+      }
+    });
+  };
+
+  const changeUserRole = (userId, newRole, currentEmail) => {
+    if (!window.confirm(`Changer le rôle de ${currentEmail} en ${newRole} ?`)) return;
+    fetch(`${API_URL}/api/users/${userId}/role`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ role: newRole }),
+    })
+      .then((res) =>
+        res.json().then((data) => ({ ok: res.ok, data }))
+      )
+      .then(({ ok, data }) => {
+        if (!ok) {
+          alert(data.message || data.error || "Erreur lors du changement de rôle");
+          return;
+        }
+        setUsers(users.map((u) => (u.id === userId ? data : u)));
+        // Si on a promu en producteur, retirer de la liste pending
+        if (newRole !== "ROLE_PRODUCTEUR_PENDING") {
+          setPendingProducteurs(pendingProducteurs.filter((p) => p.id !== userId));
+        }
+      })
+      .catch((err) => alert("Erreur réseau : " + err.message));
+  };
+
+  // ============================
+  // COMMENTAIRES HANDLERS
+  // ============================
+  const changeCommentaireStatut = (id, statut) => {
+    fetch(`${API_URL}/api/commentaires/${id}/statut`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ statut }),
+    })
+      .then((res) => res.json())
+      .then((updated) =>
+        setCommentaires(commentaires.map((c) => (c.id === id ? updated : c)))
+      );
+  };
+
+  const deleteCommentaire = (id) => {
+    if (!window.confirm(`Supprimer le commentaire #${id} ?`)) return;
+    fetch(`${API_URL}/api/commentaires/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).then(() => setCommentaires(commentaires.filter((c) => c.id !== id)));
+  };
 
   // ============================
   // DELETE HANDLERS
@@ -122,6 +225,8 @@ const Dashboard = () => {
       PAYE: { bg: "#d4edda", color: "#155724", icon: "check" },
       EN_ATTENTE: { bg: "#fff3cd", color: "#856404", icon: "hourglass-half" },
       REFUSE: { bg: "#f8d7da", color: "#721c24", icon: "ban" },
+      PUBLIE: { bg: "#d4edda", color: "#155724", icon: "eye" },
+      REJETE: { bg: "#f8d7da", color: "#721c24", icon: "eye-slash" },
     };
     const s = colors[status] || {
       bg: "#e2e3e5",
@@ -209,27 +314,35 @@ const Dashboard = () => {
     {
       name: "Role",
       cell: (row) => (
-        <span
+        <select
+          value={row.role || "ROLE_USER"}
+          onChange={(e) => changeUserRole(row.id, e.target.value, row.email)}
+          className="form-select form-select-sm"
           style={{
-            padding: "4px 10px",
-            borderRadius: "12px",
             fontSize: "0.75rem",
-            fontWeight: 700,
-            backgroundColor:
-              row.role === "ADMIN" || row.role === "ROLE_ADMIN"
-                ? "#fec810"
-                : "#e2e3e5",
-            color:
-              row.role === "ADMIN" || row.role === "ROLE_ADMIN"
-                ? "#212529"
-                : "#383d41",
             fontFamily: "Montserrat, sans-serif",
+            fontWeight: 700,
+            border: "1px solid #dee2e6",
+            backgroundColor:
+              row.role === "ROLE_ADMIN"
+                ? "#fec810"
+                : row.role === "ROLE_PRODUCTEUR"
+                ? "#cfe2ff"
+                : row.role === "ROLE_PRODUCTEUR_PENDING"
+                ? "#fff3cd"
+                : "#e2e3e5",
+            color: row.role === "ROLE_ADMIN" ? "#212529" : "#383d41",
+            cursor: "pointer",
           }}
         >
-          {row.role}
-        </span>
+          <option value="ROLE_USER">USER</option>
+          <option value="ROLE_PRODUCTEUR">PRODUCTEUR</option>
+          <option value="ROLE_PRODUCTEUR_PENDING">PRODUCTEUR (en attente)</option>
+          <option value="ROLE_ADMIN">ADMIN</option>
+        </select>
       ),
       sortable: true,
+      width: "210px",
     },
     {
       name: "Actions",
@@ -331,6 +444,100 @@ const Dashboard = () => {
         >
           <i className="fas fa-trash"></i>
         </button>
+      ),
+    },
+  ];
+
+  const commentaireColumns = [
+    {
+      name: "ID",
+      selector: (row) => `#${row.id}`,
+      sortable: true,
+      width: "70px",
+    },
+    {
+      name: "Spectacle",
+      selector: (row) => row.spectacleTitle || "—",
+      sortable: true,
+    },
+    {
+      name: "Auteur",
+      selector: (row) =>
+        `${row.userPrenom || ""} ${row.userNom || ""}`.trim() || "—",
+      sortable: true,
+    },
+    {
+      name: "Note",
+      cell: (row) => (
+        <span style={{ color: "#fec810", fontWeight: 700 }}>
+          {row.note}/5 <i className="fas fa-star ms-1"></i>
+        </span>
+      ),
+      width: "90px",
+      sortable: true,
+      selector: (row) => row.note,
+    },
+    {
+      name: "Contenu",
+      cell: (row) => (
+        <div
+          style={{
+            maxWidth: "300px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          title={row.contenu}
+        >
+          {row.contenu}
+        </div>
+      ),
+    },
+    {
+      name: "Statut",
+      cell: (row) => statusBadge(row.statut),
+      sortable: true,
+      selector: (row) => row.statut,
+      width: "120px",
+    },
+    {
+      name: "Date",
+      selector: (row) =>
+        row.createdAt ? new Date(row.createdAt).toLocaleDateString("fr-FR") : "—",
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="d-flex gap-2">
+          {row.statut === "PUBLIE" ? (
+            <button
+              onClick={() => changeCommentaireStatut(row.id, "REJETE")}
+              className="btn btn-sm btn-outline-warning"
+              style={btnStyle}
+              title="Masquer (rejeter)"
+            >
+              <i className="fas fa-eye-slash"></i>
+            </button>
+          ) : (
+            <button
+              onClick={() => changeCommentaireStatut(row.id, "PUBLIE")}
+              className="btn btn-sm btn-outline-success"
+              style={btnStyle}
+              title="Republier"
+            >
+              <i className="fas fa-eye"></i>
+            </button>
+          )}
+          <button
+            onClick={() => deleteCommentaire(row.id)}
+            className="btn btn-sm btn-outline-danger"
+            style={btnStyle}
+            title="Supprimer"
+          >
+            <i className="fas fa-trash"></i>
+          </button>
+        </div>
       ),
     },
   ];
@@ -484,6 +691,12 @@ const Dashboard = () => {
     { key: "reservations", label: "Reservations", icon: "ticket-alt" },
     { key: "paiements", label: "Paiements", icon: "credit-card" },
     { key: "users", label: "Utilisateurs", icon: "users" },
+    { key: "commentaires", label: "Commentaires", icon: "comments" },
+    {
+      key: "producteurs",
+      label: `Producteurs${pendingProducteurs.length > 0 ? ` (${pendingProducteurs.length})` : ""}`,
+      icon: "briefcase",
+    },
   ];
 
   // ============================
@@ -512,6 +725,11 @@ const Dashboard = () => {
       r.user?.nom,
       r.status,
     ].some((v) => v?.toLowerCase().includes(searchText.toLowerCase())),
+  );
+  const filteredCommentaires = commentaires.filter((c) =>
+    [c.contenu, c.spectacleTitle, c.userPrenom, c.userNom, c.statut].some(
+      (v) => v?.toLowerCase().includes(searchText.toLowerCase()),
+    ),
   );
 
   const searchBar = (
@@ -811,6 +1029,121 @@ const Dashboard = () => {
                   customStyles={customStyles}
                   noDataComponent="Aucun paiement"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* ==================== COMMENTAIRES ==================== */}
+          {activeTab === "commentaires" && (
+            <div className="agency-card">
+              <div
+                className="card-accent"
+                style={{ background: "#17a2b8" }}
+              ></div>
+              <div className="card-content">
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <SectionLabel
+                    icon="comments"
+                    text="Modération des commentaires"
+                  />
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#666",
+                      fontFamily: "Montserrat, sans-serif",
+                    }}
+                  >
+                    <i className="fas fa-eye me-1" style={{ color: "#198754" }}></i>
+                    {commentaires.filter((c) => c.statut === "PUBLIE").length} publiés /
+                    <i
+                      className="fas fa-eye-slash ms-2 me-1"
+                      style={{ color: "#dc3545" }}
+                    ></i>
+                    {commentaires.filter((c) => c.statut === "REJETE").length} rejetés
+                  </span>
+                </div>
+                <DataTable
+                  columns={commentaireColumns}
+                  data={filteredCommentaires}
+                  subHeader
+                  subHeaderComponent={searchBar}
+                  progressPending={loadingCommentaires}
+                  pagination
+                  paginationPerPage={10}
+                  customStyles={customStyles}
+                  noDataComponent="Aucun commentaire"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ==================== PRODUCTEURS ==================== */}
+          {activeTab === "producteurs" && (
+            <div className="agency-card">
+              <div
+                className="card-accent"
+                style={{ background: "#6f42c1" }}
+              ></div>
+              <div className="card-content">
+                <SectionLabel
+                  icon="briefcase"
+                  text="Demandes producteur en attente"
+                />
+                {loadingPending ? (
+                  <div className="text-center py-4">
+                    <div className="spinner-border text-primary"></div>
+                  </div>
+                ) : pendingProducteurs.length === 0 ? (
+                  <p className="info-label text-center py-4">
+                    Aucune demande en attente.
+                  </p>
+                ) : (
+                  <DataTable
+                    columns={[
+                      {
+                        name: "ID",
+                        selector: (r) => `#${r.id}`,
+                        width: "70px",
+                      },
+                      {
+                        name: "Prénom",
+                        selector: (r) => r.firstName || "—",
+                        sortable: true,
+                      },
+                      {
+                        name: "Nom",
+                        selector: (r) => r.lastName || "—",
+                        sortable: true,
+                      },
+                      { name: "Email", selector: (r) => r.email, sortable: true },
+                      {
+                        name: "Actions",
+                        cell: (r) => (
+                          <div className="d-flex gap-2">
+                            <button
+                              onClick={() => approveProducteur(r.id)}
+                              className="btn btn-sm btn-success text-uppercase"
+                              style={btnStyle}
+                            >
+                              <i className="fas fa-check me-1"></i>Approuver
+                            </button>
+                            <button
+                              onClick={() => rejectProducteur(r.id)}
+                              className="btn btn-sm btn-outline-danger text-uppercase"
+                              style={btnStyle}
+                            >
+                              <i className="fas fa-times me-1"></i>Rejeter
+                            </button>
+                          </div>
+                        ),
+                      },
+                    ]}
+                    data={pendingProducteurs}
+                    pagination
+                    paginationPerPage={10}
+                    customStyles={customStyles}
+                  />
+                )}
               </div>
             </div>
           )}
