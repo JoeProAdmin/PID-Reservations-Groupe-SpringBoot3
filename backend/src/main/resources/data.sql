@@ -4,6 +4,7 @@
 -- ============================================
 -- Idempotent : chaque INSERT est protege par WHERE NOT EXISTS
 -- (cle naturelle), donc rejouer ce script ne cree pas de doublons.
+-- Mot de passe pour TOUS les comptes seedes : "password" (BCrypt)
 
 -- ========== UTILISATEURS ==========
 -- email est deja UNIQUE en base, INSERT IGNORE suffit
@@ -19,6 +20,29 @@ VALUES (
     'user@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
     'Dupont', 'Jean', 'ROLE_USER'
+);
+
+INSERT IGNORE INTO users (email, password, nom, prenom, role)
+VALUES (
+    'sophie@test.com',
+    '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
+    'Martin', 'Sophie', 'ROLE_USER'
+);
+
+-- Producteur valide (peut creer des spectacles)
+INSERT IGNORE INTO users (email, password, nom, prenom, role)
+VALUES (
+    'producteur@test.com',
+    '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
+    'Producer', 'Pierre', 'ROLE_PRODUCTEUR'
+);
+
+-- Producteur en attente de validation admin (visible dans le dashboard admin)
+INSERT IGNORE INTO users (email, password, nom, prenom, role)
+VALUES (
+    'pending@test.com',
+    '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
+    'Attente', 'Marie', 'ROLE_PRODUCTEUR_PENDING'
 );
 
 -- ========== ARTISTES (cle naturelle : name) ==========
@@ -93,6 +117,24 @@ SELECT 'Festival Rock Belge',
        NOW(), NOW()
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM spectacles WHERE title = 'Festival Rock Belge');
 
+-- Spectacle cree par le producteur Pierre (avec producer_id)
+INSERT INTO spectacles (title, description, date, location, price, artist_id, producer_id, created_at, updated_at)
+SELECT 'Concert acoustique prive',
+       'Soiree intimiste organisee par Pierre Producteur, programme exclusif autour de la chanson belge.',
+       '2026-09-15 20:00:00', 'Theatre Marni, Bruxelles', 35.00,
+       (SELECT id FROM artists WHERE name = 'Angele' LIMIT 1),
+       (SELECT id FROM users WHERE email = 'producteur@test.com' LIMIT 1),
+       NOW(), NOW()
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM spectacles WHERE title = 'Concert acoustique prive');
+
+-- ========== ASSIGNATION PRODUCTEUR aux spectacles existants ==========
+-- Pierre devient aussi producteur de "Multitude Tour" et "Nonante-Cinq Tour"
+-- (idempotent : ne change que si producer_id est encore NULL)
+UPDATE spectacles
+SET producer_id = (SELECT id FROM users WHERE email = 'producteur@test.com' LIMIT 1)
+WHERE title IN ('Multitude Tour', 'Nonante-Cinq Tour')
+  AND producer_id IS NULL;
+
 -- ========== REPRESENTATIONS (cle naturelle : spectacle_id + date_heure) ==========
 INSERT INTO representations (date_heure, places_disponibles, spectacle_id)
 SELECT '2026-06-15 20:00:00', 200, (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1)
@@ -153,3 +195,72 @@ SELECT '2026-08-02 18:00:00', 400, (SELECT id FROM spectacles WHERE title = 'Fes
 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM representations
     WHERE spectacle_id = (SELECT id FROM spectacles WHERE title = 'Festival Rock Belge' LIMIT 1)
       AND date_heure = '2026-08-02 18:00:00');
+
+INSERT INTO representations (date_heure, places_disponibles, spectacle_id)
+SELECT '2026-09-15 20:00:00', 90, (SELECT id FROM spectacles WHERE title = 'Concert acoustique prive' LIMIT 1)
+FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM representations
+    WHERE spectacle_id = (SELECT id FROM spectacles WHERE title = 'Concert acoustique prive' LIMIT 1)
+      AND date_heure = '2026-09-15 20:00:00');
+
+-- ========== COMMENTAIRES (cle naturelle : user_id + spectacle_id, contrainte UNIQUE en base) ==========
+-- Permet de demontrer la modulation de la note moyenne et la moderation
+INSERT INTO commentaires (contenu, note, statut, user_id, spectacle_id, created_at)
+SELECT 'Quel concert incroyable ! Stromae a vraiment livre une performance exceptionnelle. La mise en scene etait magnifique.',
+       5, 'PUBLIE',
+       (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1),
+       (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1),
+       NOW()
+FROM DUAL WHERE NOT EXISTS (
+    SELECT 1 FROM commentaires
+    WHERE user_id = (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1)
+      AND spectacle_id = (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1)
+);
+
+INSERT INTO commentaires (contenu, note, statut, user_id, spectacle_id, created_at)
+SELECT 'Tres belle ambiance, salle pleine et public en feu. Je recommande sans hesiter.',
+       4, 'PUBLIE',
+       (SELECT id FROM users WHERE email = 'sophie@test.com' LIMIT 1),
+       (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1),
+       NOW()
+FROM DUAL WHERE NOT EXISTS (
+    SELECT 1 FROM commentaires
+    WHERE user_id = (SELECT id FROM users WHERE email = 'sophie@test.com' LIMIT 1)
+      AND spectacle_id = (SELECT id FROM spectacles WHERE title = 'Multitude Tour' LIMIT 1)
+);
+
+INSERT INTO commentaires (contenu, note, statut, user_id, spectacle_id, created_at)
+SELECT 'Un hommage poignant et emouvant. L orchestre symphonique etait parfait.',
+       5, 'PUBLIE',
+       (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1),
+       (SELECT id FROM spectacles WHERE title = 'Hommage a Brel' LIMIT 1),
+       NOW()
+FROM DUAL WHERE NOT EXISTS (
+    SELECT 1 FROM commentaires
+    WHERE user_id = (SELECT id FROM users WHERE email = 'user@test.com' LIMIT 1)
+      AND spectacle_id = (SELECT id FROM spectacles WHERE title = 'Hommage a Brel' LIMIT 1)
+);
+
+INSERT INTO commentaires (contenu, note, statut, user_id, spectacle_id, created_at)
+SELECT 'Bonne soiree mais le son etait un peu trop fort par moments.',
+       3, 'PUBLIE',
+       (SELECT id FROM users WHERE email = 'sophie@test.com' LIMIT 1),
+       (SELECT id FROM spectacles WHERE title = 'Jazz Manouche Night' LIMIT 1),
+       NOW()
+FROM DUAL WHERE NOT EXISTS (
+    SELECT 1 FROM commentaires
+    WHERE user_id = (SELECT id FROM users WHERE email = 'sophie@test.com' LIMIT 1)
+      AND spectacle_id = (SELECT id FROM spectacles WHERE title = 'Jazz Manouche Night' LIMIT 1)
+);
+
+-- Commentaire deja rejete par moderation (pour demontrer le statut REJETE dans le dashboard admin)
+INSERT INTO commentaires (contenu, note, statut, user_id, spectacle_id, created_at)
+SELECT 'Spam : achetez moins cher sur autresite.com',
+       1, 'REJETE',
+       (SELECT id FROM users WHERE email = 'sophie@test.com' LIMIT 1),
+       (SELECT id FROM spectacles WHERE title = 'Festival Rock Belge' LIMIT 1),
+       NOW()
+FROM DUAL WHERE NOT EXISTS (
+    SELECT 1 FROM commentaires
+    WHERE user_id = (SELECT id FROM users WHERE email = 'sophie@test.com' LIMIT 1)
+      AND spectacle_id = (SELECT id FROM spectacles WHERE title = 'Festival Rock Belge' LIMIT 1)
+);
