@@ -1,57 +1,64 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useState, useMemo } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import API_URL from "../../config";
 
-const Login = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const [searchParams] = useSearchParams();
+  const token = useMemo(() => searchParams.get("token"), [searchParams]);
+
+  const [formData, setFormData] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [success, setSuccess] = useState(null);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.id]: e.target.value });
 
   const handleSubmit = () => {
-    if (!formData.email || !formData.password) {
-      setError("Email et mot de passe obligatoires.");
+    if (!token) {
+      setError("Lien invalide : token manquant.");
       return;
     }
+    if (!formData.newPassword || !formData.confirmPassword) {
+      setError("Les deux champs sont obligatoires.");
+      return;
+    }
+    if (formData.newPassword.length < 6) {
+      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      return;
+    }
+    if (formData.newPassword !== formData.confirmPassword) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    fetch(`${API_URL}/api/auth/login`, {
+    fetch(`${API_URL}/api/auth/reset-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: formData.email.trim().toLowerCase(),
-        password: formData.password,
+        token,
+        newPassword: formData.newPassword,
       }),
     })
       .then((res) =>
-        res
-          .text()
-          .then((text) => {
-            let body;
-            try {
-              body = text ? JSON.parse(text) : {};
-            } catch {
-              body = { error: text };
-            }
-            return { ok: res.ok, body };
-          })
+        res.json().then((data) => ({ ok: res.ok, data }))
       )
-      .then(({ ok, body }) => {
+      .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(
-            body.error || body.message || "Email ou mot de passe incorrect"
-          );
+          throw new Error(data.error || "Erreur lors de la réinitialisation");
         }
-        login(body.token, body.role, body.prenom, body.nom, body.id);
-        navigate("/");
+        setSuccess(data.message || "Mot de passe réinitialisé avec succès.");
+        setLoading(false);
+        setTimeout(() => navigate("/login"), 2000);
       })
       .catch((err) => {
         setError(err.message);
@@ -62,70 +69,73 @@ const Login = () => {
   return (
     <>
       <PageHeader
-        title="Connexion"
-        subtitle="Connectez-vous à votre compte."
-        breadcrumb={[{ label: "Accueil", path: "/" }, { label: "Connexion" }]}
+        title="Nouveau mot de passe"
+        subtitle="Choisissez un nouveau mot de passe sécurisé."
+        breadcrumb={[
+          { label: "Accueil", path: "/" },
+          { label: "Réinitialisation" },
+        ]}
       />
 
       <section className="py-5 bg-light">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-5">
+              {!token && (
+                <div className="alert-error">
+                  <i className="fas fa-exclamation-circle me-2"></i>
+                  Lien invalide : aucun token fourni.
+                </div>
+              )}
               {error && (
                 <div className="alert-error">
                   <i className="fas fa-exclamation-circle me-2"></i>
                   {error}
                 </div>
               )}
+              {success && (
+                <div className="alert alert-success">
+                  <i className="fas fa-check-circle me-2"></i>
+                  {success} Redirection vers la connexion...
+                </div>
+              )}
 
               <div className="agency-card">
                 <div className="card-accent"></div>
                 <div className="card-content">
-                  <SectionLabel icon="lock" text="Identifiants" />
+                  <SectionLabel icon="key" text="Nouveau mot de passe" />
 
                   <div className="mb-3">
-                    <label className="agency-label">Email</label>
-                    <input
-                      type="email"
-                      id="email"
-                      className="form-control"
-                      placeholder="votre@email.com"
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="agency-label">Mot de passe</label>
+                    <label className="agency-label">Nouveau mot de passe</label>
                     <input
                       type="password"
-                      id="password"
+                      id="newPassword"
                       className="form-control"
                       placeholder="••••••••"
-                      value={formData.password}
+                      value={formData.newPassword}
                       onChange={handleChange}
+                      disabled={!token || success}
                     />
                   </div>
 
-                  <div className="text-end mb-2">
-                    <Link
-                      to="/forgot-password"
-                      style={{
-                        fontFamily: "Roboto Slab, serif",
-                        fontSize: "0.85rem",
-                        color: "#fec810",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Mot de passe oublié ?
-                    </Link>
+                  <div className="mb-3">
+                    <label className="agency-label">Confirmer le mot de passe</label>
+                    <input
+                      type="password"
+                      id="confirmPassword"
+                      className="form-control"
+                      placeholder="••••••••"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      disabled={!token || success}
+                    />
                   </div>
 
                   <hr className="agency-divider" />
 
                   <button
                     onClick={handleSubmit}
-                    disabled={loading}
+                    disabled={loading || !token || success}
                     className="btn btn-primary btn-xl text-uppercase w-100"
                     style={{
                       fontFamily: "Montserrat, sans-serif",
@@ -135,11 +145,12 @@ const Login = () => {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
-                        Connexion...
+                        Mise à jour...
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-sign-in-alt me-2"></i>Se connecter
+                        <i className="fas fa-check me-2"></i>
+                        Valider le nouveau mot de passe
                       </>
                     )}
                   </button>
@@ -152,12 +163,12 @@ const Login = () => {
                       color: "#6c757d",
                     }}
                   >
-                    Pas encore de compte ?{" "}
                     <Link
-                      to="/register"
+                      to="/login"
                       style={{ color: "#fec810", fontWeight: 700 }}
                     >
-                      S'inscrire
+                      <i className="fas fa-arrow-left me-1"></i>
+                      Retour à la connexion
                     </Link>
                   </p>
                 </div>
@@ -170,4 +181,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;
