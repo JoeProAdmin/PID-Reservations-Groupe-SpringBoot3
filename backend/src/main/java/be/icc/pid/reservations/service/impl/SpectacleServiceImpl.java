@@ -4,6 +4,8 @@ import be.icc.pid.reservations.entity.Spectacle;
 import be.icc.pid.reservations.exception.ResourceNotFoundException;
 import be.icc.pid.reservations.repository.SpectacleRepository;
 import be.icc.pid.reservations.service.SpectacleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +24,18 @@ public class SpectacleServiceImpl implements SpectacleService {
     @Override
     public List<Spectacle> getAllSpectacles() {
         return spectacleRepository.findAll();
+    }
+
+    @Override
+    public Page<Spectacle> getSpectaclesPaged(String search, String location, Pageable pageable) {
+        String s = (search != null && !search.isBlank()) ? search.trim() : null;
+        String loc = (location != null && !location.isBlank()) ? location.trim() : null;
+        return spectacleRepository.findFiltered(s, loc, pageable);
+    }
+
+    @Override
+    public List<String> getDistinctLocations() {
+        return spectacleRepository.findDistinctLocations();
     }
 
     @Override
