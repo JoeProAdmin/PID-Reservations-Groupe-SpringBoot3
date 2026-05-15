@@ -3,9 +3,12 @@ package be.icc.pid.reservations.service.impl;
 import be.icc.pid.reservations.entity.Reservation;
 import be.icc.pid.reservations.entity.ReservationStatus;
 import be.icc.pid.reservations.entity.Representation;
+import be.icc.pid.reservations.entity.User;
 import be.icc.pid.reservations.exception.ResourceNotFoundException;
 import be.icc.pid.reservations.repository.RepresentationRepository;
 import be.icc.pid.reservations.repository.ReservationRepository;
+import be.icc.pid.reservations.repository.UserRepository;
+import be.icc.pid.reservations.service.EmailService;
 import be.icc.pid.reservations.service.PaiementService;
 import be.icc.pid.reservations.service.ReservationService;
 import org.springframework.stereotype.Service;
@@ -18,16 +21,22 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final RepresentationRepository representationRepository;
+    private final UserRepository userRepository;
     private final PaiementService paiementService;
+    private final EmailService emailService;
 
     public ReservationServiceImpl(
             ReservationRepository reservationRepository,
             RepresentationRepository representationRepository,
-            PaiementService paiementService
+            UserRepository userRepository,
+            PaiementService paiementService,
+            EmailService emailService
     ) {
         this.reservationRepository = reservationRepository;
         this.representationRepository = representationRepository;
+        this.userRepository = userRepository;
         this.paiementService = paiementService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -52,19 +61,21 @@ public class ReservationServiceImpl implements ReservationService {
                 "Représentation introuvable"
         ));
 
-        int placesRestantes =
-                representation.getPlacesDisponibles()
-                        - reservation.getNumberOfSeats();
-
-        if (placesRestantes < 0) {
+        // On verifie juste qu'il y a assez de places, mais on ne decremente PAS
+        // (la decrementation est faite a la confirmation du paiement)
+        if (representation.getPlacesDisponibles() < reservation.getNumberOfSeats()) {
             throw new RuntimeException("Pas assez de places disponibles");
         }
 
-        representation.setPlacesDisponibles(placesRestantes);
+        reservation.setRepresentation(representation);
+        Reservation saved = reservationRepository.save(reservation);
 
-        representationRepository.save(representation);
+        if (saved.getUser() != null && saved.getUser().getId() != null) {
+            userRepository.findById(saved.getUser().getId())
+                    .ifPresent(fullUser -> emailService.sendReservationConfirmationEmail(fullUser, saved));
+        }
 
-        return reservationRepository.save(reservation);
+        return saved;
     }
 
     @Override
@@ -99,16 +110,19 @@ public class ReservationServiceImpl implements ReservationService {
                         "Réservation introuvable avec l'id : " + id
                 ));
 
-        Representation representation =
-                existingReservation.getRepresentation();
+        Representation representation = existingReservation.getRepresentation();
 
-        representation.setPlacesDisponibles(
-                representation.getPlacesDisponibles()
-                        + existingReservation.getNumberOfSeats()
-        );
+        // On ne re-libere les places que si la reservation etait CONFIRMED
+        // (donc payee). Pour les reservations non payees, les places n'ont
+        // jamais ete decrementees, inutile de les re-ajouter.
+        if (existingReservation.getStatus() == ReservationStatus.CONFIRMED && representation != null) {
+            representation.setPlacesDisponibles(
+                    representation.getPlacesDisponibles() + existingReservation.getNumberOfSeats()
+            );
+            representationRepository.save(representation);
+        }
 
         paiementService.deleteByReservationId(id);
-        representationRepository.save(representation);
 
         reservationRepository.delete(existingReservation);
     }
