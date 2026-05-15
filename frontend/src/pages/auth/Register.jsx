@@ -140,6 +140,13 @@ const Register = () => {
                                             Se connecter
                                         </Link>
                                     </p>
+                                    <p className="text-center" style={{ fontFamily: 'Roboto Slab, serif', fontSize: '0.85rem', color: '#6c757d' }}>
+                                        <i className="fas fa-briefcase me-1"></i>
+                                        Vous êtes une organisation ?{' '}
+                                        <Link to="/register-producteur" style={{ color: '#6f42c1', fontWeight: 700 }}>
+                                            Inscription producteur
+                                        </Link>
+                                    </p>
 
                                 </div>
                             </div>

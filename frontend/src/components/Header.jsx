@@ -72,6 +72,15 @@ const Header = () => {
                         </li>
                     )}
 
+                    {(role === "ROLE_PRODUCTEUR" || role === "ROLE_PRODUCTEUR_PENDING") && (
+                        <li className="nav-item">
+                          <Link className="nav-link" to="/producteur/dashboard">
+                            <i className="fas fa-briefcase me-1"></i>
+                            Espace Producteur
+                          </Link>
+                        </li>
+                    )}
+
                     <li className="nav-item">
                       <button
                           className="nav-link btn btn-link text-uppercase"

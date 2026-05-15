@@ -4,11 +4,14 @@ import be.icc.pid.reservations.entity.Paiement;
 import be.icc.pid.reservations.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PaiementRepository extends JpaRepository<Paiement, Long> {
 
     Optional<Paiement> findByReservation(Reservation reservation);
+
     void deleteByReservationId(Long reservationId);
 
+    List<Paiement> findByReservationRepresentationSpectacleProducerIdAndStatut(Long producerId, String statut);
 }
