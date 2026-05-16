@@ -15,6 +15,15 @@ const Profile = () => {
 
     const isOwnProfile = String(userId) === String(id);
 
+    const roleLabel = (role) => {
+        switch (role) {
+            case 'ROLE_ADMIN': return 'Administrateur';
+            case 'ROLE_PRODUCTEUR': return 'Producteur';
+            case 'ROLE_PRODUCTEUR_PENDING': return 'Producteur (en attente)';
+            default: return 'Utilisateur';
+        }
+    };
+
     useEffect(() => {
         fetch(`${API_URL}/api/users/${id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -34,7 +43,7 @@ const Profile = () => {
         <>
             <PageHeader
                 title={`${user.firstName} ${user.lastName}`}
-                subtitle={user.role === 'ROLE_ADMIN' ? 'Administrateur' : 'Utilisateur'}
+                subtitle={roleLabel(user.role)}
                 breadcrumb={[
                     { label: 'Accueil', path: '/' },
                     { label: `${user.firstName} ${user.lastName}` }
@@ -67,7 +76,7 @@ const Profile = () => {
                                         <div className="col-md-6">
                                             <p className="info-label">Rôle</p>
                                             <p className="info-value">
-                                                {user.role === 'ROLE_ADMIN' ? 'Administrateur' : 'Utilisateur'}
+                                                {roleLabel(user.role)}
                                             </p>
                                         </div>
                                     </div>

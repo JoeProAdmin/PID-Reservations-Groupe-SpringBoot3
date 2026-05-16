@@ -25,6 +25,7 @@ const Header = () => {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarResponsive">
+            <style>{`#mainNav .nav-link, #mainNav .nav-link.btn { white-space: nowrap; }`}</style>
             <ul className="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
               <li className="nav-item">
                 <Link
