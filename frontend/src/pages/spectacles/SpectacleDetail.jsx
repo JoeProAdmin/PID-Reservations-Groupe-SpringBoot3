@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import Comments from "../../components/Comments";
+import ShareButtons from "../../components/ShareButtons";
 import API_URL from "../../config";
 
 import { useAuth } from "../../context/AuthContext";
@@ -179,6 +180,17 @@ const SpectacleDetail = () => {
                   <p className="text-description">
                     {spectacle.description || "Aucune description disponible."}
                   </p>
+
+                  <hr className="agency-divider" />
+                  <ShareButtons
+                    title={spectacle.title}
+                    text={
+                      spectacle.description
+                        ? spectacle.description.substring(0, 140)
+                        : `Découvrez ${spectacle.title} sur PID Réservations`
+                    }
+                  />
+
                   <hr className="agency-divider" />
                   <SectionLabel
                     icon="calendar"
