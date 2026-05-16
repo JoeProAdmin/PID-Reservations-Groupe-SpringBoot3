@@ -80,16 +80,31 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà");
         }
 
+        // Verification unicite du login (si change)
+        String newLogin = dto.getLogin() != null ? dto.getLogin().trim() : null;
+        if (newLogin != null && !newLogin.isEmpty()
+                && !newLogin.equalsIgnoreCase(existingUser.getLogin())
+                && userRepository.existsByLogin(newLogin)) {
+            throw new IllegalArgumentException("Ce login est déjà utilisé");
+        }
+
         existingUser.setPrenom(dto.getFirstName());
         existingUser.setNom(dto.getLastName());
         existingUser.setEmail(normalizedEmail);
+
+        if (newLogin != null && !newLogin.isEmpty()) {
+            existingUser.setLogin(newLogin);
+        }
+        if (dto.getLanguage() != null && !dto.getLanguage().isBlank()) {
+            existingUser.setLanguage(dto.getLanguage());
+        }
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        // on garde un rôle contrôlé backend
-        existingUser.setRole("ROLE_USER");
+        // ON NE TOUCHE PAS AU ROLE depuis ce endpoint
+        // (les changements de role passent par PUT /api/users/{id}/role, reserve aux admins)
 
         User updatedUser = userRepository.save(existingUser);
 
@@ -113,6 +128,8 @@ public class UserServiceImpl implements UserService {
         dto.setLastName(user.getNom());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole());
+        dto.setLogin(user.getLogin());
+        dto.setLanguage(user.getLanguage());
         return dto;
     }
 }
