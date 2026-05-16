@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import API_URL from "../../config";
 
 const MesReservations = () => {
   const { token, userId } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,23 +31,23 @@ const MesReservations = () => {
   }, [token, userId, navigate]);
 
   const cancelReservation = (id) => {
-    if (!window.confirm("Annuler cette reservation ?")) return;
+    if (!window.confirm(t("reservations.cancelConfirm"))) return;
     fetch(`${API_URL}/api/reservations/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(() => {
         setReservations(reservations.filter((r) => r.id !== id));
-        setMessage({ type: "success", text: "Reservation annulee." });
+        setMessage({ type: "success", text: t("reservations.statusCancelled") });
       })
-      .catch(() => setMessage({ type: "error", text: "Erreur lors de l'annulation." }));
+      .catch(() => setMessage({ type: "error", text: t("common.cancel") }));
   };
 
   const statusBadge = (status) => {
     const styles = {
-      CREATED: { bg: "#fff3cd", color: "#856404", icon: "clock", label: "En attente de paiement" },
-      CONFIRMED: { bg: "#d4edda", color: "#155724", icon: "check-circle", label: "Confirmee" },
-      CANCELLED: { bg: "#f8d7da", color: "#721c24", icon: "times-circle", label: "Annulee" },
+      CREATED: { bg: "#fff3cd", color: "#856404", icon: "clock", label: t("reservations.statusCreated") },
+      CONFIRMED: { bg: "#d4edda", color: "#155724", icon: "check-circle", label: t("reservations.statusConfirmed") },
+      CANCELLED: { bg: "#f8d7da", color: "#721c24", icon: "times-circle", label: t("reservations.statusCancelled") },
     };
     const s = styles[status] || { bg: "#e2e3e5", color: "#383d41", icon: "question", label: status };
     return (
@@ -63,7 +65,7 @@ const MesReservations = () => {
   if (loading) {
     return (
       <>
-        <PageHeader title="Mes Reservations" subtitle="Chargement..." />
+        <PageHeader title={t("reservations.title")} subtitle={t("common.loading")} />
         <div className="text-center py-5"><div className="spinner-border text-primary"></div></div>
       </>
     );
@@ -72,11 +74,11 @@ const MesReservations = () => {
   return (
     <>
       <PageHeader
-        title="Mes Reservations"
-        subtitle={`${reservations.length} reservation(s)`}
+        title={t("reservations.title")}
+        subtitle={`${reservations.length} ${t("reservations.title").toLowerCase()}`}
         breadcrumb={[
-          { label: "Spectacles", path: "/" },
-          { label: "Mes Reservations" },
+          { label: t("nav.spectacles"), path: "/" },
+          { label: t("reservations.title") },
         ]}
       />
 
@@ -95,13 +97,13 @@ const MesReservations = () => {
               <div className="card-content text-center py-5">
                 <i className="fas fa-ticket-alt fa-3x mb-3" style={{ color: "#ccc" }}></i>
                 <h4 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700 }}>
-                  Aucune reservation
+                  {t("reservations.empty")}
                 </h4>
-                <p className="text-muted mb-4">Vous n'avez pas encore fait de reservation.</p>
+                <p className="text-muted mb-4">{t("reservations.empty")}</p>
                 <Link to="/" className="btn btn-primary text-uppercase" style={{
                   fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "0.85rem",
                 }}>
-                  <i className="fas fa-search me-2"></i>Voir les spectacles
+                  <i className="fas fa-search me-2"></i>{t("nav.spectacles")}
                 </Link>
               </div>
             </div>
@@ -128,7 +130,7 @@ const MesReservations = () => {
                             </h5>
                             <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>
                               <i className="fas fa-map-marker-alt me-1"></i>
-                              {spectacle?.location || "Lieu non renseigne"}
+                              {spectacle?.location || t("detail.notSet")}
                             </p>
                           </div>
                           {statusBadge(res.status)}
@@ -139,7 +141,7 @@ const MesReservations = () => {
                         {/* Infos */}
                         <div className="row g-3 mb-3">
                           <div className="col-6">
-                            <p className="info-label mb-1">Date</p>
+                            <p className="info-label mb-1">{t("reservations.date")}</p>
                             <p className="info-value" style={{ fontSize: "0.9rem" }}>
                               {rep?.dateHeure
                                 ? new Date(rep.dateHeure).toLocaleDateString("fr-FR", {
@@ -150,14 +152,14 @@ const MesReservations = () => {
                             </p>
                           </div>
                           <div className="col-3">
-                            <p className="info-label mb-1">Places</p>
+                            <p className="info-label mb-1">{t("reservations.places")}</p>
                             <p className="info-value" style={{ fontSize: "0.9rem" }}>
                               <i className="fas fa-chair me-1" style={{ color: "#fec810" }}></i>
                               {res.numberOfSeats}
                             </p>
                           </div>
                           <div className="col-3">
-                            <p className="info-label mb-1">Total</p>
+                            <p className="info-label mb-1">{t("detail.total")}</p>
                             <p className="info-value" style={{ fontSize: "1.1rem", fontWeight: 700, color: "#fec810" }}>
                               {total} €
                             </p>
@@ -172,7 +174,7 @@ const MesReservations = () => {
                               className="btn btn-outline-secondary btn-sm text-uppercase flex-fill"
                               style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "0.75rem" }}
                             >
-                              <i className="fas fa-eye me-1"></i>Voir le spectacle
+                              <i className="fas fa-eye me-1"></i>{t("spectacles.view")}
                             </Link>
                           )}
                           {res.status === "CREATED" && (
@@ -182,7 +184,7 @@ const MesReservations = () => {
                                 className="btn btn-primary btn-sm text-uppercase flex-fill"
                                 style={{ fontFamily: "Montserrat, sans-serif", fontWeight: 700, fontSize: "0.75rem" }}
                               >
-                                <i className="fas fa-credit-card me-1"></i>Payer
+                                <i className="fas fa-credit-card me-1"></i>{t("reservations.pay")}
                               </Link>
                               <button
                                 onClick={() => cancelReservation(res.id)}

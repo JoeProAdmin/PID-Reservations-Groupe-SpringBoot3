@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
 import API_URL from '../../config';
@@ -8,12 +9,60 @@ import API_URL from '../../config';
 
 const Profile = () => {
     const { id } = useParams();
-    const { token, userId } = useAuth();
+    const navigate = useNavigate();
+    const { token, userId, logout } = useAuth();
+    const { t } = useLanguage();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     const isOwnProfile = String(userId) === String(id);
+
+    const roleLabel = (role) => {
+        switch (role) {
+            case 'ROLE_ADMIN': return t('role.admin');
+            case 'ROLE_PRODUCTEUR': return t('role.producer');
+            case 'ROLE_PRODUCTEUR_PENDING': return t('role.producer') + ' (en attente)';
+            default: return t('role.user');
+        }
+    };
+
+    const handleDelete = () => {
+        const confirm1 = window.confirm(
+            "Êtes-vous sûr de vouloir supprimer votre compte ?\n\n" +
+            "Cette action est IRRÉVERSIBLE. Toutes vos données (réservations, " +
+            "commentaires, etc.) seront définitivement perdues."
+        );
+        if (!confirm1) return;
+
+        const confirm2 = window.prompt(
+            "Pour confirmer, tapez SUPPRIMER en majuscules :"
+        );
+        if (confirm2 !== "SUPPRIMER") {
+            alert("Suppression annulée.");
+            return;
+        }
+
+        setDeleting(true);
+        fetch(`${API_URL}/api/users/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(text || "Erreur lors de la suppression");
+                });
+            }
+            logout();
+            navigate('/');
+        })
+        .catch(err => {
+            alert("Erreur : " + err.message);
+            setDeleting(false);
+        });
+    };
 
     useEffect(() => {
         fetch(`${API_URL}/api/users/${id}`, {
@@ -34,7 +83,7 @@ const Profile = () => {
         <>
             <PageHeader
                 title={`${user.firstName} ${user.lastName}`}
-                subtitle={user.role === 'ROLE_ADMIN' ? 'Administrateur' : 'Utilisateur'}
+                subtitle={roleLabel(user.role)}
                 breadcrumb={[
                     { label: 'Accueil', path: '/' },
                     { label: `${user.firstName} ${user.lastName}` }
@@ -53,21 +102,21 @@ const Profile = () => {
 
                                     <div className="row g-4 mb-4">
                                         <div className="col-md-6">
-                                            <p className="info-label">Prénom</p>
+                                            <p className="info-label">{t('profile.firstName')}</p>
                                             <p className="info-value">{user.firstName}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p className="info-label">Nom</p>
+                                            <p className="info-label">{t('profile.lastName')}</p>
                                             <p className="info-value">{user.lastName}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p className="info-label">Email</p>
+                                            <p className="info-label">{t('auth.email')}</p>
                                             <p className="info-value">{user.email}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p className="info-label">Rôle</p>
+                                            <p className="info-label">{t('profile.role')}</p>
                                             <p className="info-value">
-                                                {user.role === 'ROLE_ADMIN' ? 'Administrateur' : 'Utilisateur'}
+                                                {roleLabel(user.role)}
                                             </p>
                                         </div>
                                     </div>
@@ -75,11 +124,27 @@ const Profile = () => {
                                     {isOwnProfile && (
                                         <>
                                             <hr className="agency-divider" />
-                                            <div className="d-flex justify-content-end">
+                                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                <button
+                                                    onClick={handleDelete}
+                                                    disabled={deleting}
+                                                    className="btn btn-outline-danger text-uppercase"
+                                                    style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
+                                                    {deleting ? (
+                                                        <>
+                                                            <span className="spinner-border spinner-border-sm me-2"></span>
+                                                            {t('common.delete')}...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-user-times me-2"></i>{t('profile.delete')}
+                                                        </>
+                                                    )}
+                                                </button>
                                                 <Link to={`/profile/${id}/edit`}
                                                     className="btn btn-warning text-uppercase"
                                                     style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
-                                                    <i className="fas fa-pen me-2"></i>Modifier mon profil
+                                                    <i className="fas fa-pen me-2"></i>{t('profile.edit')}
                                                 </Link>
                                             </div>
                                         </>

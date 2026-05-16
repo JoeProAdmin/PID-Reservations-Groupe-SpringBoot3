@@ -37,6 +37,11 @@ public class Spectacle {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Artist artist;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "producer_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
+    private User producer;
+
     public Long getId() {
         return id;
     }
@@ -107,5 +112,13 @@ public class Spectacle {
 
     public void setArtist(Artist artist) {
         this.artist = artist;
+    }
+
+    public User getProducer() {
+        return producer;
+    }
+
+    public void setProducer(User producer) {
+        this.producer = producer;
     }
 }

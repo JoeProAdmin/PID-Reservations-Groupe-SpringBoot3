@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import API_URL from "../../config";
@@ -8,6 +9,7 @@ import API_URL from "../../config";
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t, setLang } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -17,7 +19,7 @@ const Login = () => {
 
   const handleSubmit = () => {
     if (!formData.email || !formData.password) {
-      setError("Email et mot de passe obligatoires.");
+      setError(t("login.emailPwdRequired"));
       return;
     }
     setLoading(true);
@@ -31,15 +33,30 @@ const Login = () => {
         password: formData.password,
       }),
     })
-      .then((res) => {
-        if (!res.ok)
-          return res.text().then((text) => {
-            throw new Error(text || "Email ou mot de passe incorrect");
-          });
-        return res.json();
-      })
-      .then((data) => {
-        login(data.token, data.role, data.prenom, data.nom, data.id);
+      .then((res) =>
+        res
+          .text()
+          .then((text) => {
+            let body;
+            try {
+              body = text ? JSON.parse(text) : {};
+            } catch {
+              body = { error: text };
+            }
+            return { ok: res.ok, body };
+          })
+      )
+      .then(({ ok, body }) => {
+        if (!ok) {
+          throw new Error(
+            body.error || body.message || t("login.invalid")
+          );
+        }
+        login(body.token, body.role, body.prenom, body.nom, body.id);
+        // Synchronise la langue de l'app avec la langue du compte
+        if (body.language) {
+          setLang(body.language);
+        }
         navigate("/");
       })
       .catch((err) => {
@@ -51,9 +68,9 @@ const Login = () => {
   return (
     <>
       <PageHeader
-        title="Connexion"
-        subtitle="Connectez-vous à votre compte."
-        breadcrumb={[{ label: "Accueil", path: "/" }, { label: "Connexion" }]}
+        title={t("login.title")}
+        subtitle={t("login.subtitle")}
+        breadcrumb={[{ label: t("paySuccess.home"), path: "/" }, { label: t("login.title") }]}
       />
 
       <section className="py-5 bg-light">
@@ -70,22 +87,22 @@ const Login = () => {
               <div className="agency-card">
                 <div className="card-accent"></div>
                 <div className="card-content">
-                  <SectionLabel icon="lock" text="Identifiants" />
+                  <SectionLabel icon="lock" text={t("login.credentials")} />
 
                   <div className="mb-3">
-                    <label className="agency-label">Email</label>
+                    <label className="agency-label">{t("common.email")}</label>
                     <input
                       type="email"
                       id="email"
                       className="form-control"
-                      placeholder="votre@email.com"
+                      placeholder={t("login.emailPlaceholder")}
                       value={formData.email}
                       onChange={handleChange}
                     />
                   </div>
 
                   <div className="mb-3">
-                    <label className="agency-label">Mot de passe</label>
+                    <label className="agency-label">{t("common.password")}</label>
                     <input
                       type="password"
                       id="password"
@@ -94,6 +111,20 @@ const Login = () => {
                       value={formData.password}
                       onChange={handleChange}
                     />
+                  </div>
+
+                  <div className="text-end mb-2">
+                    <Link
+                      to="/forgot-password"
+                      style={{
+                        fontFamily: "Roboto Slab, serif",
+                        fontSize: "0.85rem",
+                        color: "#fec810",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {t("login.forgot")}
+                    </Link>
                   </div>
 
                   <hr className="agency-divider" />
@@ -110,11 +141,11 @@ const Login = () => {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
-                        Connexion...
+                        {t("login.loading")}
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-sign-in-alt me-2"></i>Se connecter
+                        <i className="fas fa-sign-in-alt me-2"></i>{t("login.submit")}
                       </>
                     )}
                   </button>
@@ -127,12 +158,12 @@ const Login = () => {
                       color: "#6c757d",
                     }}
                   >
-                    Pas encore de compte ?{" "}
+                    {t("login.noAccount")}{" "}
                     <Link
                       to="/register"
                       style={{ color: "#fec810", fontWeight: 700 }}
                     >
-                      S'inscrire
+                      {t("login.signUp")}
                     </Link>
                   </p>
                 </div>

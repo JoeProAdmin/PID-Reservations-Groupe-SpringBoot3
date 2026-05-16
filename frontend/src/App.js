@@ -7,7 +7,14 @@ import ArtistEdit from "./pages/artists/ArtistEdit";
 import Header from "./components/Header";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import RegisterProducteur from "./pages/auth/RegisterProducteur";
+import ProducteurDashboard from "./pages/producteur/ProducteurDashboard";
+import MentionsLegales from "./pages/legal/MentionsLegales";
+import CookieBanner from "./components/CookieBanner";
 import { AuthProvider } from "./context/AuthContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import SpectacleList from "./pages/spectacles/SpectacleList.jsx";
 import SpectacleDetail from "./pages/spectacles/SpectacleDetail.jsx";
 import SpectacleCreate from "./pages/spectacles/SpectacleCreate.jsx";
@@ -17,10 +24,13 @@ import ProfileEdit from "./pages/profile/ProfileEdit";
 import RepresentationCreate from "./pages/representations/RepresentationCreate";
 import Dashboard from "./pages/admin/Dashboard";
 import PaymentPage from "./pages/paiement/PaymentPage";
+import PaymentSuccess from "./pages/paiement/PaymentSuccess";
+import PaymentCancel from "./pages/paiement/PaymentCancel";
 import MesReservations from "./pages/reservations/MesReservations";
 
 function App() {
     return (
+        <LanguageProvider>
         <AuthProvider>
             <BrowserRouter>
                 <Header />
@@ -42,6 +52,11 @@ function App() {
 
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/register-producteur" element={<RegisterProducteur />} />
+                    <Route path="/producteur/dashboard" element={<ProducteurDashboard />} />
+                    <Route path="/mentions-legales" element={<MentionsLegales />} />
 
                     <Route
                         path="/spectacles/:spectacleId/representations/create"
@@ -50,6 +65,8 @@ function App() {
 
                     <Route path="/admin/dashboard" element={<Dashboard />} />
 
+                    <Route path="/paiement/success" element={<PaymentSuccess />} />
+                    <Route path="/paiement/cancel" element={<PaymentCancel />} />
                     <Route
                         path="/paiement/:reservationId"
                         element={<PaymentPage />}
@@ -62,8 +79,10 @@ function App() {
                 </Routes>
 
                 <Footer />
+                <CookieBanner />
             </BrowserRouter>
         </AuthProvider>
+        </LanguageProvider>
     );
 }
 

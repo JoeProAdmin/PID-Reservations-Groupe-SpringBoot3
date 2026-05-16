@@ -20,6 +20,12 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(unique = true, length = 50)
+    private String login;
+
+    @Column(length = 5)
+    private String language;
+
     @JsonIgnore
     @Column(nullable = false)
     private String password;
@@ -85,5 +91,21 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

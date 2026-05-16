@@ -1,6 +1,8 @@
 package be.icc.pid.reservations.service;
 
 import be.icc.pid.reservations.entity.Spectacle;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +10,10 @@ import java.util.Optional;
 public interface SpectacleService {
 
     List<Spectacle> getAllSpectacles();
+
+    Page<Spectacle> getSpectaclesPaged(String search, String location, Pageable pageable);
+
+    List<String> getDistinctLocations();
 
     Optional<Spectacle> getSpectacleById(Long id);
 

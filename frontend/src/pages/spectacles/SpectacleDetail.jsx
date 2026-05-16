@@ -2,13 +2,18 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
+import Comments from "../../components/Comments";
+import ShareButtons from "../../components/ShareButtons";
 import API_URL from "../../config";
 
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 
 const SpectacleDetail = () => {
   const { id } = useParams();
   const { token, role, userId } = useAuth();
+  const { t } = useLanguage();
+  const currentUserId = userId ? parseInt(userId) : null;
   const [representations, setRepresentations] = useState([]);
   const [cartMessage, setCartMessage] = useState(null);
   const [spectacle, setSpectacle] = useState(null);
@@ -40,7 +45,7 @@ const SpectacleDetail = () => {
   }, [id]);
 
   const deleteSpectacle = () => {
-    if (window.confirm(`Supprimer "${spectacle.title}" ?`)) {
+    if (window.confirm(`${t("common.delete")} "${spectacle.title}" ?`)) {
       fetch(`${API_URL}/api/spectacles/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -61,7 +66,7 @@ const SpectacleDetail = () => {
 
   const reserve = (representation) => {
     if (!token) {
-      setCartMessage({ type: "error", text: "Connectez-vous pour réserver !" });
+      setCartMessage({ type: "error", text: t("detail.connectToBook") });
       return;
     }
     setSelectedRep(representation);
@@ -69,7 +74,7 @@ const SpectacleDetail = () => {
 
   const confirmReservation = () => {
     if (numberOfSeats < 1 || numberOfSeats > selectedRep.placesDisponibles) {
-      setCartMessage({ type: "error", text: "Nombre de places invalide." });
+      setCartMessage({ type: "error", text: t("detail.invalidPlaces") });
       return;
     }
     setReserving(true);
@@ -110,7 +115,7 @@ const SpectacleDetail = () => {
         title={spectacle.title}
         subtitle={spectacle.location}
         breadcrumb={[
-          { label: "Spectacles", path: "/" },
+          { label: t("nav.spectacles"), path: "/" },
           { label: spectacle.title },
         ]}
       />
@@ -136,14 +141,14 @@ const SpectacleDetail = () => {
                       {cartMessage.text}
                     </div>
                   )}
-                  <SectionLabel icon="theater-masks" text="Informations" />
+                  <SectionLabel icon="theater-masks" text={t("detail.info")} />
                   <div className="row g-4 mb-4">
                     <div className="col-md-3">
-                      <p className="info-label">Titre</p>
+                      <p className="info-label">{t("detail.title")}</p>
                       <p className="info-value">{spectacle.title}</p>
                     </div>
                     <div className="col-md-3">
-                      <p className="info-label">Date</p>
+                      <p className="info-label">{t("detail.date")}</p>
                       <p className="info-value">
                         {new Date(spectacle.date).toLocaleDateString("fr-FR", {
                           day: "numeric",
@@ -153,34 +158,45 @@ const SpectacleDetail = () => {
                       </p>
                     </div>
                     <div className="col-md-3">
-                      <p className="info-label">Lieu</p>
+                      <p className="info-label">{t("detail.location")}</p>
                       <p className="info-value">
-                        {spectacle.location || "Non renseigné"}
+                        {spectacle.location || t("detail.notSet")}
                       </p>
                     </div>
                     <div className="col-md-3">
-                      <p className="info-label">Prix</p>
+                      <p className="info-label">{t("detail.price")}</p>
                       <p className="info-value">{spectacle.price} €</p>
                     </div>
                     <div className="col-md-3">
-                      <p className="info-label">Artiste</p>
+                      <p className="info-label">{t("detail.artist")}</p>
                       <p className="info-value">
                         {spectacle.artist
                           ? spectacle.artist.name
-                          : "Non renseigné"}
+                          : t("detail.notSet")}
                       </p>
                     </div>
                   </div>
 
                   <hr className="agency-divider" />
-                  <SectionLabel icon="file-alt" text="Description" />
+                  <SectionLabel icon="file-alt" text={t("detail.description")} />
                   <p className="text-description">
-                    {spectacle.description || "Aucune description disponible."}
+                    {spectacle.description || t("detail.noDescription")}
                   </p>
+
+                  <hr className="agency-divider" />
+                  <ShareButtons
+                    title={spectacle.title}
+                    text={
+                      spectacle.description
+                        ? spectacle.description.substring(0, 140)
+                        : `Découvrez ${spectacle.title} sur PID Réservations`
+                    }
+                  />
+
                   <hr className="agency-divider" />
                   <SectionLabel
                     icon="calendar"
-                    text="Représentations disponibles"
+                    text={t("detail.representations")}
                   />
                   {role === "ROLE_ADMIN" && (
                     <div className="mb-3 d-flex justify-content-end">
@@ -188,21 +204,20 @@ const SpectacleDetail = () => {
                         to={`/spectacles/${id}/representations/create`}
                         className="btn btn-primary btn-sm text-uppercase btn-admin"
                       >
-                        <i className="fas fa-plus me-2"></i>Ajouter une
-                        représentation
+                        <i className="fas fa-plus me-2"></i>{t("detail.addRepresentation")}
                       </Link>
                     </div>
                   )}
                   {representations.length === 0 ? (
                     <p className="info-label">
-                      Aucune représentation disponible.
+                      {t("detail.noRepresentations")}
                     </p>
                   ) : (
                     <div className="row g-3">
                       {representations.map((rep) => (
                         <div className="col-md-6" key={rep.id}>
                           <div className="rep-card">
-                            <p className="info-label">Date et heure</p>
+                            <p className="info-label">{t("detail.dateTime")}</p>
                             <p className="info-value">
                               {new Date(rep.dateHeure).toLocaleDateString(
                                 "fr-FR",
@@ -216,7 +231,7 @@ const SpectacleDetail = () => {
                               )}
                             </p>
                             <p className="info-label mt-2">
-                              Places disponibles
+                              {t("detail.placesAvailable")}
                             </p>
                             <p className="info-value">
                               <span
@@ -229,8 +244,8 @@ const SpectacleDetail = () => {
                                 }
                               >
                                 {rep.placesDisponibles > 0
-                                  ? `${rep.placesDisponibles} places`
-                                  : "Complet"}
+                                  ? `${rep.placesDisponibles} ${t("detail.places")}`
+                                  : t("detail.full")}
                               </span>
                             </p>
                             <button
@@ -239,8 +254,8 @@ const SpectacleDetail = () => {
                               className="btn btn-primary btn-sm text-uppercase w-100 mt-2 btn-admin"
                             >
                               {rep.placesDisponibles === 0
-                                ? "Complet"
-                                : "Réserver"}
+                                ? t("detail.full")
+                                : t("detail.book")}
                             </button>
                           </div>
                         </div>
@@ -251,11 +266,11 @@ const SpectacleDetail = () => {
                     <div className="modal-overlay">
                       <div className="modal-box">
                         <h5 className="modal-title">
-                          Confirmer la réservation
+                          {t("detail.confirmBooking")}
                         </h5>
-                        <p className="info-label">Spectacle</p>
+                        <p className="info-label">{t("payment.spectacle")}</p>
                         <p className="info-value mb-3">{spectacle.title}</p>
-                        <p className="info-label">Date</p>
+                        <p className="info-label">{t("detail.date")}</p>
                         <p className="info-value mb-3">
                           {new Date(selectedRep.dateHeure).toLocaleDateString(
                             "fr-FR",
@@ -268,7 +283,7 @@ const SpectacleDetail = () => {
                             },
                           )}
                         </p>
-                        <p className="info-label">Nombre de places</p>
+                        <p className="info-label">{t("detail.numPlaces")}</p>
                         <input
                           type="number"
                           className="form-control mb-3"
@@ -279,7 +294,7 @@ const SpectacleDetail = () => {
                             setNumberOfSeats(parseInt(e.target.value))
                           }
                         />
-                        <p className="info-label">Total</p>
+                        <p className="info-label">{t("detail.total")}</p>
                         <p className="info-value total-price mb-4">
                           {(numberOfSeats * spectacle.price).toFixed(2)} €
                         </p>
@@ -288,7 +303,7 @@ const SpectacleDetail = () => {
                             onClick={() => setSelectedRep(null)}
                             className="btn-cancel w-50 text-center"
                           >
-                            Annuler
+                            {t("common.cancel")}
                           </button>
                           <button
                             onClick={confirmReservation}
@@ -298,11 +313,11 @@ const SpectacleDetail = () => {
                             {reserving ? (
                               <>
                                 <span className="spinner-border spinner-border-sm me-2"></span>
-                                Réservation...
+                                {t("detail.booking")}
                               </>
                             ) : (
                               <>
-                                <i className="fas fa-check me-2"></i>Confirmer
+                                <i className="fas fa-check me-2"></i>{t("detail.confirm")}
                               </>
                             )}
                           </button>
@@ -312,9 +327,13 @@ const SpectacleDetail = () => {
                   )}
 
                   <hr className="agency-divider" />
+                  <SectionLabel icon="comments" text={t("detail.spectatorReviews")} />
+                  <Comments spectacleId={id} />
+
+                  <hr className="agency-divider" />
                   <div className="d-flex justify-content-between align-items-center">
                     <Link to="/" className="btn-cancel">
-                      <i className="fas fa-arrow-left me-2"></i>Retour
+                      <i className="fas fa-arrow-left me-2"></i>{t("common.back")}
                     </Link>
                     {role === "ROLE_ADMIN" && (
                       <div className="d-flex gap-2">
@@ -322,13 +341,13 @@ const SpectacleDetail = () => {
                           to={`/spectacles/${spectacle.id}/edit`}
                           className="btn btn-warning text-uppercase btn-admin"
                         >
-                          <i className="fas fa-pen me-2"></i>Modifier
+                          <i className="fas fa-pen me-2"></i>{t("detail.modify")}
                         </Link>
                         <button
                           onClick={deleteSpectacle}
                           className="btn btn-outline-danger text-uppercase btn-admin"
                         >
-                          <i className="fas fa-trash me-2"></i>Supprimer
+                          <i className="fas fa-trash me-2"></i>{t("common.delete")}
                         </button>
                       </div>
                     )}
