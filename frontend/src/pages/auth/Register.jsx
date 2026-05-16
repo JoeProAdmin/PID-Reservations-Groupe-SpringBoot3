@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
+import { useLanguage } from '../../context/LanguageContext';
 import API_URL from '../../config';
 
 // Pattern mot de passe : min 6 caracteres, au moins une majuscule, au moins un caractere special
@@ -16,6 +17,7 @@ const LANGUAGES = [
 
 const Register = () => {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [submitError, setSubmitError] = useState(null);
 
@@ -50,36 +52,36 @@ const Register = () => {
         if (login === '') {
             setValidation((v) => ({ ...v, login: { valid: null, message: '', checking: false } }));
         } else if (login.length < 3) {
-            setValidation((v) => ({ ...v, login: { valid: false, message: 'Au moins 3 caractères', checking: false } }));
+            setValidation((v) => ({ ...v, login: { valid: false, message: t("valid.minChars"), checking: false } }));
         }
-    }, [formData.login]);
+    }, [formData.login, t]);
 
     useEffect(() => {
         const pwd = formData.password;
         if (pwd === '') {
             setValidation((v) => ({ ...v, password: { valid: null, message: '' } }));
         } else if (pwd.length < 6) {
-            setValidation((v) => ({ ...v, password: { valid: false, message: 'Au moins 6 caractères' } }));
+            setValidation((v) => ({ ...v, password: { valid: false, message: t("valid.passwordMin") } }));
         } else if (!/[A-Z]/.test(pwd)) {
-            setValidation((v) => ({ ...v, password: { valid: false, message: 'Au moins une majuscule' } }));
+            setValidation((v) => ({ ...v, password: { valid: false, message: t("valid.passwordUpper") } }));
         } else if (!/[!@#$%^&*()_+\-={}\[\]:;"'<>,.?/\\|`~]/.test(pwd)) {
-            setValidation((v) => ({ ...v, password: { valid: false, message: 'Au moins un caractère spécial' } }));
+            setValidation((v) => ({ ...v, password: { valid: false, message: t("valid.passwordSpecial") } }));
         } else if (!PASSWORD_PATTERN.test(pwd)) {
-            setValidation((v) => ({ ...v, password: { valid: false, message: 'Format invalide' } }));
+            setValidation((v) => ({ ...v, password: { valid: false, message: t("valid.passwordSpecial") } }));
         } else {
-            setValidation((v) => ({ ...v, password: { valid: true, message: 'Mot de passe valide' } }));
+            setValidation((v) => ({ ...v, password: { valid: true, message: t("valid.passwordValid") } }));
         }
-    }, [formData.password]);
+    }, [formData.password, t]);
 
     useEffect(() => {
         if (formData.confirmPassword === '') {
             setValidation((v) => ({ ...v, confirmPassword: { valid: null, message: '' } }));
         } else if (formData.confirmPassword !== formData.password) {
-            setValidation((v) => ({ ...v, confirmPassword: { valid: false, message: 'Les mots de passe ne correspondent pas' } }));
+            setValidation((v) => ({ ...v, confirmPassword: { valid: false, message: t("valid.passwordsNoMatch") } }));
         } else {
-            setValidation((v) => ({ ...v, confirmPassword: { valid: true, message: 'Les mots de passe correspondent' } }));
+            setValidation((v) => ({ ...v, confirmPassword: { valid: true, message: t("valid.passwordsMatch") } }));
         }
-    }, [formData.confirmPassword, formData.password]);
+    }, [formData.confirmPassword, formData.password, t]);
 
     useEffect(() => {
         setValidation((v) => ({
@@ -113,13 +115,13 @@ const Register = () => {
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.available) {
-                        setValidation((v) => ({ ...v, login: { valid: true, message: 'Login disponible', checking: false } }));
+                        setValidation((v) => ({ ...v, login: { valid: true, message: t("valid.loginAvailable"), checking: false } }));
                     } else {
-                        setValidation((v) => ({ ...v, login: { valid: false, message: 'Login déjà pris', checking: false } }));
+                        setValidation((v) => ({ ...v, login: { valid: false, message: t("valid.loginTaken"), checking: false } }));
                     }
                 })
                 .catch(() => {
-                    setValidation((v) => ({ ...v, login: { valid: null, message: 'Vérification impossible', checking: false } }));
+                    setValidation((v) => ({ ...v, login: { valid: null, message: t("valid.checkImpossible"), checking: false } }));
                 });
         }, 500);
 
@@ -134,7 +136,7 @@ const Register = () => {
             return;
         }
         if (!EMAIL_PATTERN.test(email)) {
-            setValidation((v) => ({ ...v, email: { valid: false, message: 'Format email invalide', checking: false } }));
+            setValidation((v) => ({ ...v, email: { valid: false, message: t("valid.emailFormat"), checking: false } }));
             return;
         }
 
@@ -145,13 +147,13 @@ const Register = () => {
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.available) {
-                        setValidation((v) => ({ ...v, email: { valid: true, message: 'Email disponible', checking: false } }));
+                        setValidation((v) => ({ ...v, email: { valid: true, message: t("valid.emailAvailable"), checking: false } }));
                     } else {
-                        setValidation((v) => ({ ...v, email: { valid: false, message: 'Email déjà utilisé', checking: false } }));
+                        setValidation((v) => ({ ...v, email: { valid: false, message: t("valid.emailTaken"), checking: false } }));
                     }
                 })
                 .catch(() => {
-                    setValidation((v) => ({ ...v, email: { valid: null, message: 'Vérification impossible', checking: false } }));
+                    setValidation((v) => ({ ...v, email: { valid: null, message: t("valid.checkImpossible"), checking: false } }));
                 });
         }, 500);
 
@@ -209,7 +211,7 @@ const Register = () => {
             return (
                 <small style={{ color: '#6c757d', fontSize: '0.8rem' }}>
                     <span className="spinner-border spinner-border-sm me-1" style={{ width: '0.8rem', height: '0.8rem' }}></span>
-                    Vérification...
+                    {t("valid.checking")}
                 </small>
             );
         }
@@ -239,11 +241,11 @@ const Register = () => {
     return (
         <>
             <PageHeader
-                title="Inscription"
-                subtitle="Créez votre compte."
+                title={t("register.title")}
+                subtitle={t("register.subtitle")}
                 breadcrumb={[
-                    { label: 'Accueil', path: '/' },
-                    { label: 'Inscription' }
+                    { label: t("paySuccess.home"), path: '/' },
+                    { label: t("register.title") }
                 ]}
             />
 
@@ -262,16 +264,16 @@ const Register = () => {
                                 <div className="card-accent"></div>
                                 <div className="card-content">
 
-                                    <SectionLabel icon="user-plus" text="Identifiants" />
+                                    <SectionLabel icon="user-plus" text={t("register.credentials")} />
 
                                     <div className="row g-3 mb-3">
                                         <div className="col-md-6">
-                                            <label className="agency-label">Login *</label>
+                                            <label className="agency-label">{t("register.login")} *</label>
                                             <input
                                                 type="text"
                                                 id="login"
                                                 className="form-control"
-                                                placeholder="ex: jean.dupont"
+                                                placeholder={t("register.loginPlaceholder")}
                                                 value={formData.login}
                                                 onChange={handleChange}
                                                 style={{ borderColor: inputBorderColor(validation.login) }}
@@ -279,12 +281,12 @@ const Register = () => {
                                             <FieldFeedback state={validation.login} />
                                         </div>
                                         <div className="col-md-6">
-                                            <label className="agency-label">Email *</label>
+                                            <label className="agency-label">{t("register.email")} *</label>
                                             <input
                                                 type="email"
                                                 id="email"
                                                 className="form-control"
-                                                placeholder="votre@email.com"
+                                                placeholder={t("register.emailPlaceholder")}
                                                 value={formData.email}
                                                 onChange={handleChange}
                                                 style={{ borderColor: inputBorderColor(validation.email) }}
@@ -294,11 +296,11 @@ const Register = () => {
                                     </div>
 
                                     <hr className="agency-divider" />
-                                    <SectionLabel icon="user" text="Informations personnelles" />
+                                    <SectionLabel icon="user" text={t("register.personal")} />
 
                                     <div className="row g-3 mb-3">
                                         <div className="col-md-6">
-                                            <label className="agency-label">Prénom *</label>
+                                            <label className="agency-label">{t("register.firstName")} *</label>
                                             <input
                                                 type="text"
                                                 id="firstName"
@@ -310,7 +312,7 @@ const Register = () => {
                                             />
                                         </div>
                                         <div className="col-md-6">
-                                            <label className="agency-label">Nom *</label>
+                                            <label className="agency-label">{t("register.lastName")} *</label>
                                             <input
                                                 type="text"
                                                 id="lastName"
@@ -324,7 +326,7 @@ const Register = () => {
                                     </div>
 
                                     <div className="mb-3">
-                                        <label className="agency-label">Langue *</label>
+                                        <label className="agency-label">{t("register.language")} *</label>
                                         <select
                                             id="language"
                                             className="form-select"
@@ -338,10 +340,10 @@ const Register = () => {
                                     </div>
 
                                     <hr className="agency-divider" />
-                                    <SectionLabel icon="lock" text="Sécurité" />
+                                    <SectionLabel icon="lock" text={t("register.security")} />
 
                                     <div className="mb-3">
-                                        <label className="agency-label">Mot de passe *</label>
+                                        <label className="agency-label">{t("register.password")} *</label>
                                         <input
                                             type="password"
                                             id="password"
@@ -353,12 +355,12 @@ const Register = () => {
                                         />
                                         <FieldFeedback state={validation.password} />
                                         <small className="d-block text-muted mt-1" style={{ fontSize: '0.75rem' }}>
-                                            Min 6 caractères, au moins une majuscule et un caractère spécial
+                                            {t("register.passwordHint")}
                                         </small>
                                     </div>
 
                                     <div className="mb-3">
-                                        <label className="agency-label">Confirmer le mot de passe *</label>
+                                        <label className="agency-label">{t("register.passwordConfirm")} *</label>
                                         <input
                                             type="password"
                                             id="confirmPassword"
@@ -383,29 +385,29 @@ const Register = () => {
                                             cursor: allValid ? 'pointer' : 'not-allowed',
                                         }}>
                                         {loading
-                                            ? <><span className="spinner-border spinner-border-sm me-2"></span>Inscription...</>
-                                            : <><i className="fas fa-user-plus me-2"></i>S'inscrire</>
+                                            ? <><span className="spinner-border spinner-border-sm me-2"></span>{t("register.loading")}</>
+                                            : <><i className="fas fa-user-plus me-2"></i>{t("register.submit")}</>
                                         }
                                     </button>
 
                                     {!allValid && (
                                         <p className="text-center mt-2" style={{ fontSize: '0.8rem', color: '#6c757d' }}>
                                             <i className="fas fa-info-circle me-1"></i>
-                                            Tous les champs doivent être valides pour activer le bouton
+                                            {t("valid.allFieldsRequired")}
                                         </p>
                                     )}
 
                                     <p className="text-center mt-3" style={{ fontFamily: 'Roboto Slab, serif', fontSize: '0.9rem', color: '#6c757d' }}>
-                                        Déjà un compte ?{' '}
+                                        {t("register.hasAccount")}{' '}
                                         <Link to="/login" style={{ color: '#fec810', fontWeight: 700 }}>
-                                            Se connecter
+                                            {t("register.signIn")}
                                         </Link>
                                     </p>
                                     <p className="text-center" style={{ fontFamily: 'Roboto Slab, serif', fontSize: '0.85rem', color: '#6c757d' }}>
                                         <i className="fas fa-briefcase me-1"></i>
-                                        Vous êtes une organisation ?{' '}
+                                        {t("register.organization")}{' '}
                                         <Link to="/register-producteur" style={{ color: '#6f42c1', fontWeight: 700 }}>
-                                            Inscription producteur
+                                            {t("register.producerSignup")}
                                         </Link>
                                     </p>
 
