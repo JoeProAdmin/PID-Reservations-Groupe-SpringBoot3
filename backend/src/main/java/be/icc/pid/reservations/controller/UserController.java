@@ -63,7 +63,23 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, Authentication auth) {
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
+            throw new AccessDeniedException("Authentification requise");
+        }
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_ADMIN"::equals);
+
+        boolean isOwner = userRepository.findById(id)
+                .map(u -> u.getEmail().equalsIgnoreCase(auth.getName()))
+                .orElse(false);
+
+        if (!isAdmin && !isOwner) {
+            throw new AccessDeniedException("Vous ne pouvez supprimer que votre propre compte");
+        }
+
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

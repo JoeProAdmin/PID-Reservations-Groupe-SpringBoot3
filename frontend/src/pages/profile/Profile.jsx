@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
@@ -8,10 +8,12 @@ import API_URL from '../../config';
 
 const Profile = () => {
     const { id } = useParams();
-    const { token, userId } = useAuth();
+    const navigate = useNavigate();
+    const { token, userId, logout } = useAuth();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     const isOwnProfile = String(userId) === String(id);
 
@@ -22,6 +24,42 @@ const Profile = () => {
             case 'ROLE_PRODUCTEUR_PENDING': return 'Producteur (en attente)';
             default: return 'Utilisateur';
         }
+    };
+
+    const handleDelete = () => {
+        const confirm1 = window.confirm(
+            "Êtes-vous sûr de vouloir supprimer votre compte ?\n\n" +
+            "Cette action est IRRÉVERSIBLE. Toutes vos données (réservations, " +
+            "commentaires, etc.) seront définitivement perdues."
+        );
+        if (!confirm1) return;
+
+        const confirm2 = window.prompt(
+            "Pour confirmer, tapez SUPPRIMER en majuscules :"
+        );
+        if (confirm2 !== "SUPPRIMER") {
+            alert("Suppression annulée.");
+            return;
+        }
+
+        setDeleting(true);
+        fetch(`${API_URL}/api/users/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => {
+                    throw new Error(text || "Erreur lors de la suppression");
+                });
+            }
+            logout();
+            navigate('/');
+        })
+        .catch(err => {
+            alert("Erreur : " + err.message);
+            setDeleting(false);
+        });
     };
 
     useEffect(() => {
@@ -84,7 +122,23 @@ const Profile = () => {
                                     {isOwnProfile && (
                                         <>
                                             <hr className="agency-divider" />
-                                            <div className="d-flex justify-content-end">
+                                            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                                <button
+                                                    onClick={handleDelete}
+                                                    disabled={deleting}
+                                                    className="btn btn-outline-danger text-uppercase"
+                                                    style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
+                                                    {deleting ? (
+                                                        <>
+                                                            <span className="spinner-border spinner-border-sm me-2"></span>
+                                                            Suppression...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-user-times me-2"></i>Supprimer mon compte
+                                                        </>
+                                                    )}
+                                                </button>
                                                 <Link to={`/profile/${id}/edit`}
                                                     className="btn btn-warning text-uppercase"
                                                     style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
