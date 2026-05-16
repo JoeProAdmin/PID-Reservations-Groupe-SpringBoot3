@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
+import { useLanguage } from "../../context/LanguageContext";
 import API_URL from "../../config";
 
 const ForgotPassword = () => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
@@ -12,7 +14,7 @@ const ForgotPassword = () => {
 
   const handleSubmit = () => {
     if (!email) {
-      setError("Veuillez saisir votre email.");
+      setError(t("forgot.emailRequired"));
       return;
     }
     setLoading(true);
@@ -27,16 +29,13 @@ const ForgotPassword = () => {
       .then((res) => {
         if (!res.ok) {
           return res.text().then((text) => {
-            throw new Error(text || "Erreur lors de la demande");
+            throw new Error(text || t("forgot.success"));
           });
         }
         return res.json();
       })
       .then((data) => {
-        setMessage(
-          data.message ||
-            "Si cette adresse est connue, un email de réinitialisation a été envoyé."
-        );
+        setMessage(data.message || t("forgot.success"));
         setLoading(false);
       })
       .catch((err) => {
@@ -48,11 +47,11 @@ const ForgotPassword = () => {
   return (
     <>
       <PageHeader
-        title="Mot de passe oublié"
-        subtitle="Recevez un lien de réinitialisation par email."
+        title={t("forgot.title")}
+        subtitle={t("forgot.subtitle")}
         breadcrumb={[
-          { label: "Accueil", path: "/" },
-          { label: "Mot de passe oublié" },
+          { label: t("paySuccess.home"), path: "/" },
+          { label: t("forgot.title") },
         ]}
       />
 
@@ -76,15 +75,12 @@ const ForgotPassword = () => {
               <div className="agency-card">
                 <div className="card-accent"></div>
                 <div className="card-content">
-                  <SectionLabel icon="envelope" text="Réinitialisation" />
+                  <SectionLabel icon="envelope" text={t("forgot.section")} />
 
-                  <p className="text-description mb-3">
-                    Entrez l'adresse email de votre compte. Nous vous enverrons
-                    un lien pour choisir un nouveau mot de passe.
-                  </p>
+                  <p className="text-description mb-3">{t("forgot.intro")}</p>
 
                   <div className="mb-3">
-                    <label className="agency-label">Email</label>
+                    <label className="agency-label">{t("common.email")}</label>
                     <input
                       type="email"
                       className="form-control"
@@ -108,12 +104,12 @@ const ForgotPassword = () => {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
-                        Envoi...
+                        {t("forgot.loading")}
                       </>
                     ) : (
                       <>
                         <i className="fas fa-paper-plane me-2"></i>
-                        Envoyer le lien
+                        {t("forgot.submit")}
                       </>
                     )}
                   </button>
@@ -131,7 +127,7 @@ const ForgotPassword = () => {
                       style={{ color: "#fec810", fontWeight: 700 }}
                     >
                       <i className="fas fa-arrow-left me-1"></i>
-                      Retour à la connexion
+                      {t("forgot.back")}
                     </Link>
                   </p>
                 </div>

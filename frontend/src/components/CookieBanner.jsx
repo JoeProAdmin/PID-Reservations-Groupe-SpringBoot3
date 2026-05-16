@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext";
 
 const COOKIE_KEY = "cookieConsent";
 const COOKIE_DATE_KEY = "cookieConsentDate";
@@ -19,6 +20,7 @@ export const clearCookieConsent = () => {
 };
 
 const CookieBanner = () => {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -71,7 +73,7 @@ const CookieBanner = () => {
                     marginBottom: "8px",
                   }}
                 >
-                  Respect de votre vie privée
+                  {t("cookie.title")}
                 </h5>
                 <p
                   style={{
@@ -81,14 +83,12 @@ const CookieBanner = () => {
                     marginBottom: 0,
                   }}
                 >
-                  Nous utilisons des cookies techniques essentiels au
-                  fonctionnement du site (session, authentification) et, avec
-                  votre accord, des cookies de mesure d'audience.{" "}
+                  {t("cookie.text")}{" "}
                   <Link
                     to="/mentions-legales"
                     style={{ color: "#fec810", fontWeight: 700 }}
                   >
-                    En savoir plus
+                    {t("cookie.learnMore")}
                   </Link>
                 </p>
               </div>
@@ -105,7 +105,7 @@ const CookieBanner = () => {
                   fontSize: "0.78rem",
                 }}
               >
-                <i className="fas fa-times me-2"></i>Refuser
+                <i className="fas fa-times me-2"></i>{t("cookie.reject")}
               </button>
               <button
                 onClick={handleAccept}
@@ -116,7 +116,7 @@ const CookieBanner = () => {
                   fontSize: "0.78rem",
                 }}
               >
-                <i className="fas fa-check me-2"></i>Tout accepter
+                <i className="fas fa-check me-2"></i>{t("cookie.accept")}
               </button>
             </div>
           </div>

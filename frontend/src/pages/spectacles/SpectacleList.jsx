@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import API_URL from '../../config';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const PAGE_SIZE = 9;
 
 const SpectacleList = () => {
     const { role } = useAuth();
+    const { t } = useLanguage();
 
     const [spectacles, setSpectacles] = useState([]);
     const [locations, setLocations] = useState([]);
@@ -99,20 +101,20 @@ const SpectacleList = () => {
     return (
         <>
             <PageHeader
-                title="Nos Spectacles"
-                subtitle="Découvrez et réservez vos spectacles"
-                breadcrumb={[{ label: 'Spectacles', path: '/' }]}
+                title={t("spectacles.title")}
+                subtitle={t("spectacles.subtitle")}
+                breadcrumb={[{ label: t("nav.spectacles"), path: '/' }]}
             />
 
             <section className="py-5 bg-light">
                 <div className="container">
                     <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                         <span className="count-badge">
-                            {totalElements} spectacle{totalElements !== 1 ? 's' : ''}
+                            {totalElements} {totalElements !== 1 ? t("spectacles.countPlural") : t("spectacles.count")}
                         </span>
                         {(role === 'ROLE_ADMIN' || role === 'ROLE_PRODUCTEUR') && (
                             <Link to="/spectacles/create" className="btn btn-primary text-uppercase btn-admin">
-                                <i className="fas fa-plus me-2"></i>Nouveau spectacle
+                                <i className="fas fa-plus me-2"></i>{t("spectacles.newButton")}
                             </Link>
                         )}
                     </div>
@@ -120,53 +122,53 @@ const SpectacleList = () => {
                     <div className="row g-2 mb-4">
                         <div className="col-md-12">
                             <label className="form-label info-label mb-1">
-                                <i className="fas fa-search me-1 text-warning"></i>Rechercher
+                                <i className="fas fa-search me-1 text-warning"></i>{t("spectacles.searchLabel")}
                             </label>
                             <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Titre ou description..."
+                                placeholder={t("spectacles.searchPlaceholder")}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                         <div className="col-md-4">
                             <label className="form-label info-label mb-1">
-                                <i className="fas fa-sort me-1 text-warning"></i>Trier par
+                                <i className="fas fa-sort me-1 text-warning"></i>{t("spectacles.sortBy")}
                             </label>
                             <select
                                 className="form-select"
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
                             >
-                                <option value="date">Date</option>
-                                <option value="price">Prix</option>
-                                <option value="name">Nom</option>
+                                <option value="date">{t("spectacles.sortDate")}</option>
+                                <option value="price">{t("spectacles.sortPrice")}</option>
+                                <option value="name">{t("spectacles.sortName")}</option>
                             </select>
                         </div>
                         <div className="col-md-4">
                             <label className="form-label info-label mb-1">
-                                <i className="fas fa-arrows-alt-v me-1 text-warning"></i>Ordre
+                                <i className="fas fa-arrows-alt-v me-1 text-warning"></i>{t("spectacles.order")}
                             </label>
                             <select
                                 className="form-select"
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value)}
                             >
-                                <option value="asc">Ascendant</option>
-                                <option value="desc">Descendant</option>
+                                <option value="asc">{t("spectacles.asc")}</option>
+                                <option value="desc">{t("spectacles.desc")}</option>
                             </select>
                         </div>
                         <div className="col-md-4">
                             <label className="form-label info-label mb-1">
-                                <i className="fas fa-map-marker-alt me-1 text-warning"></i>Lieu
+                                <i className="fas fa-map-marker-alt me-1 text-warning"></i>{t("spectacles.location")}
                             </label>
                             <select
                                 className="form-select"
                                 value={filterLocation}
                                 onChange={(e) => setFilterLocation(e.target.value)}
                             >
-                                <option value="">Tous les lieux</option>
+                                <option value="">{t("spectacles.allLocations")}</option>
                                 {locations.map(loc => (
                                     <option key={loc} value={loc}>{loc}</option>
                                 ))}
@@ -184,7 +186,7 @@ const SpectacleList = () => {
                         <div className="text-center py-5">
                             <i className="fas fa-theater-masks fa-3x text-muted mb-3"></i>
                             <p className="info-label">
-                                Aucun spectacle ne correspond à votre recherche.
+                                {t("spectacles.empty")}
                             </p>
                         </div>
                     ) : (
@@ -229,7 +231,7 @@ const SpectacleList = () => {
                                             <div className="d-flex gap-2 px-4 pb-4 card-footer-actions">
                                                 <Link to={`/spectacles/${spectacle.id}`}
                                                     className="btn btn-sm btn-dark text-warning btn-admin">
-                                                    <i className="fas fa-eye me-1"></i>Voir
+                                                    <i className="fas fa-eye me-1"></i>{t("spectacles.view")}
                                                 </Link>
                                             </div>
                                         </div>
@@ -300,7 +302,7 @@ const SpectacleList = () => {
                                         </li>
                                     </ul>
                                     <p className="text-center info-label mt-2">
-                                        Page {page + 1} sur {totalPages}
+                                        {t("spectacles.page")} {page + 1} {t("spectacles.pageOf")} {totalPages}
                                     </p>
                                 </nav>
                             )}

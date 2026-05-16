@@ -1,17 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import API_URL from "../../config";
 import PageHeader from "../../components/PageHeader";
 
-// ================================================
-// Page de retour apres un paiement reussi sur Stripe
-// Stripe redirige ici avec ?session_id=cs_xxx&reservationId=X
-// ================================================
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { t } = useLanguage();
   const sessionId = searchParams.get("session_id");
   const reservationId = searchParams.get("reservationId");
 
@@ -25,7 +23,7 @@ const PaymentSuccess = () => {
     confirmedRef.current = true;
 
     if (!sessionId) {
-      setError("Identifiant de session Stripe manquant.");
+      setError(t("paySuccess.sessionMissing"));
       setLoading(false);
       return;
     }
@@ -37,10 +35,9 @@ const PaymentSuccess = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.error || data.status !== "success") {
-          setError(data.error || "Confirmation echouee.");
+          setError(data.error || t("paySuccess.confirmFailed"));
         } else {
           setMethode(data.methode);
-          // Vide la cle stockee dans sessionStorage
           if (reservationId) {
             sessionStorage.removeItem(`stripe_checkout_url_${reservationId}`);
           }
@@ -48,16 +45,17 @@ const PaymentSuccess = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError("Erreur de confirmation : " + err.message);
+        setError(t("paySuccess.confirmFailed") + " " + err.message);
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, reservationId, token]);
 
   return (
     <>
       <PageHeader
-        title={loading ? "Confirmation..." : error ? "Erreur de paiement" : "Paiement confirme"}
-        subtitle="Merci pour votre reservation"
+        title={loading ? t("paySuccess.titleLoading") : error ? t("paySuccess.titleError") : t("paySuccess.titleSuccess")}
+        subtitle={t("paySuccess.subtitle")}
       />
       <section className="py-5 bg-light">
         <div className="container">
@@ -72,9 +70,9 @@ const PaymentSuccess = () => {
                   {loading ? (
                     <>
                       <div className="spinner-border text-primary" style={{ width: "3rem", height: "3rem" }}></div>
-                      <h4 className="mt-3">Verification du paiement...</h4>
+                      <h4 className="mt-3">{t("paySuccess.verifying")}</h4>
                       <p className="text-muted">
-                        Nous validons votre transaction avec Stripe.
+                        {t("paySuccess.verifyingDesc")}
                       </p>
                     </>
                   ) : error ? (
@@ -83,16 +81,16 @@ const PaymentSuccess = () => {
                         className="fas fa-times-circle"
                         style={{ fontSize: "4rem", color: "#dc3545" }}
                       ></i>
-                      <h3 className="mt-3 mb-2">Erreur de confirmation</h3>
+                      <h3 className="mt-3 mb-2">{t("paySuccess.errorTitle")}</h3>
                       <p className="text-muted mb-4">{error}</p>
                       <button
                         onClick={() => navigate("/mes-reservations")}
                         className="btn btn-outline-secondary me-2"
                       >
-                        <i className="fas fa-ticket-alt me-2"></i>Mes reservations
+                        <i className="fas fa-ticket-alt me-2"></i>{t("paySuccess.myReservations")}
                       </button>
                       <Link to="/" className="btn btn-primary btn-admin">
-                        <i className="fas fa-home me-2"></i>Accueil
+                        <i className="fas fa-home me-2"></i>{t("paySuccess.home")}
                       </Link>
                     </>
                   ) : (
@@ -101,9 +99,9 @@ const PaymentSuccess = () => {
                         className="fas fa-check-circle"
                         style={{ fontSize: "4rem", color: "#28a745" }}
                       ></i>
-                      <h3 className="mt-3 mb-2">Paiement reussi !</h3>
+                      <h3 className="mt-3 mb-2">{t("paySuccess.successTitle")}</h3>
                       <p className="text-muted mb-2">
-                        Votre reservation a bien ete confirmee.
+                        {t("paySuccess.successDesc")}
                       </p>
                       {methode && (
                         <p className="mb-3">
@@ -119,22 +117,22 @@ const PaymentSuccess = () => {
                             }}
                           >
                             <i className="fas fa-check me-1"></i>
-                            Paye par {methode}
+                            {t("paySuccess.paidWith")} {methode}
                           </span>
                         </p>
                       )}
                       <p className="text-muted mb-4" style={{ fontSize: "0.9rem" }}>
                         <i className="fas fa-envelope me-1 text-warning"></i>
-                        Un recu a ete envoye a votre adresse email.
+                        {t("paySuccess.receiptSent")}
                       </p>
                       <button
                         onClick={() => navigate("/mes-reservations")}
                         className="btn btn-outline-secondary me-2"
                       >
-                        <i className="fas fa-ticket-alt me-2"></i>Mes reservations
+                        <i className="fas fa-ticket-alt me-2"></i>{t("paySuccess.myReservations")}
                       </button>
                       <Link to="/" className="btn btn-primary btn-admin">
-                        <i className="fas fa-home me-2"></i>Accueil
+                        <i className="fas fa-home me-2"></i>{t("paySuccess.home")}
                       </Link>
                     </>
                   )}

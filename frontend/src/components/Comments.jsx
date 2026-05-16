@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import API_URL from "../config";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 
 const StarRating = ({ value, onChange, readOnly = false, size = "1rem" }) => {
   const [hover, setHover] = useState(0);
@@ -37,6 +38,7 @@ const LANGUAGES = [
 
 const Comments = ({ spectacleId }) => {
   const { token, userId } = useAuth();
+  const { t } = useLanguage();
   const currentUserId = userId ? parseInt(userId) : null;
 
   const [comments, setComments] = useState([]);
@@ -105,7 +107,7 @@ const Comments = ({ spectacleId }) => {
 
   const submit = () => {
     if (!contenu.trim()) {
-      setFormError("Le commentaire ne peut pas être vide.");
+      setFormError(t("comments.contentRequired"));
       return;
     }
     setSubmitting(true);
@@ -141,7 +143,7 @@ const Comments = ({ spectacleId }) => {
   };
 
   const deleteComment = (id) => {
-    if (!window.confirm("Supprimer ce commentaire ?")) return;
+    if (!window.confirm(t("comments.deleteConfirm"))) return;
     fetch(`${API_URL}/api/commentaires/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
@@ -189,7 +191,7 @@ const Comments = ({ spectacleId }) => {
   };
 
   if (loading) {
-    return <div className="info-label">Chargement des avis...</div>;
+    return <div className="info-label">{t("common.loading")}</div>;
   }
   if (error) {
     return <div className="text-danger">{error}</div>;
@@ -200,7 +202,7 @@ const Comments = ({ spectacleId }) => {
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
           <p className="info-label mb-0">
-            {comments.length} avis
+            {comments.length} {t("comments.review")}
             {averageNote && (
               <span className="ms-3">
                 <StarRating value={Math.round(averageNote)} readOnly />
@@ -216,12 +218,12 @@ const Comments = ({ spectacleId }) => {
               className="btn btn-primary btn-sm text-uppercase btn-admin"
             >
               <i className="fas fa-pen me-2"></i>
-              {myComment ? "Modifier mon avis" : "Laisser un avis"}
+              {myComment ? t("comments.edit") : t("comments.leave")}
             </button>
           )
         ) : (
           <Link to="/login" className="btn btn-outline-warning btn-sm text-uppercase">
-            <i className="fas fa-sign-in-alt me-2"></i>Se connecter pour commenter
+            <i className="fas fa-sign-in-alt me-2"></i>{t("comments.connectToComment")}
           </Link>
         )}
       </div>
@@ -234,22 +236,22 @@ const Comments = ({ spectacleId }) => {
               {formError}
             </div>
           )}
-          <p className="info-label mb-1">Votre note</p>
+          <p className="info-label mb-1">{t("comments.yourRating")}</p>
           <div className="mb-3">
             <StarRating value={note} onChange={setNote} size="1.5rem" />
           </div>
-          <p className="info-label mb-1">Votre avis</p>
+          <p className="info-label mb-1">{t("comments.yourReview")}</p>
           <textarea
             className="form-control mb-3"
             rows="4"
             maxLength="2000"
-            placeholder="Partagez votre expérience..."
+            placeholder={t("comments.shareExp")}
             value={contenu}
             onChange={(e) => setContenu(e.target.value)}
           />
           <div className="d-flex gap-2 justify-content-end">
             <button onClick={cancelEditing} className="btn-cancel">
-              Annuler
+              {t("common.cancel")}
             </button>
             <button
               onClick={submit}
@@ -259,12 +261,12 @@ const Comments = ({ spectacleId }) => {
               {submitting ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2"></span>
-                  Envoi...
+                  {t("comments.sending")}
                 </>
               ) : (
                 <>
                   <i className="fas fa-check me-2"></i>
-                  {editingId === "new" ? "Publier" : "Mettre à jour"}
+                  {editingId === "new" ? t("comments.publish") : t("comments.update")}
                 </>
               )}
             </button>
@@ -273,14 +275,14 @@ const Comments = ({ spectacleId }) => {
       )}
 
       {comments.length === 0 ? (
-        <p className="info-label">Aucun avis pour le moment. Soyez le premier !</p>
+        <p className="info-label">{t("comments.empty")}</p>
       ) : (
         <>
           {/* Sélecteur global de langue cible pour les traductions */}
           <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
             <span className="info-label mb-0">
               <i className="fas fa-language me-1 text-warning"></i>
-              Traduire les avis vers :
+              {t("comments.translateTo")}
             </span>
             <select
               value={targetLang}
@@ -318,7 +320,7 @@ const Comments = ({ spectacleId }) => {
                         })}
                         {c.updatedAt && (
                           <span className="ms-2" style={{ fontStyle: "italic" }}>
-                            (modifié)
+                            {t("comments.modified")}
                           </span>
                         )}
                       </p>
@@ -334,12 +336,12 @@ const Comments = ({ spectacleId }) => {
                             {translatingId === c.id ? (
                               <>
                                 <span className="spinner-border spinner-border-sm me-1"></span>
-                                Traduction...
+                                {t("comments.translating")}
                               </>
                             ) : (
                               <>
                                 <i className="fas fa-language me-1"></i>
-                                Traduire
+                                {t("comments.translate")}
                               </>
                             )}
                           </button>
@@ -350,7 +352,7 @@ const Comments = ({ spectacleId }) => {
                             style={{ fontSize: "0.75rem" }}
                           >
                             <i className="fas fa-eye-slash me-1"></i>
-                            Masquer la traduction
+                            {t("comments.hide")}
                           </button>
                         )}
                         {c.userId === currentUserId && (
@@ -359,7 +361,7 @@ const Comments = ({ spectacleId }) => {
                             className="btn btn-outline-danger btn-sm"
                             style={{ fontSize: "0.75rem" }}
                           >
-                            <i className="fas fa-trash me-1"></i>Supprimer
+                            <i className="fas fa-trash me-1"></i>{t("comments.delete")}
                           </button>
                         )}
                       </div>
@@ -380,12 +382,12 @@ const Comments = ({ spectacleId }) => {
                     >
                       <p className="info-label mb-1">
                         <i className="fas fa-language me-1 text-primary"></i>
-                        Traduction (
+                        {t("comments.translation")} (
                         {LANGUAGES.find((l) => l.code === tr.targetLang)?.label || tr.targetLang}
                         {tr.detectedSourceLang && tr.detectedSourceLang !== tr.targetLang && (
-                          <> · détecté : {tr.detectedSourceLang.toUpperCase()}</>
+                          <> · {t("comments.detected")} : {tr.detectedSourceLang.toUpperCase()}</>
                         )}
-                        ) · <em>via {tr.provider}</em>
+                        ) · <em>{t("comments.via")} {tr.provider}</em>
                       </p>
                       <p
                         className="text-description mb-0"

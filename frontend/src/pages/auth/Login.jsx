@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import API_URL from "../../config";
@@ -8,6 +9,7 @@ import API_URL from "../../config";
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -17,7 +19,7 @@ const Login = () => {
 
   const handleSubmit = () => {
     if (!formData.email || !formData.password) {
-      setError("Email et mot de passe obligatoires.");
+      setError(t("login.emailPwdRequired"));
       return;
     }
     setLoading(true);
@@ -47,7 +49,7 @@ const Login = () => {
       .then(({ ok, body }) => {
         if (!ok) {
           throw new Error(
-            body.error || body.message || "Email ou mot de passe incorrect"
+            body.error || body.message || t("login.invalid")
           );
         }
         login(body.token, body.role, body.prenom, body.nom, body.id);
@@ -62,9 +64,9 @@ const Login = () => {
   return (
     <>
       <PageHeader
-        title="Connexion"
-        subtitle="Connectez-vous à votre compte."
-        breadcrumb={[{ label: "Accueil", path: "/" }, { label: "Connexion" }]}
+        title={t("login.title")}
+        subtitle={t("login.subtitle")}
+        breadcrumb={[{ label: t("paySuccess.home"), path: "/" }, { label: t("login.title") }]}
       />
 
       <section className="py-5 bg-light">
@@ -81,22 +83,22 @@ const Login = () => {
               <div className="agency-card">
                 <div className="card-accent"></div>
                 <div className="card-content">
-                  <SectionLabel icon="lock" text="Identifiants" />
+                  <SectionLabel icon="lock" text={t("login.credentials")} />
 
                   <div className="mb-3">
-                    <label className="agency-label">Email</label>
+                    <label className="agency-label">{t("common.email")}</label>
                     <input
                       type="email"
                       id="email"
                       className="form-control"
-                      placeholder="votre@email.com"
+                      placeholder={t("login.emailPlaceholder")}
                       value={formData.email}
                       onChange={handleChange}
                     />
                   </div>
 
                   <div className="mb-3">
-                    <label className="agency-label">Mot de passe</label>
+                    <label className="agency-label">{t("common.password")}</label>
                     <input
                       type="password"
                       id="password"
@@ -117,7 +119,7 @@ const Login = () => {
                         fontWeight: 600,
                       }}
                     >
-                      Mot de passe oublié ?
+                      {t("login.forgot")}
                     </Link>
                   </div>
 
@@ -135,11 +137,11 @@ const Login = () => {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
-                        Connexion...
+                        {t("login.loading")}
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-sign-in-alt me-2"></i>Se connecter
+                        <i className="fas fa-sign-in-alt me-2"></i>{t("login.submit")}
                       </>
                     )}
                   </button>
@@ -152,12 +154,12 @@ const Login = () => {
                       color: "#6c757d",
                     }}
                   >
-                    Pas encore de compte ?{" "}
+                    {t("login.noAccount")}{" "}
                     <Link
                       to="/register"
                       style={{ color: "#fec810", fontWeight: 700 }}
                     >
-                      S'inscrire
+                      {t("login.signUp")}
                     </Link>
                   </p>
                 </div>

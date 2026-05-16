@@ -2,10 +2,12 @@ import { useState, useMemo } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
+import { useLanguage } from "../../context/LanguageContext";
 import API_URL from "../../config";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const token = useMemo(() => searchParams.get("token"), [searchParams]);
 
@@ -22,19 +24,19 @@ const ResetPassword = () => {
 
   const handleSubmit = () => {
     if (!token) {
-      setError("Lien invalide : token manquant.");
+      setError(t("reset.tokenMissing"));
       return;
     }
     if (!formData.newPassword || !formData.confirmPassword) {
-      setError("Les deux champs sont obligatoires.");
+      setError(t("reset.bothRequired"));
       return;
     }
     if (formData.newPassword.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      setError(t("reset.minChars"));
       return;
     }
     if (formData.newPassword !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
+      setError(t("reset.noMatch"));
       return;
     }
 
@@ -54,9 +56,9 @@ const ResetPassword = () => {
       )
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || "Erreur lors de la réinitialisation");
+          throw new Error(data.error || t("reset.success"));
         }
-        setSuccess(data.message || "Mot de passe réinitialisé avec succès.");
+        setSuccess(data.message || t("reset.success"));
         setLoading(false);
         setTimeout(() => navigate("/login"), 2000);
       })
@@ -69,11 +71,11 @@ const ResetPassword = () => {
   return (
     <>
       <PageHeader
-        title="Nouveau mot de passe"
-        subtitle="Choisissez un nouveau mot de passe sécurisé."
+        title={t("reset.title")}
+        subtitle={t("reset.subtitle")}
         breadcrumb={[
-          { label: "Accueil", path: "/" },
-          { label: "Réinitialisation" },
+          { label: t("paySuccess.home"), path: "/" },
+          { label: t("reset.section") },
         ]}
       />
 
@@ -84,7 +86,7 @@ const ResetPassword = () => {
               {!token && (
                 <div className="alert-error">
                   <i className="fas fa-exclamation-circle me-2"></i>
-                  Lien invalide : aucun token fourni.
+                  {t("reset.tokenMissing")}
                 </div>
               )}
               {error && (
@@ -96,17 +98,17 @@ const ResetPassword = () => {
               {success && (
                 <div className="alert alert-success">
                   <i className="fas fa-check-circle me-2"></i>
-                  {success} Redirection vers la connexion...
+                  {success} {t("reset.redirecting")}
                 </div>
               )}
 
               <div className="agency-card">
                 <div className="card-accent"></div>
                 <div className="card-content">
-                  <SectionLabel icon="key" text="Nouveau mot de passe" />
+                  <SectionLabel icon="key" text={t("reset.section")} />
 
                   <div className="mb-3">
-                    <label className="agency-label">Nouveau mot de passe</label>
+                    <label className="agency-label">{t("reset.newPassword")}</label>
                     <input
                       type="password"
                       id="newPassword"
@@ -119,7 +121,7 @@ const ResetPassword = () => {
                   </div>
 
                   <div className="mb-3">
-                    <label className="agency-label">Confirmer le mot de passe</label>
+                    <label className="agency-label">{t("reset.confirmPassword")}</label>
                     <input
                       type="password"
                       id="confirmPassword"
@@ -145,12 +147,12 @@ const ResetPassword = () => {
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
-                        Mise à jour...
+                        {t("reset.loading")}
                       </>
                     ) : (
                       <>
                         <i className="fas fa-check me-2"></i>
-                        Valider le nouveau mot de passe
+                        {t("reset.submit")}
                       </>
                     )}
                   </button>
@@ -168,7 +170,7 @@ const ResetPassword = () => {
                       style={{ color: "#fec810", fontWeight: 700 }}
                     >
                       <i className="fas fa-arrow-left me-1"></i>
-                      Retour à la connexion
+                      {t("reset.back")}
                     </Link>
                   </p>
                 </div>

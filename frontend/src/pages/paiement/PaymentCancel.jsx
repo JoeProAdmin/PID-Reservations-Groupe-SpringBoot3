@@ -1,18 +1,17 @@
 import { useSearchParams, Link } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
+import { useLanguage } from "../../context/LanguageContext";
 
-// ================================================
-// Page de retour si l'utilisateur annule sur Stripe
-// ================================================
 const PaymentCancel = () => {
   const [searchParams] = useSearchParams();
+  const { t } = useLanguage();
   const reservationId = searchParams.get("reservationId");
 
   return (
     <>
       <PageHeader
-        title="Paiement annule"
-        subtitle="Aucun montant n'a ete debite"
+        title={t("payCancel.title")}
+        subtitle={t("payCancel.subtitle")}
       />
       <section className="py-5 bg-light">
         <div className="container">
@@ -25,13 +24,12 @@ const PaymentCancel = () => {
                     className="fas fa-exclamation-triangle"
                     style={{ fontSize: "4rem", color: "#fec810" }}
                   ></i>
-                  <h3 className="mt-3 mb-2">Paiement annule</h3>
+                  <h3 className="mt-3 mb-2">{t("payCancel.title")}</h3>
                   <p className="text-muted mb-4">
-                    Vous avez annule la transaction. Aucun montant n'a ete preleve.
+                    {t("payCancel.message")}
                   </p>
                   <p className="text-muted mb-4" style={{ fontSize: "0.9rem" }}>
-                    Votre reservation reste en attente. Vous pouvez relancer le
-                    paiement quand vous le souhaitez depuis votre espace.
+                    {t("payCancel.bookingPending")}
                   </p>
 
                   {reservationId && (
@@ -39,11 +37,11 @@ const PaymentCancel = () => {
                       to={`/paiement/${reservationId}`}
                       className="btn btn-primary text-uppercase btn-admin me-2"
                     >
-                      <i className="fas fa-redo me-2"></i>Reessayer le paiement
+                      <i className="fas fa-redo me-2"></i>{t("payCancel.retry")}
                     </Link>
                   )}
                   <Link to="/mes-reservations" className="btn btn-outline-secondary">
-                    <i className="fas fa-ticket-alt me-2"></i>Mes reservations
+                    <i className="fas fa-ticket-alt me-2"></i>{t("payCancel.myReservations")}
                   </Link>
                 </div>
               </div>

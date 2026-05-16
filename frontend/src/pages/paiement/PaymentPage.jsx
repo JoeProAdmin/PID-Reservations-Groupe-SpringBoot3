@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLanguage } from "../../context/LanguageContext";
 import API_URL from "../../config";
 import PageHeader from "../../components/PageHeader";
 
@@ -12,6 +13,7 @@ const PaymentPage = () => {
   const { reservationId } = useParams();
   const [searchParams] = useSearchParams();
   const { token } = useAuth();
+  const { t } = useLanguage();
   const spectacleTitle = searchParams.get("spectacle") || "Spectacle";
 
   const [montant, setMontant] = useState(null);
@@ -44,15 +46,16 @@ const PaymentPage = () => {
         setLoading(false);
       })
       .catch((err) => {
-        setError("Impossible de preparer le paiement : " + err.message);
+        setError(t("payment.cannotLoad") + err.message);
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reservationId, token]);
 
   const handlePay = () => {
     const url = sessionStorage.getItem(`stripe_checkout_url_${reservationId}`);
     if (!url) {
-      setError("URL de paiement manquante. Rafraichissez la page.");
+      setError(t("payment.urlMissing"));
       return;
     }
     setRedirecting(true);
@@ -63,11 +66,11 @@ const PaymentPage = () => {
   return (
     <>
       <PageHeader
-        title="Paiement"
+        title={t("payment.title")}
         subtitle={spectacleTitle}
         breadcrumb={[
-          { label: "Spectacles", path: "/" },
-          { label: "Paiement" },
+          { label: t("nav.spectacles"), path: "/" },
+          { label: t("payment.title") },
         ]}
       />
 
@@ -80,7 +83,7 @@ const PaymentPage = () => {
                 <div className="card-content">
                   <h5 className="mb-4" style={{ fontWeight: "700" }}>
                     <i className="fas fa-credit-card me-2" style={{ color: "#fec810" }}></i>
-                    Recapitulatif de votre commande
+                    {t("payment.summary")}
                   </h5>
 
                   {error && (
@@ -93,18 +96,18 @@ const PaymentPage = () => {
                   {loading && (
                     <div className="text-center py-4">
                       <div className="spinner-border text-primary"></div>
-                      <p className="mt-2 text-muted">Preparation du paiement...</p>
+                      <p className="mt-2 text-muted">{t("payment.preparing")}</p>
                     </div>
                   )}
 
                   {montant && !error && (
                     <>
                       <div className="mb-4 p-3" style={{ background: "#f8f9fa", borderRadius: "8px" }}>
-                        <p className="info-label mb-1">Spectacle</p>
+                        <p className="info-label mb-1">{t("payment.spectacle")}</p>
                         <p className="info-value mb-3">{spectacleTitle}</p>
                         <hr />
                         <div className="d-flex align-items-center justify-content-between">
-                          <span className="info-label">Total a payer</span>
+                          <span className="info-label">{t("payment.totalToPay")}</span>
                           <span style={{ fontSize: "1.8rem", fontWeight: "700", color: "#fec810" }}>
                             {montant} EUR
                           </span>
@@ -122,12 +125,10 @@ const PaymentPage = () => {
                       >
                         <p className="mb-1">
                           <i className="fas fa-info-circle me-2 text-primary"></i>
-                          <strong>Vous allez etre redirige vers Stripe</strong>
+                          <strong>{t("payment.stripeInfo")}</strong>
                         </p>
                         <p className="mb-0" style={{ fontSize: "0.85rem", color: "#666" }}>
-                          Sur la page suivante, vous pourrez choisir votre methode de paiement
-                          (carte bancaire, Bancontact, iDEAL, etc.) selon ce qui est disponible
-                          dans votre region.
+                          {t("payment.stripeDesc")}
                         </p>
                       </div>
 
@@ -140,12 +141,12 @@ const PaymentPage = () => {
                         {redirecting ? (
                           <>
                             <span className="spinner-border spinner-border-sm me-2"></span>
-                            Redirection vers Stripe...
+                            {t("payment.redirecting")}
                           </>
                         ) : (
                           <>
                             <i className="fas fa-lock me-2"></i>
-                            Payer {montant} EUR avec Stripe
+                            {t("payment.payWith").replace("{amount}", montant)}
                           </>
                         )}
                       </button>
@@ -156,7 +157,7 @@ const PaymentPage = () => {
                         style={{ fontSize: "0.85rem" }}
                       >
                         <i className="fas fa-arrow-left me-1"></i>
-                        Annuler
+                        {t("payment.cancel")}
                       </Link>
                     </>
                   )}
@@ -172,11 +173,11 @@ const PaymentPage = () => {
                   >
                     <p className="mb-1">
                       <strong>
-                        <i className="fas fa-flask me-1"></i>Mode test Stripe
+                        <i className="fas fa-flask me-1"></i>{t("payment.testMode")}
                       </strong>
                     </p>
                     <p className="mb-0">
-                      Carte : <code>4242 4242 4242 4242</code> · <code>12/34</code> · <code>123</code>
+                      {t("payment.testCard")} : <code>4242 4242 4242 4242</code> · <code>12/34</code> · <code>123</code>
                     </p>
                   </div>
                 </div>
