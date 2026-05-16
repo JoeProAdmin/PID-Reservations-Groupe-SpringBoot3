@@ -14,6 +14,7 @@ import ProducteurDashboard from "./pages/producteur/ProducteurDashboard";
 import MentionsLegales from "./pages/legal/MentionsLegales";
 import CookieBanner from "./components/CookieBanner";
 import { AuthProvider } from "./context/AuthContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import SpectacleList from "./pages/spectacles/SpectacleList.jsx";
 import SpectacleDetail from "./pages/spectacles/SpectacleDetail.jsx";
 import SpectacleCreate from "./pages/spectacles/SpectacleCreate.jsx";
@@ -29,6 +30,7 @@ import MesReservations from "./pages/reservations/MesReservations";
 
 function App() {
     return (
+        <LanguageProvider>
         <AuthProvider>
             <BrowserRouter>
                 <Header />
@@ -80,6 +82,7 @@ function App() {
                 <CookieBanner />
             </BrowserRouter>
         </AuthProvider>
+        </LanguageProvider>
     );
 }
 

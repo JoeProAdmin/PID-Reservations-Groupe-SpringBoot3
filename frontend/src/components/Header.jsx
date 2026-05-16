@@ -1,9 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
+import { SUPPORTED_LANGUAGES } from "../i18n/translations";
 
 const Header = () => {
   const location = useLocation();
   const { token, role, prenom, nom, userId, logout } = useAuth();
+  const { lang, setLang, t } = useLanguage();
 
   const isActive = (path) => location.pathname === path;
 
@@ -32,7 +35,7 @@ const Header = () => {
                     className={`nav-link ${isActive("/") ? "active" : ""}`}
                     to="/"
                 >
-                  Spectacles
+                  {t("nav.spectacles")}
                 </Link>
               </li>
 
@@ -41,7 +44,7 @@ const Header = () => {
                     className={`nav-link ${isActive("/artists") ? "active" : ""}`}
                     to="/artists"
                 >
-                  Artistes
+                  {t("nav.artists")}
                 </Link>
               </li>
 
@@ -61,14 +64,14 @@ const Header = () => {
                     <li className="nav-item">
                       <Link className="nav-link" to="/mes-reservations">
                         <i className="fas fa-ticket-alt me-1"></i>
-                        Mes Réservations
+                        {t("nav.reservations")}
                       </Link>
                     </li>
 
                     {role === "ROLE_ADMIN" && (
                         <li className="nav-item">
                           <Link className="nav-link" to="/admin/dashboard">
-                            Dashboard
+                            {t("nav.adminDashboard")}
                           </Link>
                         </li>
                     )}
@@ -77,7 +80,7 @@ const Header = () => {
                         <li className="nav-item">
                           <Link className="nav-link" to="/producteur/dashboard">
                             <i className="fas fa-briefcase me-1"></i>
-                            Espace Producteur
+                            {t("nav.producerDashboard")}
                           </Link>
                         </li>
                     )}
@@ -89,7 +92,7 @@ const Header = () => {
                           style={{ color: "#fff" }}
                       >
                         <i className="fas fa-sign-out-alt me-1"></i>
-                        Déconnexion
+                        {t("nav.logout")}
                       </button>
                     </li>
                   </>
@@ -102,7 +105,7 @@ const Header = () => {
                           }`}
                           to="/login"
                       >
-                        Connexion
+                        {t("nav.login")}
                       </Link>
                     </li>
 
@@ -113,11 +116,38 @@ const Header = () => {
                           }`}
                           to="/register"
                       >
-                        Inscription
+                        {t("nav.register")}
                       </Link>
                     </li>
                   </>
               )}
+
+              {/* Selecteur de langue (drapeaux) */}
+              <li className="nav-item d-flex align-items-center ms-lg-2">
+                <div className="d-flex gap-1">
+                  {SUPPORTED_LANGUAGES.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => setLang(l.code)}
+                      title={l.label}
+                      style={{
+                        background: "transparent",
+                        border: lang === l.code ? "2px solid #fec810" : "2px solid transparent",
+                        borderRadius: "4px",
+                        padding: "2px 4px",
+                        fontSize: "1.1rem",
+                        cursor: "pointer",
+                        opacity: lang === l.code ? 1 : 0.5,
+                        transition: "opacity 0.2s, border-color 0.2s",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = 1)}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = lang === l.code ? 1 : 0.5)}
+                    >
+                      {l.flag}
+                    </button>
+                  ))}
+                </div>
+              </li>
             </ul>
           </div>
         </div>

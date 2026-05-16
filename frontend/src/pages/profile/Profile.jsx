@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
 import API_URL from '../../config';
@@ -10,6 +11,7 @@ const Profile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { token, userId, logout } = useAuth();
+    const { t } = useLanguage();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,10 +21,10 @@ const Profile = () => {
 
     const roleLabel = (role) => {
         switch (role) {
-            case 'ROLE_ADMIN': return 'Administrateur';
-            case 'ROLE_PRODUCTEUR': return 'Producteur';
-            case 'ROLE_PRODUCTEUR_PENDING': return 'Producteur (en attente)';
-            default: return 'Utilisateur';
+            case 'ROLE_ADMIN': return t('role.admin');
+            case 'ROLE_PRODUCTEUR': return t('role.producer');
+            case 'ROLE_PRODUCTEUR_PENDING': return t('role.producer') + ' (en attente)';
+            default: return t('role.user');
         }
     };
 
@@ -100,19 +102,19 @@ const Profile = () => {
 
                                     <div className="row g-4 mb-4">
                                         <div className="col-md-6">
-                                            <p className="info-label">Prénom</p>
+                                            <p className="info-label">{t('profile.firstName')}</p>
                                             <p className="info-value">{user.firstName}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p className="info-label">Nom</p>
+                                            <p className="info-label">{t('profile.lastName')}</p>
                                             <p className="info-value">{user.lastName}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p className="info-label">Email</p>
+                                            <p className="info-label">{t('auth.email')}</p>
                                             <p className="info-value">{user.email}</p>
                                         </div>
                                         <div className="col-md-6">
-                                            <p className="info-label">Rôle</p>
+                                            <p className="info-label">{t('profile.role')}</p>
                                             <p className="info-value">
                                                 {roleLabel(user.role)}
                                             </p>
@@ -131,18 +133,18 @@ const Profile = () => {
                                                     {deleting ? (
                                                         <>
                                                             <span className="spinner-border spinner-border-sm me-2"></span>
-                                                            Suppression...
+                                                            {t('common.delete')}...
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <i className="fas fa-user-times me-2"></i>Supprimer mon compte
+                                                            <i className="fas fa-user-times me-2"></i>{t('profile.delete')}
                                                         </>
                                                     )}
                                                 </button>
                                                 <Link to={`/profile/${id}/edit`}
                                                     className="btn btn-warning text-uppercase"
                                                     style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: '0.8rem' }}>
-                                                    <i className="fas fa-pen me-2"></i>Modifier mon profil
+                                                    <i className="fas fa-pen me-2"></i>{t('profile.edit')}
                                                 </Link>
                                             </div>
                                         </>
