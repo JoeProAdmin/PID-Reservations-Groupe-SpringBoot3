@@ -11,4 +11,6 @@ public interface EmailService {
     void sendReservationConfirmationEmail(User user, Reservation reservation);
 
     void sendPaymentConfirmationEmail(User user, Reservation reservation, Paiement paiement);
+
+    void sendProducerApprovalEmail(User user);
 }

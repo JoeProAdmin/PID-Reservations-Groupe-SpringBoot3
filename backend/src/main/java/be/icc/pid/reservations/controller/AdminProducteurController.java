@@ -3,6 +3,7 @@ package be.icc.pid.reservations.controller;
 import be.icc.pid.reservations.dto.UserResponseDTO;
 import be.icc.pid.reservations.entity.User;
 import be.icc.pid.reservations.repository.UserRepository;
+import be.icc.pid.reservations.service.EmailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -17,9 +18,12 @@ import java.util.Map;
 public class AdminProducteurController {
 
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
-    public AdminProducteurController(UserRepository userRepository) {
+    public AdminProducteurController(UserRepository userRepository,
+                                     EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     @GetMapping("/pending")
@@ -52,7 +56,11 @@ public class AdminProducteurController {
         }
         user.setRole("ROLE_PRODUCTEUR");
         userRepository.save(user);
-        return ResponseEntity.ok(Map.of("message", "Producteur approuvé."));
+
+        // Notification email au producteur
+        emailService.sendProducerApprovalEmail(user);
+
+        return ResponseEntity.ok(Map.of("message", "Producteur approuvé. Email de notification envoyé."));
     }
 
     @PutMapping("/{userId}/reject")

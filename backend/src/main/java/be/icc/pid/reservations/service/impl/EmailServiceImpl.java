@@ -28,11 +28,14 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
     private final String fromAddress;
+    private final String frontendUrl;
 
     public EmailServiceImpl(JavaMailSender mailSender,
-                            @Value("${app.mail.from}") String fromAddress) {
+                            @Value("${app.mail.from}") String fromAddress,
+                            @Value("${app.frontend.url}") String frontendUrl) {
         this.mailSender = mailSender;
         this.fromAddress = fromAddress;
+        this.frontendUrl = frontendUrl;
     }
 
     @Override
@@ -222,6 +225,53 @@ public class EmailServiceImpl implements EmailService {
                         paiement.getId(),
                         reservation.getId()
                 );
+
+        sendHtmlEmail(user.getEmail(), subject, body);
+    }
+
+    @Override
+    public void sendProducerApprovalEmail(User user) {
+        String subject = "Votre compte producteur a été validé - PID Réservations";
+        String dashboardLink = frontendUrl + "/producteur/dashboard";
+
+        String body = """
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <div style="background-color: #1a1a1a; padding: 20px; text-align: center;">
+                    <h1 style="color: #fec810; margin: 0;">PID Réservations</h1>
+                  </div>
+                  <div style="padding: 30px; background-color: #f8f9fa;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                      <div style="display: inline-block; width: 60px; height: 60px; line-height: 60px; border-radius: 50%%; background-color: #198754; color: white; font-size: 30px; font-weight: bold;">
+                        ✓
+                      </div>
+                    </div>
+                    <h2 style="color: #1a1a1a; text-align: center;">Compte producteur validé !</h2>
+                    <p>Bonjour %s,</p>
+                    <p>Excellente nouvelle : votre demande de compte producteur a été <strong>approuvée</strong> par notre équipe d'administration.</p>
+                    <p>Vous avez maintenant accès à votre espace producteur, où vous pouvez :</p>
+                    <ul style="line-height: 1.8;">
+                      <li>Créer et gérer vos propres spectacles</li>
+                      <li>Suivre les statistiques (réservations, revenus, taux de remplissage)</li>
+                      <li>Modérer les commentaires de vos spectacles</li>
+                      <li>Consulter la note moyenne attribuée par les spectateurs</li>
+                    </ul>
+                    <div style="text-align: center; margin: 30px 0;">
+                      <a href="%s"
+                         style="background-color: #fec810; color: #1a1a1a; padding: 14px 32px;
+                                text-decoration: none; font-weight: bold; border-radius: 4px;
+                                display: inline-block; text-transform: uppercase;">
+                        Accéder à mon espace producteur
+                      </a>
+                    </div>
+                    <p style="font-size: 0.9em; color: #6c757d; text-align: center; margin-top: 20px;">
+                      Bienvenue dans la communauté des producteurs PID Réservations !
+                    </p>
+                  </div>
+                  <div style="text-align: center; padding: 15px; color: #6c757d; font-size: 0.8em;">
+                    © PID Réservations - Tous droits réservés
+                  </div>
+                </div>
+                """.formatted(user.getPrenom(), dashboardLink);
 
         sendHtmlEmail(user.getEmail(), subject, body);
     }
