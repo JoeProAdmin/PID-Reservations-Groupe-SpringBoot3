@@ -1,9 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PageHeader from "../../components/PageHeader";
 import SectionLabel from "../../components/SectionLabel";
 import { useLanguage } from "../../context/LanguageContext";
 import API_URL from "../../config";
+
+// Memes regles que l'inscription
+const PASSWORD_PATTERN = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-={}\[\]:;"'<>,.?/\\|`~]).{6,}$/;
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -15,6 +18,10 @@ const ResetPassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [validation, setValidation] = useState({
+    newPassword: { valid: null, message: "" },
+    confirmPassword: { valid: null, message: "" },
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -22,23 +29,45 @@ const ResetPassword = () => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.id]: e.target.value });
 
+  // Validation du nouveau mot de passe (memes regles que l'inscription)
+  useEffect(() => {
+    const pwd = formData.newPassword;
+    if (pwd === "") {
+      setValidation((v) => ({ ...v, newPassword: { valid: null, message: "" } }));
+    } else if (pwd.length < 6) {
+      setValidation((v) => ({ ...v, newPassword: { valid: false, message: t("valid.passwordMin") } }));
+    } else if (!/[A-Z]/.test(pwd)) {
+      setValidation((v) => ({ ...v, newPassword: { valid: false, message: t("valid.passwordUpper") } }));
+    } else if (!/[!@#$%^&*()_+\-={}\[\]:;"'<>,.?/\\|`~]/.test(pwd)) {
+      setValidation((v) => ({ ...v, newPassword: { valid: false, message: t("valid.passwordSpecial") } }));
+    } else if (!PASSWORD_PATTERN.test(pwd)) {
+      setValidation((v) => ({ ...v, newPassword: { valid: false, message: t("valid.passwordSpecial") } }));
+    } else {
+      setValidation((v) => ({ ...v, newPassword: { valid: true, message: t("valid.passwordValid") } }));
+    }
+  }, [formData.newPassword, t]);
+
+  // Validation de la confirmation
+  useEffect(() => {
+    if (formData.confirmPassword === "") {
+      setValidation((v) => ({ ...v, confirmPassword: { valid: null, message: "" } }));
+    } else if (formData.confirmPassword !== formData.newPassword) {
+      setValidation((v) => ({ ...v, confirmPassword: { valid: false, message: t("valid.passwordsNoMatch") } }));
+    } else {
+      setValidation((v) => ({ ...v, confirmPassword: { valid: true, message: t("valid.passwordsMatch") } }));
+    }
+  }, [formData.confirmPassword, formData.newPassword, t]);
+
+  const allValid =
+    validation.newPassword.valid === true &&
+    validation.confirmPassword.valid === true;
+
   const handleSubmit = () => {
     if (!token) {
       setError(t("reset.tokenMissing"));
       return;
     }
-    if (!formData.newPassword || !formData.confirmPassword) {
-      setError(t("reset.bothRequired"));
-      return;
-    }
-    if (formData.newPassword.length < 6) {
-      setError(t("reset.minChars"));
-      return;
-    }
-    if (formData.newPassword !== formData.confirmPassword) {
-      setError(t("reset.noMatch"));
-      return;
-    }
+    if (!allValid) return;
 
     setLoading(true);
     setError(null);
@@ -56,7 +85,7 @@ const ResetPassword = () => {
       )
       .then(({ ok, data }) => {
         if (!ok) {
-          throw new Error(data.error || t("reset.success"));
+          throw new Error(data.error || data.message || t("reset.success"));
         }
         setSuccess(data.message || t("reset.success"));
         setLoading(false);
@@ -66,6 +95,30 @@ const ResetPassword = () => {
         setError(err.message);
         setLoading(false);
       });
+  };
+
+  const FieldFeedback = ({ state }) => {
+    if (state.valid === true && state.message) {
+      return (
+        <small style={{ color: "#198754", fontSize: "0.8rem", fontWeight: 600 }}>
+          <i className="fas fa-check-circle me-1"></i>{state.message}
+        </small>
+      );
+    }
+    if (state.valid === false && state.message) {
+      return (
+        <small style={{ color: "#dc3545", fontSize: "0.8rem", fontWeight: 600 }}>
+          <i className="fas fa-exclamation-circle me-1"></i>{state.message}
+        </small>
+      );
+    }
+    return null;
+  };
+
+  const inputBorderColor = (state) => {
+    if (state.valid === true) return "#198754";
+    if (state.valid === false) return "#dc3545";
+    return "#ced4da";
   };
 
   return (
@@ -117,7 +170,12 @@ const ResetPassword = () => {
                       value={formData.newPassword}
                       onChange={handleChange}
                       disabled={!token || success}
+                      style={{ borderColor: inputBorderColor(validation.newPassword) }}
                     />
+                    <FieldFeedback state={validation.newPassword} />
+                    <small className="d-block text-muted mt-1" style={{ fontSize: "0.75rem" }}>
+                      {t("register.passwordHint")}
+                    </small>
                   </div>
 
                   <div className="mb-3">
@@ -130,18 +188,22 @@ const ResetPassword = () => {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       disabled={!token || success}
+                      style={{ borderColor: inputBorderColor(validation.confirmPassword) }}
                     />
+                    <FieldFeedback state={validation.confirmPassword} />
                   </div>
 
                   <hr className="agency-divider" />
 
                   <button
                     onClick={handleSubmit}
-                    disabled={loading || !token || success}
+                    disabled={loading || !token || success || !allValid}
                     className="btn btn-primary btn-xl text-uppercase w-100"
                     style={{
                       fontFamily: "Montserrat, sans-serif",
                       fontWeight: 700,
+                      opacity: allValid ? 1 : 0.5,
+                      cursor: allValid ? "pointer" : "not-allowed",
                     }}
                   >
                     {loading ? (
@@ -156,6 +218,13 @@ const ResetPassword = () => {
                       </>
                     )}
                   </button>
+
+                  {!allValid && token && !success && (
+                    <p className="text-center mt-2" style={{ fontSize: "0.8rem", color: "#6c757d" }}>
+                      <i className="fas fa-info-circle me-1"></i>
+                      {t("valid.allFieldsRequired")}
+                    </p>
+                  )}
 
                   <p
                     className="text-center mt-3"
