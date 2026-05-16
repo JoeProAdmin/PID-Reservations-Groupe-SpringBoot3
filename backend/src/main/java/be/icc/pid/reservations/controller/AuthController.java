@@ -51,13 +51,37 @@ public class AuthController {
         this.frontendUrl = frontendUrl;
     }
 
+    // ================================================
+    // Verifications asynchrones depuis le formulaire d'inscription
+    // ================================================
+    @GetMapping("/check-login")
+    public ResponseEntity<Map<String, Object>> checkLogin(@RequestParam String login) {
+        boolean available = login != null
+                && !login.trim().isEmpty()
+                && !userRepository.existsByLogin(login.trim());
+        return ResponseEntity.ok(Map.of("available", available));
+    }
+
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Object>> checkEmail(@RequestParam String email) {
+        boolean available = email != null
+                && !email.trim().isEmpty()
+                && !userRepository.existsByEmail(email.trim().toLowerCase());
+        return ResponseEntity.ok(Map.of("available", available));
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserCreateDTO dto) {
 
         String email = dto.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByEmail(email)) {
-            return ResponseEntity.badRequest().body("Email déjà utilisé");
+            return ResponseEntity.badRequest().body(Map.of("error", "Email déjà utilisé"));
+        }
+
+        String login = dto.getLogin() != null ? dto.getLogin().trim() : null;
+        if (login != null && !login.isEmpty() && userRepository.existsByLogin(login)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Login déjà utilisé"));
         }
 
         User user = new User();
@@ -65,11 +89,13 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNom(dto.getLastName());
         user.setPrenom(dto.getFirstName());
+        user.setLogin(login != null && !login.isEmpty() ? login : null);
+        user.setLanguage(dto.getLanguage() != null && !dto.getLanguage().isBlank() ? dto.getLanguage() : "fr");
         user.setRole("ROLE_USER");
 
         userRepository.save(user);
 
-        return ResponseEntity.ok("Utilisateur créé");
+        return ResponseEntity.ok(Map.of("message", "Utilisateur créé"));
     }
 
     @PostMapping("/register-producteur")
@@ -78,7 +104,12 @@ public class AuthController {
         String email = dto.getEmail().trim().toLowerCase();
 
         if (userRepository.existsByEmail(email)) {
-            return ResponseEntity.badRequest().body("Email déjà utilisé");
+            return ResponseEntity.badRequest().body(Map.of("error", "Email déjà utilisé"));
+        }
+
+        String login = dto.getLogin() != null ? dto.getLogin().trim() : null;
+        if (login != null && !login.isEmpty() && userRepository.existsByLogin(login)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Login déjà utilisé"));
         }
 
         User user = new User();
@@ -86,6 +117,8 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setNom(dto.getLastName());
         user.setPrenom(dto.getFirstName());
+        user.setLogin(login != null && !login.isEmpty() ? login : null);
+        user.setLanguage(dto.getLanguage() != null && !dto.getLanguage().isBlank() ? dto.getLanguage() : "fr");
         user.setRole("ROLE_PRODUCTEUR_PENDING");
 
         userRepository.save(user);

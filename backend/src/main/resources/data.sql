@@ -8,41 +8,41 @@
 
 -- ========== UTILISATEURS ==========
 -- email est deja UNIQUE en base, INSERT IGNORE suffit
-INSERT IGNORE INTO users (email, password, nom, prenom, role)
+INSERT IGNORE INTO users (email, password, nom, prenom, role, login, language)
 VALUES (
     'admin@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
-    'Admin', 'Test', 'ROLE_ADMIN'
+    'Admin', 'Test', 'ROLE_ADMIN', 'admin', 'fr'
 );
 
-INSERT IGNORE INTO users (email, password, nom, prenom, role)
+INSERT IGNORE INTO users (email, password, nom, prenom, role, login, language)
 VALUES (
     'user@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
-    'Dupont', 'Jean', 'ROLE_USER'
+    'Dupont', 'Jean', 'ROLE_USER', 'jean.dupont', 'fr'
 );
 
-INSERT IGNORE INTO users (email, password, nom, prenom, role)
+INSERT IGNORE INTO users (email, password, nom, prenom, role, login, language)
 VALUES (
     'sophie@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
-    'Martin', 'Sophie', 'ROLE_USER'
+    'Martin', 'Sophie', 'ROLE_USER', 'sophie.martin', 'fr'
 );
 
 -- Producteur valide (peut creer des spectacles)
-INSERT IGNORE INTO users (email, password, nom, prenom, role)
+INSERT IGNORE INTO users (email, password, nom, prenom, role, login, language)
 VALUES (
     'producteur@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
-    'Producer', 'Pierre', 'ROLE_PRODUCTEUR'
+    'Producer', 'Pierre', 'ROLE_PRODUCTEUR', 'pierre.prod', 'fr'
 );
 
 -- Producteur en attente de validation admin (visible dans le dashboard admin)
-INSERT IGNORE INTO users (email, password, nom, prenom, role)
+INSERT IGNORE INTO users (email, password, nom, prenom, role, login, language)
 VALUES (
     'pending@test.com',
     '$2a$10$FYxtkUoIUsgq1mt0tGJDK.VKD/3QB1TtKKZ4zxRo3UPGTEY3ce1Dq',
-    'Attente', 'Marie', 'ROLE_PRODUCTEUR_PENDING'
+    'Attente', 'Marie', 'ROLE_PRODUCTEUR_PENDING', 'marie.attente', 'fr'
 );
 
 -- ========== ARTISTES (cle naturelle : name) ==========
