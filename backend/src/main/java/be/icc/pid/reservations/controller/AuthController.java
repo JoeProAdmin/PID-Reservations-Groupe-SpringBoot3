@@ -152,7 +152,8 @@ public class AuthController {
                         user.getRole(),
                         user.getPrenom(),
                         user.getNom(),
-                        user.getId()
+                        user.getId(),
+                        user.getLanguage()
                 )
         );
     }

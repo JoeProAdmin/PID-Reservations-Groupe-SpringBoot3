@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import PageHeader from '../../components/PageHeader';
 import SectionLabel from '../../components/SectionLabel';
 import API_URL from '../../config';
@@ -19,6 +20,7 @@ const ProfileEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { token, userId } = useAuth();
+    const { setLang } = useLanguage();
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -241,6 +243,10 @@ const ProfileEdit = () => {
             }))
             .then(({ ok, body }) => {
                 if (!ok) throw new Error(body.error || body.message || 'Erreur lors de la mise à jour');
+                // Synchronise la langue de l'app avec la nouvelle langue choisie
+                if (formData.language) {
+                    setLang(formData.language);
+                }
                 navigate(`/profile/${id}`);
             })
             .catch(err => { setSubmitError(err.message); setSaving(false); });

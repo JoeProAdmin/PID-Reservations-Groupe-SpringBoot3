@@ -9,7 +9,7 @@ import API_URL from "../../config";
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { t } = useLanguage();
+  const { t, setLang } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -53,6 +53,10 @@ const Login = () => {
           );
         }
         login(body.token, body.role, body.prenom, body.nom, body.id);
+        // Synchronise la langue de l'app avec la langue du compte
+        if (body.language) {
+          setLang(body.language);
+        }
         navigate("/");
       })
       .catch((err) => {
